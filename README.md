@@ -1,0 +1,226 @@
+# slidev-react
+
+React-first presentation runtime with an MDX deck pipeline, presenter/viewer modes, and built-in interactive slide features.
+
+[中文说明](./README.zh-CN.md)
+
+## Overview
+
+`slidev-react` is an experimental slide system built around:
+
+- React 19 for rendering
+- MDX as the authoring format
+- Rsbuild / Rspack for the app runtime
+- a compile-time deck pipeline under `src/deck`
+- a presentation shell with presenter/viewer sync, reveal flow, drawings, and recording
+
+This repo is not a Vue Slidev runtime. It is a React + MDX implementation that borrows some presentation ideas while using its own deck model and rendering pipeline.
+
+## Highlights
+
+- MDX-authored deck source in [`slides.mdx`](./slides.mdx)
+- Compile-time parsing and deck artifact generation
+- Built-in slide layouts such as `default`, `center`, `cover`, `section`, `two-cols`, `image-right`, and `statement`
+- React-native MDX helpers including `Badge`, `Callout`, `AnnotationMark`, `Reveal`, and `RevealGroup`
+- Diagram fences for Mermaid and PlantUML
+- KaTeX-based math rendering
+- Presenter and viewer routes with sync-ready state handling
+- Multi-tab sync through `BroadcastChannel`
+- Optional cross-device sync through a WebSocket relay
+- Stage drawing tools, cursor sync, quick overview, and browser recording
+
+## Status
+
+The project is currently an MVP / playground. APIs, authoring conventions, and deck capabilities may still change.
+
+## Release Positioning
+
+This repository is an open-source application/runtime repo, not an npm package. Keep `"private": true` in `package.json` to prevent accidental publication, and treat source checkout as the supported way to use or extend the project.
+
+## Quick Start
+
+### Requirements
+
+- Node.js `>=22`
+- Bun `1.3.3`
+
+### Install
+
+```bash
+bun install
+```
+
+### Start development
+
+```bash
+bun run dev
+```
+
+### Build production assets
+
+```bash
+bun run build
+```
+
+### Preview the build
+
+```bash
+bun run preview
+```
+
+### Clean generated output
+
+```bash
+bun run clean
+```
+
+## Presentation Mode
+
+Start the app first:
+
+```bash
+bun run dev
+```
+
+Optional: start the relay server for cross-device sync:
+
+```bash
+bun run presentation:server
+```
+
+Default relay endpoint: `ws://localhost:4860/ws`
+
+Routes:
+
+- Presenter: `http://localhost:3000/presenter/1`
+- Viewer: `http://localhost:3000/1`
+
+The presenter shell currently includes:
+
+- presenter / viewer roles
+- page sync
+- reveal-state sync
+- cursor sync
+- drawing sync
+- browser recording via `MediaRecorder`
+- quick overview and presenter-side controls
+
+## Deck Authoring
+
+The deck source lives in [`slides.mdx`](./slides.mdx).
+
+Core authoring rules:
+
+- Use `---` to split slides
+- Use frontmatter for deck or slide metadata
+- Use MDX for slide content
+- Use repo-provided React components directly in MDX
+
+Supported frontmatter today:
+
+- Deck: `title`, `theme`, `layout`
+- Slide: `title`, `layout`, `class`
+
+Notes:
+
+- `layout:` is active and affects rendering
+- `class:` is applied to the stage article element
+- `theme:` is parsed as metadata but is not yet wired into runtime theme switching
+
+Example:
+
+```mdx
+---
+title: Demo Deck
+layout: default
+---
+
+---
+title: Compare
+layout: two-cols
+class: px-20
+---
+
+# Left column
+
+<hr />
+
+# Right column
+
+<Reveal step={1}>
+  <Callout title="Tip">This block appears on click.</Callout>
+</Reveal>
+```
+
+## MDX Helpers
+
+Common helpers exposed to MDX include:
+
+- `Badge`
+- `Callout`
+- `AnnotationMark`
+- `CourseCover`
+- `MagicMoveDemo`
+- `MinimaxReactVisualizer`
+- `Reveal`
+- `RevealGroup`
+- `MermaidDiagram`
+- `PlantUmlDiagram`
+
+`AnnotationMark` example:
+
+```mdx
+<AnnotationMark>Default highlight</AnnotationMark>
+<AnnotationMark type="underline">Key idea</AnnotationMark>
+<AnnotationMark type="box" color="#2563eb">API boundary</AnnotationMark>
+<AnnotationMark type="bracket" brackets={['left', 'right']}>Focus block</AnnotationMark>
+```
+
+## Project Structure
+
+Top-level source areas under [`src/`](./src):
+
+- `app/`: application assembly, providers, entry wiring
+- `deck/`: deck parsing, frontmatter handling, MDX compilation, generated artifacts
+- `features/`: presentation capabilities such as reveal, presenter shell, sync, draw, and navigation
+- `features/player/`: stage rendering and stage interaction
+- `ui/`: reusable presentation components and MDX helpers
+- `theme/`: layouts and visual tokens
+
+For more internal structure guidance, see [`src/README.md`](./src/README.md).
+
+## Scripts
+
+- `bun run clean`: remove generated output such as `dist/`, `.generated/`, and `output/`
+- `bun run dev`: start the development server
+- `bun run build`: build the app
+- `bun run preview`: preview the production build
+- `bun run presentation:server`: start the WebSocket relay server
+- `bun run test`: run the Vitest suite
+- `bun run lint`: lint `src/` with Oxlint
+
+## Build Artifact Management
+
+Build output is disposable and should not be committed. In this repository:
+
+- `dist/` is generated by production builds
+- `.generated/` is compile-time deck output
+- `output/` is treated as generated runtime output
+
+Before opening a PR, remove generated files with `bun run clean` if they are unrelated to the change.
+
+## Testing
+
+Run the test suite with:
+
+```bash
+bun run test
+```
+
+## Acknowledgements
+
+This project is inspired by [Slidev](https://github.com/slidevjs/slidev), and some early deck content was migrated from the Slidev starter deck while adapting the authoring model to this React + MDX runtime.
+
+## License
+
+[MIT](./LICENSE)
