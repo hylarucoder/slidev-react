@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react";
 
 export function Badge({ children }: { children: ReactNode }) {
-  return <span className="slide-badge">{children}</span>
+  return <span className="slide-badge">{children}</span>;
 }

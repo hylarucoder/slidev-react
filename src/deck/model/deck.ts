@@ -1,13 +1,13 @@
-import type { LayoutName } from "./layout"
-import type { SlideUnit } from "./slide"
+import type { LayoutName } from "./layout";
+import type { SlideUnit } from "./slide";
 
 export interface DeckMeta {
-  title?: string
-  theme?: string
-  layout?: LayoutName
+  title?: string;
+  theme?: string;
+  layout?: LayoutName;
 }
 
 export interface DeckModel {
-  meta: DeckMeta
-  slides: SlideUnit[]
+  meta: DeckMeta;
+  slides: SlideUnit[];
 }

@@ -1,55 +1,54 @@
-import type { HighlighterCore } from 'shiki'
-import { useEffect, useMemo, useState } from 'react'
-import { createHighlighter } from 'shiki'
-import { ShikiMagicMove } from 'shiki-magic-move/react'
+import type { HighlighterCore } from "shiki";
+import { useEffect, useMemo, useState } from "react";
+import { createHighlighter } from "shiki";
+import { ShikiMagicMove } from "shiki-magic-move/react";
 
 const STEPS = [
   `const hello = 'world'`,
   `let hi = 'hello'`,
-  `function greet(name: string) {\n  return \`Hi, ${'${name}'}!\`\n}`,
-]
+  `function greet(name: string) {\n  return \`Hi, ${"${name}"}!\`\n}`,
+];
 
-let highlighterPromise: Promise<HighlighterCore> | null = null
+let highlighterPromise: Promise<HighlighterCore> | null = null;
 
 function getHighlighter() {
   if (!highlighterPromise) {
     highlighterPromise = createHighlighter({
-      themes: ['vitesse-light'],
-      langs: ['javascript', 'typescript'],
-    })
+      themes: ["vitesse-light"],
+      langs: ["javascript", "typescript"],
+    });
   }
 
-  return highlighterPromise
+  return highlighterPromise;
 }
 
 export function MagicMoveDemo() {
-  const [stepIndex, setStepIndex] = useState(0)
-  const [highlighter, setHighlighter] = useState<HighlighterCore>()
+  const [stepIndex, setStepIndex] = useState(0);
+  const [highlighter, setHighlighter] = useState<HighlighterCore>();
 
   useEffect(() => {
-    let cancelled = false
+    let cancelled = false;
 
     const initializeHighlighter = async () => {
-      const instance = await getHighlighter()
-      if (!cancelled)
-        setHighlighter(instance)
-    }
+      const instance = await getHighlighter();
+      if (!cancelled) setHighlighter(instance);
+    };
 
-    void initializeHighlighter()
+    void initializeHighlighter();
 
     return () => {
-      cancelled = true
-    }
-  }, [])
+      cancelled = true;
+    };
+  }, []);
 
-  const code = useMemo(() => STEPS[stepIndex], [stepIndex])
+  const code = useMemo(() => STEPS[stepIndex], [stepIndex]);
 
   if (!highlighter) {
     return (
       <div className="rounded-xl border border-slate-300/70 bg-white/70 p-3 text-sm text-slate-700">
         Preparing highlighter...
       </div>
-    )
+    );
   }
 
   return (
@@ -65,7 +64,7 @@ export function MagicMoveDemo() {
         <button
           type="button"
           className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white disabled:opacity-45"
-          onClick={() => setStepIndex(index => Math.max(index - 1, 0))}
+          onClick={() => setStepIndex((index) => Math.max(index - 1, 0))}
           disabled={stepIndex === 0}
         >
           Prev Step
@@ -73,7 +72,7 @@ export function MagicMoveDemo() {
         <button
           type="button"
           className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white disabled:opacity-45"
-          onClick={() => setStepIndex(index => Math.min(index + 1, STEPS.length - 1))}
+          onClick={() => setStepIndex((index) => Math.min(index + 1, STEPS.length - 1))}
           disabled={stepIndex >= STEPS.length - 1}
         >
           Next Step
@@ -87,5 +86,5 @@ export function MagicMoveDemo() {
         </button>
       </div>
     </div>
-  )
+  );
 }

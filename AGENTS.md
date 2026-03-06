@@ -16,12 +16,17 @@ Deck content is authored in `slides.mdx`. Tests live next to source as `*.test.t
 ## Build, Test, and Development Commands
 
 - `bun install`: install dependencies
-- `bun run dev`: start the Rsbuild dev server
+- `bun run dev`: start the Vite dev server
 - `bun run build`: produce a production build
 - `bun run preview`: preview the built app locally
 - `bun run presentation:server`: start the WebSocket relay for cross-device sync
 - `bun run test`: run the Vitest suite once
-- `bun run lint`: lint `src/` with Oxlint
+- `bun run test:e2e`: run the Playwright end-to-end suite
+- `bun run test:e2e:headed`: run the Playwright suite with a visible browser
+- `bun run test:e2e:install`: install the Chromium browser used by Playwright
+- `bun run lint`: run type-aware Oxlint on `src/`
+- `bun run format`: format the repository with Oxfmt
+- `bun run format:check`: check repository formatting with Oxfmt
 
 Use Bun for all local commands; `packageManager` is pinned to `bun@1.3.3`.
 

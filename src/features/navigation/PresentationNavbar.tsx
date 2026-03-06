@@ -1,17 +1,17 @@
-import { BookOpenText, ChevronLeft, ChevronRight, LayoutGrid, PenLine, Radio } from "lucide-react"
-import { useState } from "react"
-import { useDraw } from "../draw/DrawProvider"
+import { BookOpenText, ChevronLeft, ChevronRight, LayoutGrid, PenLine, Radio } from "lucide-react";
+import { useState } from "react";
+import { useDraw } from "../draw/DrawProvider";
 
 function iconButtonClassName(active?: boolean) {
   if (active) {
-    return "inline-flex size-9 items-center justify-center rounded-lg border border-blue-300 bg-blue-100 text-blue-800 transition-colors"
+    return "inline-flex size-9 items-center justify-center rounded-lg border border-blue-300 bg-blue-100 text-blue-800 transition-colors";
   }
 
-  return "inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50/95 text-slate-700 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-45"
+  return "inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 bg-slate-50/95 text-slate-700 transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-45";
 }
 
 function DrawControls() {
-  const draw = useDraw()
+  const draw = useDraw();
 
   return (
     <button
@@ -23,7 +23,7 @@ function DrawControls() {
     >
       <PenLine size={16} />
     </button>
-  )
+  );
 }
 
 export function PresentationNavbar({
@@ -40,20 +40,20 @@ export function PresentationNavbar({
   onNext,
   canControl,
 }: {
-  slideTitle?: string
-  currentIndex: number
-  total: number
-  canPrev: boolean
-  canNext: boolean
-  showPresenterModeButton: boolean
-  overviewOpen: boolean
-  onEnterPresenterMode?: () => void
-  onToggleOverview: () => void
-  onPrev: () => void
-  onNext: () => void
-  canControl: boolean
+  slideTitle?: string;
+  currentIndex: number;
+  total: number;
+  canPrev: boolean;
+  canNext: boolean;
+  showPresenterModeButton: boolean;
+  overviewOpen: boolean;
+  onEnterPresenterMode?: () => void;
+  onToggleOverview: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  canControl: boolean;
 }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   return (
     <div
@@ -61,10 +61,7 @@ export function PresentationNavbar({
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
-      <div
-        aria-hidden
-        className="size-20 rounded-full"
-      />
+      <div aria-hidden className="size-20 rounded-full" />
       <nav
         className={`absolute bottom-0 left-0 flex items-center gap-1 rounded-2xl border border-slate-200 bg-white/95 p-2 text-slate-800 shadow-[0_10px_24px_rgba(15,23,42,0.14)] ring-1 ring-black/5 backdrop-blur-md transition-[opacity,transform] ${open ? "pointer-events-auto translate-y-0 opacity-100 duration-0" : "pointer-events-none translate-y-2 opacity-0 duration-180"}`}
         aria-label="Presentation navbar"
@@ -126,5 +123,5 @@ export function PresentationNavbar({
         )}
       </nav>
     </div>
-  )
+  );
 }

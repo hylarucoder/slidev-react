@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "types": ["@rsbuild/core/types", "vitest/globals"],
+    "types": ["vite/client", "vitest/globals"],
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -15,10 +15,9 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "noUnusedLocals": false,
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@generated/*": [".generated/*"]
+      "@/*": ["./src/*"],
+      "@generated/*": ["./.generated/*"]
     }
   },
   "include": [
@@ -27,6 +26,7 @@
     "src/**/*.d.ts",
     ".generated/**/*.ts",
     ".generated/**/*.tsx",
-    "rsbuild.config.ts"
+    "vite.config.ts",
+    "vitest.config.ts"
   ]
 }

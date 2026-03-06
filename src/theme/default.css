@@ -3,8 +3,10 @@
 
 :root {
   color-scheme: light;
-  --font-sans: "Inter", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, "Cascadia Mono", "Fira Code", monospace;
+  --font-sans:
+    "Inter", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-mono:
+    "JetBrains Mono", "SFMono-Regular", ui-monospace, "Cascadia Mono", "Fira Code", monospace;
   --slide-color-body: #0f172a;
   --slide-color-heading: #0f172a;
   --slide-color-muted: #475569;
@@ -245,7 +247,10 @@ body {
   text-decoration-color: var(--slide-link-decoration-color);
   text-underline-offset: 0.2em;
   border-radius: 0.2em;
-  transition: color 120ms ease, text-decoration-color 120ms ease, background-color 120ms ease;
+  transition:
+    color 120ms ease,
+    text-decoration-color 120ms ease,
+    background-color 120ms ease;
 }
 
 .slide-prose a:hover {
@@ -427,7 +432,8 @@ body {
 }
 
 .slide-mark--box .slide-mark-overlay {
-  inset: calc(var(--mark-pad-top) * -1) calc(var(--mark-pad-right) * -1) calc(var(--mark-pad-bottom) * -1) calc(var(--mark-pad-left) * -1);
+  inset: calc(var(--mark-pad-top) * -1) calc(var(--mark-pad-right) * -1)
+    calc(var(--mark-pad-bottom) * -1) calc(var(--mark-pad-left) * -1);
   z-index: 0;
   border: var(--mark-stroke-width) solid var(--mark-color);
   border-radius: 0.28em;
@@ -435,7 +441,8 @@ body {
 }
 
 .slide-mark--circle .slide-mark-overlay {
-  inset: calc(var(--mark-pad-top) * -1) calc(var(--mark-pad-right) * -1) calc(var(--mark-pad-bottom) * -1) calc(var(--mark-pad-left) * -1);
+  inset: calc(var(--mark-pad-top) * -1) calc(var(--mark-pad-right) * -1)
+    calc(var(--mark-pad-bottom) * -1) calc(var(--mark-pad-left) * -1);
   z-index: 0;
   border: var(--mark-stroke-width) solid var(--mark-color);
   border-radius: 999px;
@@ -453,7 +460,8 @@ body {
 }
 
 .slide-mark--crossed-off .slide-mark-overlay {
-  inset: calc(var(--mark-pad-top) * -1) calc(var(--mark-pad-right) * -1) calc(var(--mark-pad-bottom) * -1) calc(var(--mark-pad-left) * -1);
+  inset: calc(var(--mark-pad-top) * -1) calc(var(--mark-pad-right) * -1)
+    calc(var(--mark-pad-bottom) * -1) calc(var(--mark-pad-left) * -1);
   z-index: 0;
 }
 

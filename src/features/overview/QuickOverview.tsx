@@ -1,13 +1,13 @@
-import { X } from "lucide-react"
-import { resolveLayout } from "../../theme/layouts/resolveLayout"
+import { X } from "lucide-react";
+import { resolveLayout } from "../../theme/layouts/resolveLayout";
 import {
   OVERVIEW_STAGE_HEIGHT,
   OVERVIEW_STAGE_SCALE,
   OVERVIEW_STAGE_WIDTH,
   STAGE_HEIGHT,
   STAGE_WIDTH,
-} from "../presenter/stage"
-import type { CompiledSlide } from "../presenter/types"
+} from "../presenter/stage";
+import type { CompiledSlide } from "../presenter/types";
 
 export function QuickOverview({
   open,
@@ -16,14 +16,13 @@ export function QuickOverview({
   onClose,
   onSelect,
 }: {
-  open: boolean
-  slides: CompiledSlide[]
-  currentIndex: number
-  onClose: () => void
-  onSelect: (index: number) => void
+  open: boolean;
+  slides: CompiledSlide[];
+  currentIndex: number;
+  onClose: () => void;
+  onSelect: (index: number) => void;
 }) {
-  if (!open)
-    return null
+  if (!open) return null;
 
   return (
     <div className="absolute inset-0 z-50 bg-slate-100/82 backdrop-blur-sm">
@@ -31,7 +30,9 @@ export function QuickOverview({
         <header className="mb-4 flex items-center justify-between">
           <div className="text-slate-900">
             <h2 className="text-lg font-semibold">Quick Overview</h2>
-            <p className="text-sm text-slate-600">Click a slide to jump. Press `O` or `Esc` to close.</p>
+            <p className="text-sm text-slate-600">
+              Click a slide to jump. Press `O` or `Esc` to close.
+            </p>
           </div>
           <button
             type="button"
@@ -45,9 +46,9 @@ export function QuickOverview({
         <div className="min-h-0 flex-1 overflow-auto pr-1">
           <div className="grid grid-cols-[repeat(auto-fill,minmax(308px,1fr))] gap-4">
             {slides.map((slide, index) => {
-              const active = index === currentIndex
-              const Layout = resolveLayout(slide.meta.layout)
-              const Slide = slide.component
+              const active = index === currentIndex;
+              const Layout = resolveLayout(slide.meta.layout);
+              const Slide = slide.component;
               return (
                 <button
                   key={slide.id}
@@ -90,11 +91,11 @@ export function QuickOverview({
                     {slide.meta.title ?? `Slide ${index + 1}`}
                   </div>
                 </button>
-              )
+              );
             })}
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

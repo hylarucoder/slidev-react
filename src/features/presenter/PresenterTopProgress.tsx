@@ -7,17 +7,16 @@ export function PresenterTopProgress({
   elapsedLabel,
   remoteActive,
 }: {
-  currentIndex: number
-  total: number
-  progressPercent: number
-  revealClicks: number
-  revealClicksTotal: number
-  elapsedLabel: string
-  remoteActive: boolean
+  currentIndex: number;
+  total: number;
+  progressPercent: number;
+  revealClicks: number;
+  revealClicksTotal: number;
+  elapsedLabel: string;
+  remoteActive: boolean;
 }) {
-  const revealProgressPercent = revealClicksTotal > 0
-    ? (revealClicks / revealClicksTotal) * 100
-    : 0
+  const revealProgressPercent =
+    revealClicksTotal > 0 ? (revealClicks / revealClicksTotal) * 100 : 0;
 
   return (
     <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex justify-center">
@@ -30,15 +29,16 @@ export function PresenterTopProgress({
             />
           </div>
           <div className="flex shrink-0 items-center gap-2 text-[11px] font-medium text-slate-500">
-            <span>{currentIndex + 1}/{total}</span>
+            <span>
+              {currentIndex + 1}/{total}
+            </span>
             {revealClicksTotal > 0 && (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200/80 bg-sky-50/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-sky-700">
                 <span>Build</span>
-                <span>{revealClicks}/{revealClicksTotal}</span>
-                <span
-                  aria-hidden
-                  className="h-1.5 w-10 overflow-hidden rounded-full bg-sky-200/80"
-                >
+                <span>
+                  {revealClicks}/{revealClicksTotal}
+                </span>
+                <span aria-hidden className="h-1.5 w-10 overflow-hidden rounded-full bg-sky-200/80">
                   <span
                     className="block h-full rounded-full bg-[linear-gradient(90deg,#38bdf8_0%,#6366f1_100%)] transition-[width] duration-200 ease-out"
                     style={{ width: `${revealProgressPercent}%` }}
@@ -47,10 +47,12 @@ export function PresenterTopProgress({
               </span>
             )}
             <span>{elapsedLabel}</span>
-            <span className={`size-2 rounded-full ${remoteActive ? "bg-emerald-300" : "bg-amber-300"}`} />
+            <span
+              className={`size-2 rounded-full ${remoteActive ? "bg-emerald-300" : "bg-amber-300"}`}
+            />
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

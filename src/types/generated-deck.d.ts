@@ -1,7 +1,7 @@
-declare module '@generated/deck' {
-  import type { CompiledDeckManifest } from '../deck/model/compiled-deck'
+declare module "@generated/deck" {
+  import type { CompiledDeckManifest } from "../deck/model/compiled-deck";
 
-  const compiledDeck: CompiledDeckManifest
+  const compiledDeck: CompiledDeckManifest;
 
-  export default compiledDeck
+  export default compiledDeck;
 }

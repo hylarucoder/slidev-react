@@ -1,7 +1,7 @@
-import { useDeck } from '../../app/providers/DeckProvider'
+import { useDeck } from "../../app/providers/DeckProvider";
 
 export function useDeckNavigation() {
-  const deck = useDeck()
+  const deck = useDeck();
 
   return {
     currentIndex: deck.currentIndex,
@@ -11,5 +11,5 @@ export function useDeckNavigation() {
     first: deck.first,
     last: deck.last,
     goTo: deck.goTo,
-  }
+  };
 }

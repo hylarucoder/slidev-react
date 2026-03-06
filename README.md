@@ -10,7 +10,7 @@ React-first presentation runtime with an MDX deck pipeline, presenter/viewer mod
 
 - React 19 for rendering
 - MDX as the authoring format
-- Rsbuild / Rspack for the app runtime
+- Vite for the app runtime
 - a compile-time deck pipeline under `src/deck`
 - a presentation shell with presenter/viewer sync, reveal flow, drawings, and recording
 
@@ -92,8 +92,8 @@ Default relay endpoint: `ws://localhost:4860/ws`
 
 Routes:
 
-- Presenter: `http://localhost:3000/presenter/1`
-- Viewer: `http://localhost:3000/1`
+- Presenter: `http://localhost:5173/presenter/1`
+- Viewer: `http://localhost:5173/1`
 
 The presenter shell currently includes:
 
@@ -136,9 +136,11 @@ layout: default
 ---
 
 ---
+
 title: Compare
 layout: two-cols
 class: px-20
+
 ---
 
 # Left column
@@ -172,8 +174,12 @@ Common helpers exposed to MDX include:
 ```mdx
 <AnnotationMark>Default highlight</AnnotationMark>
 <AnnotationMark type="underline">Key idea</AnnotationMark>
-<AnnotationMark type="box" color="#2563eb">API boundary</AnnotationMark>
-<AnnotationMark type="bracket" brackets={['left', 'right']}>Focus block</AnnotationMark>
+<AnnotationMark type="box" color="#2563eb">
+  API boundary
+</AnnotationMark>
+<AnnotationMark type="bracket" brackets={["left", "right"]}>
+  Focus block
+</AnnotationMark>
 ```
 
 ## Project Structure
@@ -197,7 +203,12 @@ For more internal structure guidance, see [`src/README.md`](./src/README.md).
 - `bun run preview`: preview the production build
 - `bun run presentation:server`: start the WebSocket relay server
 - `bun run test`: run the Vitest suite
-- `bun run lint`: lint `src/` with Oxlint
+- `bun run test:e2e`: run the Playwright end-to-end suite
+- `bun run test:e2e:headed`: run the Playwright suite with a visible browser
+- `bun run test:e2e:install`: install the Chromium browser used by Playwright
+- `bun run lint`: run type-aware Oxlint on `src/`
+- `bun run format`: format the repository with Oxfmt
+- `bun run format:check`: check repository formatting with Oxfmt
 
 ## Build Artifact Management
 

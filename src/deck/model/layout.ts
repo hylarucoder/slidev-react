@@ -6,6 +6,6 @@ export const layoutNames = [
   "two-cols",
   "image-right",
   "statement",
-] as const
+] as const;
 
-export type LayoutName = (typeof layoutNames)[number]
+export type LayoutName = (typeof layoutNames)[number];

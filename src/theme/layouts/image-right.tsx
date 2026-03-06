@@ -1,15 +1,15 @@
-import type { ReactNode } from 'react'
-import { splitByFirstHr } from './helpers'
+import type { ReactNode } from "react";
+import { splitByFirstHr } from "./helpers";
 
 export function ImageRightLayout({ children }: { children: ReactNode }) {
-  const [left, right] = splitByFirstHr(children)
+  const [left, right] = splitByFirstHr(children);
 
   if (!right) {
     return (
       <section className="slide-layout-image-right grid size-full place-content-start">
         <div className="min-w-0">{left}</div>
       </section>
-    )
+    );
   }
 
   return (
@@ -17,5 +17,5 @@ export function ImageRightLayout({ children }: { children: ReactNode }) {
       <div className="min-w-0">{left}</div>
       <div className="min-w-0">{right}</div>
     </section>
-  )
+  );
 }

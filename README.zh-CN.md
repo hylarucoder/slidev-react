@@ -10,7 +10,7 @@
 
 - React 19 渲染层
 - MDX 内容编写格式
-- Rsbuild / Rspack 应用运行时
+- Vite 应用运行时
 - 位于 `src/deck` 下的编译期 deck 处理链路
 - 支持 presenter/viewer 同步、渐进揭示、涂鸦和录制的演示壳层
 
@@ -92,8 +92,8 @@ bun run presentation:server
 
 路由入口：
 
-- Presenter：`http://localhost:3000/presenter/1`
-- Viewer：`http://localhost:3000/1`
+- Presenter：`http://localhost:5173/presenter/1`
+- Viewer：`http://localhost:5173/1`
 
 当前 presenter 壳层已支持：
 
@@ -136,9 +136,11 @@ layout: default
 ---
 
 ---
+
 title: Compare
 layout: two-cols
 class: px-20
+
 ---
 
 # 左栏
@@ -172,8 +174,12 @@ class: px-20
 ```mdx
 <AnnotationMark>默认高亮</AnnotationMark>
 <AnnotationMark type="underline">关键观点</AnnotationMark>
-<AnnotationMark type="box" color="#2563eb">API 边界</AnnotationMark>
-<AnnotationMark type="bracket" brackets={['left', 'right']}>聚焦区域</AnnotationMark>
+<AnnotationMark type="box" color="#2563eb">
+  API 边界
+</AnnotationMark>
+<AnnotationMark type="bracket" brackets={["left", "right"]}>
+  聚焦区域
+</AnnotationMark>
 ```
 
 ## 项目结构
@@ -197,7 +203,12 @@ class: px-20
 - `bun run preview`：预览生产构建
 - `bun run presentation:server`：启动 WebSocket relay 服务
 - `bun run test`：运行 Vitest 测试
-- `bun run lint`：使用 Oxlint 检查 `src/`
+- `bun run test:e2e`：运行 Playwright 端到端测试
+- `bun run test:e2e:headed`：以可见浏览器运行 Playwright 测试
+- `bun run test:e2e:install`：安装 Playwright 使用的 Chromium 浏览器
+- `bun run lint`：使用支持 type-aware 的 Oxlint 检查 `src/`
+- `bun run format`：使用 Oxfmt 格式化仓库
+- `bun run format:check`：使用 Oxfmt 检查仓库格式
 
 ## 构建产物管理
 
