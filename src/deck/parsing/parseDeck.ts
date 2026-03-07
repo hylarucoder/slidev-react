@@ -46,24 +46,16 @@ const slideMetaSchema = z.object({
 });
 
 const codeFenceStartRE = /^(`{3,}|~{3,})/;
-const yamlFieldRE = /^(?:[A-Z_][\w-]*|["'][^"']+["'])\s*:/i;
-
 function isLikelyYamlMeta(lines: string[]): boolean {
-  let hasField = false;
+  const candidate = lines.join("\n").trim();
+  if (!candidate) return false;
 
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-
-    if (yamlFieldRE.test(trimmed)) {
-      hasField = true;
-      continue;
-    }
-
+  try {
+    const parsed = parseFrontmatter(`---\n${candidate}\n---`).data;
+    return parsed != null && typeof parsed === "object" && !Array.isArray(parsed);
+  } catch {
     return false;
   }
-
-  return hasField;
 }
 
 function findFrontmatterCloseLine(lines: string[], start: number): number {

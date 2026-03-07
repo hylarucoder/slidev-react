@@ -158,6 +158,37 @@ describe("parseDeck", () => {
     );
   });
 
+  it("keeps multiline notes inside later-slide frontmatter instead of splitting the slide", () => {
+    const source = [
+      "---",
+      "title: Demo",
+      "---",
+      "",
+      "# First",
+      "",
+      "---",
+      "title: Welcome",
+      "layout: center",
+      "notes: |",
+      "  Frame the repo in one sentence.",
+      "",
+      "  Transition into the authoring model.",
+      "---",
+      "",
+      "# Second",
+    ].join("\n");
+
+    const parsed = parseDeck(source);
+
+    expect(parsed.slides).toHaveLength(2);
+    expect(parsed.slides[1].meta.title).toBe("Welcome");
+    expect(parsed.slides[1].meta.layout).toBe("center");
+    expect(parsed.slides[1].meta.notes).toBe(
+      ["Frame the repo in one sentence.", "", "Transition into the authoring model."].join("\n"),
+    );
+    expect(parsed.slides[1].source).toBe("# Second");
+  });
+
   it("throws on non-string speaker notes", () => {
     const source = [
       "---",
