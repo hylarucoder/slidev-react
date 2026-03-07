@@ -4,17 +4,17 @@ layout: default
 ---
 
 ---
-title: "L01: 产品定义 & 工具就位"
+title: "L01: Product Framing & Setup"
 ---
 
 <CourseCover
   color="green"
   lesson="01"
   total="10"
-  series="Claude Code + GPT-5.4 AI编程课"
-  title="L01: 产品定义 & 工具就位"
-  subtitle="不是先学代码，是先想清楚你要做什么"
-  author="海拉鲁编程客"
+  series="slidev-react Capability Tour"
+  title="L01: Product Framing & Setup"
+  subtitle="Start with the deck model, then shape the runtime around real authoring needs."
+  author="slidev-react"
 />
 
 ---
@@ -29,7 +29,7 @@ Presentation slides for developers, authored in MDX and rendered with React.
 <Badge>MDX</Badge>
 
 <Callout title="Deck runtime">
-这份 deck 现在对齐的是仓库真实支持的 `slidev-react` 语法，而不是 Vue 版 Slidev 原语。
+This deck now reflects the `slidev-react` syntax the repo actually supports, rather than Vue Slidev primitives.
 </Callout>
 
 Press `Space` or `→` for next page.
@@ -70,7 +70,7 @@ level: 2
 | `End` | last slide |
 
 <Callout type="info" title="Runtime note">
-当前 MVP 里我们已实现 `←/→/Space/Home/End`。
+The current MVP already supports `←/→/Space/Home/End`.
 </Callout>
 
 ---
@@ -109,7 +109,7 @@ class: px-20
 </div>
 
 <Callout type="info" title="Column split tip">
-在 `two-cols` 和 `image-right` 布局里，优先使用 `<hr />` 做左右分区。裸写 `---` 会被解析成下一页分隔符。
+In `two-cols` and `image-right`, prefer `<hr />` to split the left and right regions. A raw `---` will be parsed as the next-slide separator.
 </Callout>
 
 ---
@@ -143,7 +143,7 @@ export function emptyArray<T>(size: number): T[] {
 ```
 
 <Callout type="success" title="Compile-time highlight">
-代码块会在编译期走 Shiki，高亮主题当前是 `vitesse-light`。
+Code blocks are highlighted by Shiki at compile time, with `vitesse-light` as the current theme.
 </Callout>
 
 ---
@@ -153,9 +153,9 @@ level: 2
 
 # Shiki Magic Move
 
-`slidev-react` 直接集成了 `shiki-magic-move/react`，用来做代码块状态切换演示。
+`slidev-react` integrates `shiki-magic-move/react` directly for code state transition demos.
 
-下面这个 demo 用的就是当前仓库的 React 版实现：
+The demo below uses the React implementation that ships in this repo:
 
 <MagicMoveDemo />
 
@@ -285,14 +285,14 @@ layout: statement
 <div className="rounded-xl border border-slate-200 bg-white/70 p-4">
   <strong className="block text-sm text-slate-900">Current theme status</strong>
   <p className="mt-2 text-sm text-slate-700">
-    `theme:` 目前只会被解析成 metadata，还没有真正接上视觉主题切换。
+    `theme:` is currently parsed as metadata only and is not wired to visual theme switching yet.
   </p>
 </div>
 
 </div>
 
 <Callout type="info" title="Practical guidance">
-现在优先使用 `layout:` 和 `class:`，它们已经实际参与渲染。
+For now, prefer `layout:` and `class:` because they already participate in rendering.
 </Callout>
 
 ---
@@ -301,7 +301,7 @@ title: Reveal Flow
 
 # Reveal Flow
 
-`slidev-react` 里渐进揭示使用 `Reveal` 和 `RevealGroup`。
+In `slidev-react`, progressive reveals are built with `Reveal` and `RevealGroup`.
 
 ```mdx
 <Reveal step={1}>
@@ -378,7 +378,7 @@ $$
 \end{aligned}
 $$
 <Callout type="info" title="Math pipeline">
-当前数学公式通过 `remark-math` + `rehype-katex` 渲染。
+Math is currently rendered through `remark-math` + `rehype-katex`.
 </Callout>
 
 ---
