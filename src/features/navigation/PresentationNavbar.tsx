@@ -1,4 +1,12 @@
-import { BookOpenText, ChevronLeft, ChevronRight, LayoutGrid, PenLine, Radio } from "lucide-react";
+import {
+  BookOpenText,
+  ChevronLeft,
+  ChevronRight,
+  LayoutGrid,
+  NotebookText,
+  PenLine,
+  Radio,
+} from "lucide-react";
 import { useState } from "react";
 import { useDraw } from "../draw/DrawProvider";
 
@@ -34,8 +42,10 @@ export function PresentationNavbar({
   canNext,
   showPresenterModeButton,
   overviewOpen,
+  notesOpen,
   onEnterPresenterMode,
   onToggleOverview,
+  onToggleNotes,
   onPrev,
   onNext,
   canControl,
@@ -47,8 +57,10 @@ export function PresentationNavbar({
   canNext: boolean;
   showPresenterModeButton: boolean;
   overviewOpen: boolean;
+  notesOpen: boolean;
   onEnterPresenterMode?: () => void;
   onToggleOverview: () => void;
+  onToggleNotes: () => void;
   onPrev: () => void;
   onNext: () => void;
   canControl: boolean;
@@ -73,6 +85,16 @@ export function PresentationNavbar({
           aria-label="Current slide info"
         >
           <BookOpenText size={15} />
+        </button>
+        <button
+          type="button"
+          onClick={onToggleNotes}
+          title="Notes Workspace (N)"
+          aria-label="Toggle notes workspace"
+          className={iconButtonClassName(notesOpen)}
+          disabled={!canControl}
+        >
+          <NotebookText size={16} />
         </button>
         <button
           type="button"

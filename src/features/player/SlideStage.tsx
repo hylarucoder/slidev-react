@@ -9,14 +9,12 @@ import type { SlideComponent, SlideMeta } from "../../deck/model/slide";
 import { DrawOverlay } from "../draw/DrawOverlay";
 import { useDraw } from "../draw/DrawProvider";
 import type { PresentationCursorState } from "../presentation/types";
-import { resolveLayout } from "../../theme/layouts/resolveLayout";
+import { resolveSlideSurface } from "./slideSurface";
+import type { TransitionName } from "../../deck/model/transition";
+import { useResolvedLayout } from "../../theme/useResolvedLayout";
 
 const SLIDE_WIDTH = 1920;
 const SLIDE_HEIGHT = 1080;
-
-function joinClassNames(...names: Array<string | undefined>): string {
-  return names.filter(Boolean).join(" ");
-}
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -28,7 +26,7 @@ function shouldIgnoreStageAdvance(target: EventTarget | null) {
   return !!target.closest('a, button, input, textarea, select, [contenteditable="true"]');
 }
 
-function useSlideScale() {
+function useSlideScale(scaleMultiplier: number) {
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const [scale, setScale] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -41,7 +39,7 @@ function useSlideScale() {
       const { width, height } = element.getBoundingClientRect();
       if (!width || !height) return;
 
-      const nextScale = Math.min(width / SLIDE_WIDTH, height / SLIDE_HEIGHT);
+      const nextScale = Math.min(width / SLIDE_WIDTH, height / SLIDE_HEIGHT) * scaleMultiplier;
       const scaledWidth = SLIDE_WIDTH * nextScale;
       const scaledHeight = SLIDE_HEIGHT * nextScale;
 
@@ -60,7 +58,7 @@ function useSlideScale() {
     return () => {
       observer.disconnect();
     };
-  }, []);
+  }, [scaleMultiplier]);
 
   return { viewportRef, scale, offset };
 }
@@ -88,31 +86,54 @@ function toViewportPoint(
   };
 }
 
+function toTransitionClassName(transition: TransitionName | undefined) {
+  switch (transition) {
+    case "slide-left":
+      return "slide-transition slide-transition--slide-left";
+    case "slide-up":
+      return "slide-transition slide-transition--slide-up";
+    case "zoom":
+      return "slide-transition slide-transition--zoom";
+    case "fade":
+      return "slide-transition slide-transition--fade";
+    default:
+      return undefined;
+  }
+}
+
 export function SlideStage({
   Slide,
   slideId,
   meta,
   deckLayout,
+  deckBackground,
+  deckTransition,
   remoteCursor,
   onCursorChange,
   onStageAdvance,
+  scaleMultiplier = 1,
 }: {
   Slide: SlideComponent;
   slideId: string;
   meta: SlideMeta;
   deckLayout?: SlideMeta["layout"];
+  deckBackground?: string;
+  deckTransition?: TransitionName;
   remoteCursor?: PresentationCursorState | null;
   onCursorChange?: (cursor: PresentationCursorState | null) => void;
   onStageAdvance?: () => void;
+  scaleMultiplier?: number;
 }) {
-  const Layout = resolveLayout(meta.layout ?? deckLayout);
+  const Layout = useResolvedLayout(meta.layout ?? deckLayout);
   const draw = useDraw();
-  const { viewportRef, scale, offset } = useSlideScale();
-  const className = joinClassNames(
-    "slide-prose relative box-border size-full bg-white px-18 py-14 shadow-[0_20px_60px_rgba(21,42,82,0.12)]",
-    meta.class,
-  );
-  const stageStyle = useMemo(
+  const { viewportRef, scale, offset } = useSlideScale(scaleMultiplier);
+  const surface = resolveSlideSurface({
+    meta,
+    deckBackground,
+    className:
+      "slide-prose relative box-border size-full px-18 py-14 shadow-[0_20px_60px_rgba(21,42,82,0.12)]",
+  });
+  const viewportStageStyle = useMemo(
     () => ({
       width: `${SLIDE_WIDTH}px`,
       height: `${SLIDE_HEIGHT}px`,
@@ -121,6 +142,7 @@ export function SlideStage({
     }),
     [offset.x, offset.y, scale],
   );
+  const transitionClassName = toTransitionClassName(meta.transition ?? deckTransition);
   const remoteCursorPosition = useMemo(() => {
     if (!remoteCursor) return null;
 
@@ -147,12 +169,20 @@ export function SlideStage({
         onStageAdvance();
       }}
     >
-      <article className={className} style={stageStyle}>
-        <Layout>
-          <Slide />
-        </Layout>
-        <DrawOverlay slideId={slideId} scale={scale} />
-      </article>
+      <div style={viewportStageStyle}>
+        <article
+          key={`${slideId}:${meta.transition ?? deckTransition ?? "none"}`}
+          className={surface.className}
+          style={surface.style}
+        >
+          <div className={transitionClassName}>
+            <Layout>
+              <Slide />
+            </Layout>
+            <DrawOverlay slideId={slideId} scale={scale} />
+          </div>
+        </article>
+      </div>
       {remoteCursorPosition && (
         <span
           aria-hidden

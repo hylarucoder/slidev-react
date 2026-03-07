@@ -4,7 +4,10 @@ import path from "node:path";
 import { compile } from "@mdx-js/mdx";
 import type { Plugin, ViteDevServer } from "vite";
 import { getMdxCompileOptions } from "../compiling/mdx-options";
-import { parseDeck } from "../parsing/parseDeck";
+import { parseFrontmatter } from "../parsing/frontmatter";
+import { parseDeck, parseSlideMeta } from "../parsing/parseDeck";
+import type { SlideUnit } from "../model/slide";
+import { validateDeckAuthoring } from "../validation/validateDeckAuthoring";
 
 const GENERATED_DECK_DIR = ".generated/deck";
 const GENERATED_SLIDES_DIR = `${GENERATED_DECK_DIR}/slides`;
@@ -122,6 +125,94 @@ async function compileSlideModule(source: string) {
   return normalizeDiagramCodeProps(String(compiled));
 }
 
+function createDeckSourceHash({
+  deckSource,
+  resolvedSlides,
+}: {
+  deckSource: string;
+  resolvedSlides: Array<{
+    id: string;
+    source: string;
+    externalFilePath?: string;
+    externalFileSource?: string;
+  }>;
+}) {
+  return hashString(
+    JSON.stringify({
+      deckSource,
+      slides: resolvedSlides.map((slide) => ({
+        id: slide.id,
+        source: slide.source,
+        externalFilePath: slide.externalFilePath,
+        externalFileSource: slide.externalFileSource,
+      })),
+    }),
+  );
+}
+
+async function resolveSlideUnitSource({
+  slide,
+  deckSourceFile,
+}: {
+  slide: SlideUnit;
+  deckSourceFile: string;
+}) {
+  const slideSrc = slide.meta.src?.trim();
+  if (!slideSrc) {
+    return {
+      ...slide,
+      watchedFiles: [] as string[],
+      externalFilePath: undefined,
+      externalFileSource: undefined,
+    };
+  }
+
+  if (slide.hasInlineSource) {
+    throw new Error(
+      `Slide ${slide.index + 1}${slide.meta.title ? ` (${slide.meta.title})` : ""} mixes inline content with src. Use one or the other.`,
+    );
+  }
+
+  const externalFilePath = path.resolve(path.dirname(deckSourceFile), slideSrc);
+  let externalFileSource: string;
+
+  try {
+    externalFileSource = await readFile(externalFilePath, "utf8");
+  } catch (error) {
+    throw new Error(
+      `Failed to load slide ${slide.index + 1}${slide.meta.title ? ` (${slide.meta.title})` : ""} src "${slideSrc}": ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error },
+    );
+  }
+
+  const externalMatter = parseFrontmatter(externalFileSource.replace(/\r\n/g, "\n").trim());
+  const externalMeta = parseSlideMeta(
+    externalMatter.data,
+    `slide ${slide.index + 1} src "${slideSrc}"`,
+  );
+
+  if (externalMeta.src) {
+    throw new Error(
+      `Nested src is not supported in slide ${slide.index + 1}${slide.meta.title ? ` (${slide.meta.title})` : ""}.`,
+    );
+  }
+
+  const mergedMeta = {
+    ...externalMeta,
+    ...slide.meta,
+  };
+  const resolvedSource = externalMatter.content.trim() || "# Empty slide";
+
+  return {
+    ...slide,
+    meta: mergedMeta,
+    source: resolvedSource,
+    watchedFiles: [externalFilePath],
+    externalFilePath,
+    externalFileSource,
+  };
+}
+
 export async function generateCompiledDeckArtifacts(options: {
   appRoot: string;
   deckSourceFile: string;
@@ -129,24 +220,42 @@ export async function generateCompiledDeckArtifacts(options: {
   const { appRoot, deckSourceFile } = options;
   const deckSource = await readFile(deckSourceFile, "utf8");
   const parsedDeck = parseDeck(deckSource);
-  const sourceHash = hashString(deckSource);
+  const warnings = await validateDeckAuthoring({
+    appRoot,
+    deck: parsedDeck,
+  });
   const generatedDeckDir = path.join(appRoot, GENERATED_DECK_DIR);
   const generatedSlidesDir = path.join(appRoot, GENERATED_SLIDES_DIR);
   const manifestFile = path.join(appRoot, GENERATED_MANIFEST_FILE);
   const expectedSlideFiles = new Set<string>();
+  const watchedFiles = new Set<string>([deckSourceFile]);
   const manifestEntries: Array<{
     id: string;
     importName: string;
     importPath: string;
     meta: Record<string, unknown>;
   }> = [];
+  const resolvedSlides = await Promise.all(
+    parsedDeck.slides.map((slide) =>
+      resolveSlideUnitSource({
+        slide,
+        deckSourceFile,
+      }),
+    ),
+  );
+  const sourceHash = createDeckSourceHash({
+    deckSource,
+    resolvedSlides,
+  });
 
   await mkdir(generatedSlidesDir, { recursive: true });
 
-  for (const slide of parsedDeck.slides) {
+  for (const slide of resolvedSlides) {
     const slideFileName = createSlideModuleFileName(slide.index);
     const slideFilePath = path.join(generatedSlidesDir, slideFileName);
     const importName = toModuleIdentifier(slide.id);
+
+    for (const watchedFile of slide.watchedFiles) watchedFiles.add(watchedFile);
 
     try {
       const compiledSource = await compileSlideModule(slide.source);
@@ -186,14 +295,18 @@ export async function generateCompiledDeckArtifacts(options: {
     generatedDeckDir,
     manifestFile,
     sourceHash,
+    watchedFiles: [...watchedFiles],
+    warnings,
   };
 }
 
 function createDeckGenerator(options: { appRoot: string; deckSourceFile: string }) {
   let generatePromise: Promise<void> | null = null;
   let rerunRequested = false;
+  let watchedFiles = new Set<string>([options.deckSourceFile]);
+  let warnings: string[] = [];
 
-  return async () => {
+  const generate = async () => {
     if (generatePromise) {
       rerunRequested = true;
       await generatePromise;
@@ -203,7 +316,9 @@ function createDeckGenerator(options: { appRoot: string; deckSourceFile: string 
     generatePromise = (async () => {
       do {
         rerunRequested = false;
-        await generateCompiledDeckArtifacts(options);
+        const result = await generateCompiledDeckArtifacts(options);
+        watchedFiles = new Set(result.watchedFiles);
+        warnings = result.warnings;
       } while (rerunRequested);
     })();
 
@@ -212,6 +327,12 @@ function createDeckGenerator(options: { appRoot: string; deckSourceFile: string 
     } finally {
       generatePromise = null;
     }
+  };
+
+  return {
+    generate,
+    getWatchedFiles: () => [...watchedFiles],
+    getWarnings: () => warnings,
   };
 }
 
@@ -232,7 +353,7 @@ export function pluginCompileTimeDeck(options: {
   deckSourceFile: string;
 }): Plugin {
   const deckSourceFile = path.resolve(options.deckSourceFile);
-  const generate = createDeckGenerator({
+  const generator = createDeckGenerator({
     ...options,
     deckSourceFile,
   });
@@ -240,17 +361,35 @@ export function pluginCompileTimeDeck(options: {
   return {
     name: "slide-react-compile-time-deck",
     async buildStart() {
-      await generate();
+      await generator.generate();
+      for (const warning of generator.getWarnings()) {
+        this.warn(warning);
+      }
+      for (const watchedFile of generator.getWatchedFiles()) {
+        this.addWatchFile(watchedFile);
+      }
     },
     configureServer(server) {
       server.watcher.add(deckSourceFile);
 
-      const handleDeckChange = async (filePath: string) => {
-        if (path.resolve(filePath) !== deckSourceFile) return;
-
-        await regenerateDeckForServer(server, generate);
+      const syncWatchedFiles = () => {
+        server.watcher.add(generator.getWatchedFiles());
       };
 
+      const handleDeckChange = async (filePath: string) => {
+        const resolvedFilePath = path.resolve(filePath);
+        if (!generator.getWatchedFiles().includes(resolvedFilePath)) return;
+
+        await regenerateDeckForServer(server, async () => {
+          await generator.generate();
+          for (const warning of generator.getWarnings()) {
+            server.config.logger.warn(warning, { timestamp: true });
+          }
+          syncWatchedFiles();
+        });
+      };
+
+      syncWatchedFiles();
       server.watcher.on("add", handleDeckChange);
       server.watcher.on("change", handleDeckChange);
       server.watcher.on("unlink", handleDeckChange);

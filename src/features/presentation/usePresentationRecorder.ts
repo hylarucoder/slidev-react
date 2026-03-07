@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createRecordingDownloadName } from "./recordingFilename";
 
 const ELAPSED_UPDATE_INTERVAL_MS = 250;
 
@@ -15,17 +16,35 @@ function chooseMimeType(): string | null {
   return null;
 }
 
-function downloadBlob(blob: Blob) {
-  const stamp = new Date().toISOString().replaceAll(":", "-").replace(/\..+$/, "");
+function downloadBlob({
+  blob,
+  exportFilename,
+  deckTitle,
+}: {
+  blob: Blob;
+  exportFilename?: string;
+  deckTitle?: string;
+}) {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = `slide-react-recording-${stamp}.webm`;
+  anchor.download = createRecordingDownloadName({
+    exportFilename,
+    deckTitle,
+  });
   anchor.click();
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export function usePresentationRecorder({ enabled }: { enabled: boolean }) {
+export function usePresentationRecorder({
+  enabled,
+  exportFilename,
+  deckTitle,
+}: {
+  enabled: boolean;
+  exportFilename?: string;
+  deckTitle?: string;
+}) {
   const [isRecording, setIsRecording] = useState(false);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -112,7 +131,12 @@ export function usePresentationRecorder({ enabled }: { enabled: boolean }) {
         setIsRecording(false);
         clearElapsedTimer();
 
-        if (blob.size > 0) downloadBlob(blob);
+        if (blob.size > 0)
+          downloadBlob({
+            blob,
+            exportFilename,
+            deckTitle,
+          });
       });
 
       const [videoTrack] = stream.getVideoTracks();
@@ -155,7 +179,7 @@ export function usePresentationRecorder({ enabled }: { enabled: boolean }) {
       clearElapsedTimer();
       stopStreamTracks();
     };
-  }, []);
+  }, [deckTitle, exportFilename]);
 
   return {
     supported,

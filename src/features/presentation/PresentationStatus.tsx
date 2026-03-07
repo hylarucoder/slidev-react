@@ -5,8 +5,10 @@ import {
   CircleDot,
   Copy,
   Eraser,
+  Expand,
   Link2,
   PenLine,
+  Printer,
   Radio,
   RectangleHorizontal,
   RotateCcw,
@@ -85,8 +87,22 @@ export function PresentationStatus({
   isRecording,
   recordingElapsedMs,
   recordingError,
+  wakeLockSupported,
+  wakeLockRequested,
+  wakeLockActive,
+  wakeLockError,
+  fullscreenSupported,
+  fullscreenActive,
+  stageScale,
+  cursorMode,
   onStartRecording,
   onStopRecording,
+  onToggleWakeLock,
+  onToggleFullscreen,
+  onStageScaleChange,
+  onCursorModeChange,
+  onOpenMirrorStage,
+  onOpenPrintExport,
   onSyncModeChange,
 }: {
   slideId: string;
@@ -103,8 +119,22 @@ export function PresentationStatus({
   isRecording: boolean;
   recordingElapsedMs: number;
   recordingError: string | null;
+  wakeLockSupported: boolean;
+  wakeLockRequested: boolean;
+  wakeLockActive: boolean;
+  wakeLockError: string | null;
+  fullscreenSupported: boolean;
+  fullscreenActive: boolean;
+  stageScale: number;
+  cursorMode: "always" | "idle-hide";
   onStartRecording: () => void;
   onStopRecording: () => void;
+  onToggleWakeLock: () => void;
+  onToggleFullscreen: () => void;
+  onStageScaleChange: (value: number) => void;
+  onCursorModeChange: (value: "always" | "idle-hide") => void;
+  onOpenMirrorStage?: () => void;
+  onOpenPrintExport?: () => void;
   onSyncModeChange?: (mode: PresentationSyncMode) => void;
 }) {
   const draw = useDraw();
@@ -265,6 +295,41 @@ export function PresentationStatus({
                 {isRecording ? formatElapsed(recordingElapsedMs) : "Record"}
               </button>
             )}
+            {canRecord && onOpenPrintExport && (
+              <button
+                type="button"
+                onClick={onOpenPrintExport}
+                className="inline-flex items-center justify-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-white"
+              >
+                <Printer size={12} />
+                Print / PDF
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onToggleWakeLock}
+              disabled={!wakeLockSupported}
+              className={`inline-flex items-center justify-center gap-1.5 rounded-[5px] border px-3 py-1.5 text-xs font-medium transition ${
+                wakeLockActive
+                  ? "border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                  : "border-slate-200 bg-white/88 text-slate-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-45"
+              }`}
+            >
+              {wakeLockActive ? "Wake lock on" : "Wake lock"}
+            </button>
+            <button
+              type="button"
+              onClick={onToggleFullscreen}
+              disabled={!fullscreenSupported}
+              className={`inline-flex items-center justify-center gap-1.5 rounded-[5px] border px-3 py-1.5 text-xs font-medium transition ${
+                fullscreenActive
+                  ? "border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100"
+                  : "border-slate-200 bg-white/88 text-slate-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-45"
+              }`}
+            >
+              <Expand size={12} />
+              {fullscreenActive ? "Fullscreen on" : "Fullscreen"}
+            </button>
             <button
               type="button"
               onClick={() => setDetailsOpen((value) => !value)}
@@ -279,6 +344,7 @@ export function PresentationStatus({
             <span className="text-xs text-amber-700">Recording unsupported in this browser.</span>
           )}
           {recordingError && <span className="text-xs text-rose-700">{recordingError}</span>}
+          {wakeLockError && <span className="text-xs text-amber-700">{wakeLockError}</span>}
         </div>
         {detailsOpen && (
           <div className="border-t border-slate-200/80 bg-slate-50/72 px-3 py-3">
@@ -330,6 +396,75 @@ export function PresentationStatus({
                   {copiedTarget === "viewer" ? "Viewer copied" : "Copy viewer link"}
                 </button>
               )}
+              {onOpenMirrorStage && (
+                <button
+                  type="button"
+                  onClick={onOpenMirrorStage}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-white"
+                >
+                  <Link2 size={12} />
+                  Open mirror stage
+                </button>
+              )}
+            </div>
+            <div className="mb-3 grid gap-2 sm:grid-cols-2">
+              <label className="inline-flex items-center gap-2 rounded-[5px] border border-slate-200 bg-white/88 px-3 py-2 text-xs font-medium text-slate-700">
+                stage scale
+                <select
+                  value={String(stageScale)}
+                  onChange={(event) => {
+                    onStageScaleChange(Number(event.target.value));
+                  }}
+                  className="rounded-[5px] border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 outline-none"
+                >
+                  <option value="0.9">90%</option>
+                  <option value="1">100%</option>
+                  <option value="1.08">108%</option>
+                </select>
+              </label>
+              <label className="inline-flex items-center gap-2 rounded-[5px] border border-slate-200 bg-white/88 px-3 py-2 text-xs font-medium text-slate-700">
+                cursor
+                <select
+                  value={cursorMode}
+                  onChange={(event) => {
+                    onCursorModeChange(event.target.value as "always" | "idle-hide");
+                  }}
+                  className="rounded-[5px] border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 outline-none"
+                >
+                  <option value="always">always visible</option>
+                  <option value="idle-hide">hide when idle</option>
+                </select>
+              </label>
+              <span
+                className={`inline-flex items-center gap-2 rounded-[5px] border px-3 py-2 text-xs ${
+                  fullscreenSupported
+                    ? fullscreenActive
+                      ? "border-blue-200 bg-blue-50 text-blue-700"
+                      : "border-slate-200 bg-white/82 text-slate-600"
+                    : "border-amber-200 bg-amber-50 text-amber-700"
+                }`}
+              >
+                fullscreen:{" "}
+                {fullscreenSupported ? (fullscreenActive ? "active" : "off") : "unsupported"}
+              </span>
+              <span
+                className={`inline-flex items-center gap-2 rounded-[5px] border px-3 py-2 text-xs ${
+                  wakeLockSupported
+                    ? wakeLockActive
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                      : "border-slate-200 bg-white/82 text-slate-600"
+                    : "border-amber-200 bg-amber-50 text-amber-700"
+                }`}
+              >
+                wake lock:{" "}
+                {wakeLockSupported
+                  ? wakeLockRequested || wakeLockActive
+                    ? wakeLockActive
+                      ? "active"
+                      : "requesting"
+                    : "off"
+                  : "unsupported"}
+              </span>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
               <span className="inline-flex items-center gap-2 rounded-[5px] border border-slate-200 bg-white/82 px-3 py-2 text-xs text-slate-600">

@@ -1,21 +1,48 @@
 import type { DeckMeta, DeckModel } from "../model/deck";
 import type { SlideMeta, SlideUnit } from "../model/slide";
-import { z } from "zod";
-import { layoutNames } from "../model/layout";
+import { z, type ZodError } from "zod";
+import { transitionNames } from "../model/transition";
 import { parseFrontmatter } from "./frontmatter";
 
-const layoutSchema = z.enum(layoutNames);
+const layoutSchema = z.string().trim().min(1, "Layout name cannot be empty");
+const transitionSchema = z.enum(transitionNames);
+const addonsSchema = z
+  .union([z.string(), z.array(z.string())])
+  .optional()
+  .transform((value) => {
+    if (!value) return undefined;
+
+    const list = (Array.isArray(value) ? value : [value])
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0);
+
+    return list.length > 0 ? [...new Set(list)] : undefined;
+  });
+const notesSchema = z
+  .string()
+  .transform((value) => value.trim())
+  .optional()
+  .transform((value) => (value && value.length > 0 ? value : undefined));
 
 const deckMetaSchema = z.object({
   title: z.string().optional(),
   theme: z.string().optional(),
+  addons: addonsSchema,
   layout: layoutSchema.optional(),
+  background: z.string().optional(),
+  transition: transitionSchema.optional(),
+  exportFilename: z.string().optional(),
 });
 
 const slideMetaSchema = z.object({
   title: z.string().optional(),
   layout: layoutSchema.optional(),
   class: z.string().optional(),
+  background: z.string().optional(),
+  transition: transitionSchema.optional(),
+  clicks: z.number().int().nonnegative().optional(),
+  notes: notesSchema,
+  src: z.string().optional(),
 });
 
 const codeFenceStartRE = /^(`{3,}|~{3,})/;
@@ -72,7 +99,10 @@ function splitSlides(content: string): string[] {
 
     if (inSlideFrontmatter) {
       current.push(line);
-      if (trimmed === "---") inSlideFrontmatter = false;
+      if (trimmed === "---") {
+        inSlideFrontmatter = false;
+        atSlideStart = false;
+      }
       continue;
     }
 
@@ -117,13 +147,29 @@ function splitSlides(content: string): string[] {
 }
 
 function parseDeckMeta(data: unknown): DeckMeta {
-  return deckMetaSchema.parse(data);
+  const parsed = deckMetaSchema.safeParse(data);
+  if (!parsed.success) {
+    throw new Error(`Invalid deck frontmatter: ${formatZodIssues(parsed.error)}`);
+  }
+
+  return parsed.data;
 }
 
-function parseSlideMeta(data: unknown, slideIndex: number): SlideMeta {
+function formatZodIssues(error: ZodError) {
+  return error.issues
+    .map((issue) => {
+      const pathLabel = issue.path.length > 0 ? `${issue.path.join(".")}: ` : "";
+      return `${pathLabel}${issue.message}`;
+    })
+    .join("; ");
+}
+
+export function parseSlideMeta(data: unknown, slideIndex: number | string): SlideMeta {
   const parsed = slideMetaSchema.safeParse(data);
   if (!parsed.success) {
-    throw new Error(`Invalid frontmatter in slide ${slideIndex + 1}: ${parsed.error.message}`);
+    const slideLabel =
+      typeof slideIndex === "number" ? `slide ${slideIndex + 1}` : String(slideIndex);
+    throw new Error(`Invalid frontmatter in ${slideLabel}: ${formatZodIssues(parsed.error)}`);
   }
 
   return parsed.data;
@@ -140,12 +186,14 @@ export function parseDeck(source: string): DeckModel {
   const slides = slideSources.map((slide, index): SlideUnit => {
     const slideMatter = parseFrontmatter(slide);
     const slideMeta = parseSlideMeta(slideMatter.data, index);
+    const trimmedSource = slideMatter.content.trim();
 
     return {
       id: `slide-${index + 1}`,
       index,
       meta: slideMeta,
-      source: slideMatter.content.trim() || "# Empty slide",
+      source: trimmedSource || "# Empty slide",
+      hasInlineSource: trimmedSource.length > 0,
     };
   });
 

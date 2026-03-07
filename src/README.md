@@ -8,6 +8,7 @@
 ## Top-level Folders
 
 - `app/`: 应用装配层。负责 provider 组合、入口编排和模式分发。
+- `addons/`: 本地扩展层。负责 addon 注册、runtime seam 和示例 addon。
 - `deck/`: slide deck 内容系统。负责 model、parsing、compiling、MDX 编译链路。
 - `features/`: 产品能力层。按 presenter、navigation、reveal、presentation 等能力分组。
 - `features/player/`: slide 舞台播放与交互层，承接缩放、cursor、stage click、draw overlay 等舞台语义。
@@ -17,6 +18,7 @@
 ## Placement Rules
 
 - 新增内容解析或编译逻辑时，优先放进 `deck/`。
+- 新增本地 addon contract、注册或 addon 示例时，优先放进 `addons/`。
 - 新增演示行为时，优先放进对应 `features/<feature>/`。
 - 新增舞台渲染与舞台交互逻辑时，优先放进 `features/player/`。
 - 新增应用级 provider 或装配逻辑时，优先放进 `app/`。

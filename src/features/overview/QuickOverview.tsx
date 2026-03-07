@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { resolveLayout } from "../../theme/layouts/resolveLayout";
+import { resolveSlideSurface } from "../player/slideSurface";
 import {
   OVERVIEW_STAGE_HEIGHT,
   OVERVIEW_STAGE_SCALE,
@@ -8,20 +8,26 @@ import {
   STAGE_WIDTH,
 } from "../presenter/stage";
 import type { CompiledSlide } from "../presenter/types";
+import { resolveLayout } from "../../theme/layouts/resolveLayout";
+import { useResolvedLayouts } from "../../theme/useResolvedLayout";
 
 export function QuickOverview({
   open,
   slides,
   currentIndex,
+  deckBackground,
   onClose,
   onSelect,
 }: {
   open: boolean;
   slides: CompiledSlide[];
   currentIndex: number;
+  deckBackground?: string;
   onClose: () => void;
   onSelect: (index: number) => void;
 }) {
+  const layouts = useResolvedLayouts();
+
   if (!open) return null;
 
   return (
@@ -47,8 +53,13 @@ export function QuickOverview({
           <div className="grid grid-cols-[repeat(auto-fill,minmax(308px,1fr))] gap-4">
             {slides.map((slide, index) => {
               const active = index === currentIndex;
-              const Layout = resolveLayout(slide.meta.layout);
+              const Layout = resolveLayout(slide.meta.layout, layouts);
               const Slide = slide.component;
+              const surface = resolveSlideSurface({
+                meta: slide.meta,
+                deckBackground,
+                className: "slide-prose box-border size-full px-18 py-14",
+              });
               return (
                 <button
                   key={slide.id}
@@ -80,7 +91,7 @@ export function QuickOverview({
                         transform: `scale(${OVERVIEW_STAGE_SCALE})`,
                       }}
                     >
-                      <article className="slide-prose box-border size-full bg-white px-18 py-14">
+                      <article className={surface.className} style={surface.style}>
                         <Layout>
                           <Slide />
                         </Layout>

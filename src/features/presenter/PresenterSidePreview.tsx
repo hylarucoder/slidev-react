@@ -1,18 +1,21 @@
 import type { LayoutName } from "../../deck/model/layout";
-import { resolveLayout } from "../../theme/layouts/resolveLayout";
+import { resolveSlideSurface } from "../player/slideSurface";
 import { OVERVIEW_STAGE_SCALE, STAGE_HEIGHT, STAGE_WIDTH } from "./stage";
 import type { CompiledSlide } from "./types";
+import { useResolvedLayout } from "../../theme/useResolvedLayout";
 
 export function PresenterSidePreview({
   title,
   indexLabel,
   slide,
   deckLayout,
+  deckBackground,
 }: {
   title: string;
   indexLabel: string;
   slide: CompiledSlide | null;
   deckLayout?: LayoutName;
+  deckBackground?: string;
 }) {
   if (!slide) {
     return (
@@ -32,8 +35,13 @@ export function PresenterSidePreview({
     );
   }
 
-  const Layout = resolveLayout(slide.meta.layout ?? deckLayout);
+  const Layout = useResolvedLayout(slide.meta.layout ?? deckLayout);
   const Slide = slide.component;
+  const surface = resolveSlideSurface({
+    meta: slide.meta,
+    deckBackground,
+    className: "slide-prose box-border size-full px-18 py-14",
+  });
 
   return (
     <section className="flex h-full min-h-0 flex-col rounded-[8px] border border-slate-200/70 bg-white/72 p-4 text-slate-900 shadow-[0_18px_44px_rgba(148,163,184,0.18)] backdrop-blur-md">
@@ -55,7 +63,7 @@ export function PresenterSidePreview({
             transformOrigin: "top left",
           }}
         >
-          <article className="slide-prose box-border size-full bg-white px-18 py-14">
+          <article className={surface.className} style={surface.style}>
             <Layout>
               <Slide />
             </Layout>

@@ -1,9 +1,24 @@
+function renderNotes(notes: string) {
+  const sections = notes
+    .split(/\n\s*\n/g)
+    .map((section) => section.trim())
+    .filter(Boolean);
+
+  return sections.map((section, index) => (
+    <p key={`${index}-${section.slice(0, 24)}`} className="whitespace-pre-wrap">
+      {section}
+    </p>
+  ));
+}
+
 export function SpeakerNotesPanel({
   currentClicks,
   currentClicksTotal,
+  notes,
 }: {
   currentClicks: number;
   currentClicksTotal: number;
+  notes?: string;
 }) {
   const revealProgressPercent =
     currentClicksTotal > 0 ? (currentClicks / currentClicksTotal) * 100 : 0;
@@ -37,12 +52,21 @@ export function SpeakerNotesPanel({
         </div>
       </div>
       <div className="min-h-0 flex-1 rounded-[5px] border border-slate-200/80 bg-slate-50/78 p-4 text-sm leading-7 text-slate-600">
-        <p className="font-medium text-slate-900">No notes yet.</p>
-        <p className="mt-3 text-slate-500">
-          This panel is reserved for your phrasing, punchlines, and the one transition you do not
-          want to improvise live.
-        </p>
+        {notes ? (
+          <div className="space-y-4 text-slate-600">{renderNotes(notes)}</div>
+        ) : (
+          <>
+            <p className="font-medium text-slate-900">No notes yet.</p>
+            <p className="mt-3 text-slate-500">
+              Add slide-level frontmatter with <code>notes: |</code> to keep your phrasing,
+              punchlines, and handoff lines close to the slide.
+            </p>
+          </>
+        )}
         <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+          <span className="rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
+            N notes
+          </span>
           <span className="rounded-[5px] border border-slate-200 bg-white/72 px-2.5 py-1">
             O overview
           </span>

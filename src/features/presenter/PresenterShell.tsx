@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { LayoutName } from "../../deck/model/layout";
+import type { TransitionName } from "../../deck/model/transition";
 import { DrawProvider, type DrawStroke } from "../draw/DrawProvider";
 import { KeyboardController } from "../navigation/KeyboardController";
+import { NotesOverview } from "../overview/NotesOverview";
 import { PresentationNavbar } from "../navigation/PresentationNavbar";
 import { useDeckNavigation } from "../navigation/useDeckNavigation";
 import { QuickOverview } from "../overview/QuickOverview";
 import { SlideStage } from "../player/SlideStage";
 import { PresentationStatus } from "../presentation/PresentationStatus";
+import { buildPrintExportUrl } from "../presentation/printExport";
 import { buildPresentationEntryUrl, type PresentationSession } from "../presentation/session";
 import { usePresentationRecorder } from "../presentation/usePresentationRecorder";
 import { usePresentationSync } from "../presentation/usePresentationSync";
@@ -27,6 +30,10 @@ import { SpeakerNotesPanel } from "./SpeakerNotesPanel";
 import { PresenterSidePreview } from "./PresenterSidePreview";
 import { PresenterTopProgress } from "./PresenterTopProgress";
 import type { CompiledSlide } from "./types";
+import { resolveRevealTotal } from "../reveal/clicks";
+import { useWakeLock } from "./useWakeLock";
+import { useFullscreen } from "./useFullscreen";
+import { useIdleCursor } from "./useIdleCursor";
 
 function isTypingElement(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -44,6 +51,44 @@ function canControlNavigation(session: PresentationSession) {
   return !session.enabled || session.role === "presenter";
 }
 
+const PRESENTER_STAGE_SCALE_STORAGE_KEY = "slide-react:presenter-stage-scale";
+const PRESENTER_STAGE_SCALE_OPTIONS = new Set([0.9, 1, 1.08]);
+const PRESENTER_CURSOR_MODE_STORAGE_KEY = "slide-react:presenter-cursor-mode";
+const PRESENTER_CURSOR_MODE_OPTIONS = new Set(["always", "idle-hide"] as const);
+
+type PresenterCursorMode = "always" | "idle-hide";
+
+function readInitialStageScale() {
+  if (typeof window === "undefined") return 1;
+
+  try {
+    const savedValue = window.localStorage.getItem(PRESENTER_STAGE_SCALE_STORAGE_KEY);
+    if (!savedValue) return 1;
+
+    const parsedValue = Number(savedValue);
+    if (!Number.isFinite(parsedValue) || !PRESENTER_STAGE_SCALE_OPTIONS.has(parsedValue)) return 1;
+
+    return parsedValue;
+  } catch {
+    return 1;
+  }
+}
+
+function readInitialCursorMode(): PresenterCursorMode {
+  if (typeof window === "undefined") return "always";
+
+  try {
+    const savedValue = window.localStorage.getItem(PRESENTER_CURSOR_MODE_STORAGE_KEY);
+    if (!savedValue) return "always";
+
+    return PRESENTER_CURSOR_MODE_OPTIONS.has(savedValue as PresenterCursorMode)
+      ? (savedValue as PresenterCursorMode)
+      : "always";
+  } catch {
+    return "always";
+  }
+}
+
 function resolveMaxRevealStep(stepCounts: Map<number, number> | undefined) {
   if (!stepCounts || stepCounts.size === 0) return 0;
 
@@ -55,16 +100,26 @@ function resolveMaxRevealStep(stepCounts: Map<number, number> | undefined) {
   return max;
 }
 
+type PresenterOverlay = "quick-overview" | "notes-overview" | null;
+
 export function PresenterShell({
   slides,
+  deckTitle,
   deckLayout,
+  deckBackground,
+  deckTransition,
+  deckExportFilename,
   deckSessionSeed,
   drawStorageKey,
   session,
   onSyncModeChange,
 }: {
   slides: CompiledSlide[];
+  deckTitle?: string;
   deckLayout?: LayoutName;
+  deckBackground?: string;
+  deckTransition?: TransitionName;
+  deckExportFilename?: string;
   deckSessionSeed: string;
   drawStorageKey: string;
   session: PresentationSession;
@@ -74,7 +129,7 @@ export function PresenterShell({
   const currentSlide = slides[navigation.currentIndex];
   const nextSlide = slides[navigation.currentIndex + 1] ?? null;
   const CurrentSlide = currentSlide.component;
-  const [overviewOpen, setOverviewOpen] = useState(false);
+  const [activeOverlay, setActiveOverlay] = useState<PresenterOverlay>(null);
   const canControl = canControlNavigation(session);
   const isPresenterRole = session.role === "presenter";
   const [followPresenter, setFollowPresenter] = useState(session.role === "viewer");
@@ -94,8 +149,19 @@ export function PresenterShell({
   const revealStepCountsRef = useRef<Record<string, Map<number, number>>>({});
   const [clicksBySlideId, setClicksBySlideId] = useState<Record<string, number>>({});
   const [clicksTotalBySlideId, setClicksTotalBySlideId] = useState<Record<string, number>>({});
+  const [stageScale, setStageScale] = useState(readInitialStageScale);
+  const [cursorMode, setCursorMode] = useState<PresenterCursorMode>(readInitialCursorMode);
   const clicksBySlideIdRef = useRef(clicksBySlideId);
   const clicksTotalBySlideIdRef = useRef(clicksTotalBySlideId);
+  const wakeLock = useWakeLock();
+  const fullscreen = useFullscreen();
+  const slideClicksConfig = useMemo(
+    () =>
+      Object.fromEntries(
+        slides.map((slide) => [slide.id, slide.meta.clicks ?? 0] as const),
+      ) as Record<string, number>,
+    [slides],
+  );
 
   useEffect(() => {
     currentIndexRef.current = navigation.currentIndex;
@@ -117,47 +183,79 @@ export function PresenterShell({
     clicksTotalBySlideIdRef.current = clicksTotalBySlideId;
   }, [clicksTotalBySlideId]);
 
-  const setSlideClicks = useCallback((slideId: string, next: number) => {
-    setClicksBySlideId((prev) => {
-      const total = clicksTotalBySlideIdRef.current[slideId];
-      const clamped = clampRevealCount(next, total);
-      if ((prev[slideId] ?? 0) === clamped) return prev;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
 
-      const updated = {
-        ...prev,
-        [slideId]: clamped,
-      };
-      clicksBySlideIdRef.current = updated;
-      return updated;
-    });
-  }, []);
+    try {
+      window.localStorage.setItem(PRESENTER_STAGE_SCALE_STORAGE_KEY, String(stageScale));
+    } catch {
+      // Ignore storage write failures.
+    }
+  }, [stageScale]);
 
-  const setSlideClicksTotal = useCallback((slideId: string, nextTotal: number) => {
-    const safeTotal = Math.max(Math.floor(nextTotal), 0);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
 
-    setClicksTotalBySlideId((prev) => {
-      if (prev[slideId] === safeTotal) return prev;
+    try {
+      window.localStorage.setItem(PRESENTER_CURSOR_MODE_STORAGE_KEY, cursorMode);
+    } catch {
+      // Ignore storage write failures.
+    }
+  }, [cursorMode]);
 
-      const updated = {
-        ...prev,
-        [slideId]: safeTotal,
-      };
-      clicksTotalBySlideIdRef.current = updated;
-      return updated;
-    });
+  const setSlideClicks = useCallback(
+    (slideId: string, next: number) => {
+      setClicksBySlideId((prev) => {
+        const total = resolveRevealTotal({
+          configuredClicks: slideClicksConfig[slideId],
+          detectedClicks: clicksTotalBySlideIdRef.current[slideId],
+        });
+        const clamped = clampRevealCount(next, total);
+        if ((prev[slideId] ?? 0) === clamped) return prev;
 
-    setClicksBySlideId((prev) => {
-      const clamped = clampRevealCount(prev[slideId] ?? 0, safeTotal);
-      if ((prev[slideId] ?? 0) === clamped) return prev;
+        const updated = {
+          ...prev,
+          [slideId]: clamped,
+        };
+        clicksBySlideIdRef.current = updated;
+        return updated;
+      });
+    },
+    [slideClicksConfig],
+  );
 
-      const updated = {
-        ...prev,
-        [slideId]: clamped,
-      };
-      clicksBySlideIdRef.current = updated;
-      return updated;
-    });
-  }, []);
+  const setSlideClicksTotal = useCallback(
+    (slideId: string, nextTotal: number) => {
+      const safeTotal = resolveRevealTotal({
+        configuredClicks: slideClicksConfig[slideId],
+        detectedClicks: nextTotal,
+      });
+
+      setClicksTotalBySlideId((prev) => {
+        if (prev[slideId] === safeTotal) return prev;
+
+        const updated = {
+          ...prev,
+          [slideId]: safeTotal,
+        };
+        clicksTotalBySlideIdRef.current = updated;
+        return updated;
+      });
+
+      setClicksBySlideId((prev) => {
+        const clamped = clampRevealCount(prev[slideId] ?? 0, safeTotal);
+        if ((prev[slideId] ?? 0) === clamped) return prev;
+
+        const updated = {
+          ...prev,
+          [slideId]: clamped,
+        };
+        clicksBySlideIdRef.current = updated;
+        return updated;
+      });
+    },
+    [slideClicksConfig],
+  );
 
   const registerRevealStep = useCallback(
     (step: number) => {
@@ -185,7 +283,10 @@ export function PresenterShell({
   );
 
   const currentClicks = clicksBySlideId[currentSlide.id] ?? 0;
-  const currentClicksTotal = clicksTotalBySlideId[currentSlide.id] ?? 0;
+  const currentClicksTotal = resolveRevealTotal({
+    configuredClicks: currentSlide.meta.clicks,
+    detectedClicks: clicksTotalBySlideId[currentSlide.id],
+  });
 
   const goToSlideAtStart = useCallback(
     (index: number) => {
@@ -220,7 +321,10 @@ export function PresenterShell({
       currentClicks,
       currentIndex: navigation.currentIndex,
       previousClicks: clicksBySlideIdRef.current[previousSlideId],
-      previousClicksTotal: clicksTotalBySlideIdRef.current[previousSlideId],
+      previousClicksTotal: resolveRevealTotal({
+        configuredClicks: slideClicksConfig[previousSlideId],
+        detectedClicks: clicksTotalBySlideIdRef.current[previousSlideId],
+      }),
     });
     if (!nextState) return;
 
@@ -342,6 +446,8 @@ export function PresenterShell({
 
   const recorder = usePresentationRecorder({
     enabled: canControl,
+    exportFilename: deckExportFilename,
+    deckTitle,
   });
 
   const detachFromPresenter = useCallback(() => {
@@ -377,8 +483,46 @@ export function PresenterShell({
     window.location.assign(entryUrl);
   }, [deckSessionSeed]);
 
+  const handleOpenPrintExport = useCallback(() => {
+    const exportUrl = buildPrintExportUrl(window.location.href);
+    const exportWindow = window.open(exportUrl, "_blank");
+    if (exportWindow) {
+      exportWindow.opener = null;
+      return;
+    }
+
+    window.location.assign(exportUrl);
+  }, []);
+
+  const handleOpenMirrorStage = useCallback(() => {
+    const targetUrl = session.viewerUrl;
+    if (!targetUrl) return;
+
+    const mirrorWindow = window.open(targetUrl, "_blank", "noopener,noreferrer");
+    if (mirrorWindow) {
+      mirrorWindow.opener = null;
+      return;
+    }
+
+    window.location.assign(targetUrl);
+  }, [session.viewerUrl]);
+
+  const handleStageScaleChange = useCallback((value: number) => {
+    setStageScale(PRESENTER_STAGE_SCALE_OPTIONS.has(value) ? value : 1);
+  }, []);
+
+  const handleCursorModeChange = useCallback((value: PresenterCursorMode) => {
+    setCursorMode(PRESENTER_CURSOR_MODE_OPTIONS.has(value) ? value : "always");
+  }, []);
+
+  const hideCursor = useIdleCursor({
+    enabled: isPresenterRole && canControl && cursorMode === "idle-hide",
+  });
+
   const canPrev = revealContextValue.canRetreat;
   const canNext = revealContextValue.canAdvance;
+  const overviewOpen = activeOverlay === "quick-overview";
+  const notesOverviewOpen = activeOverlay === "notes-overview";
   const progressPercent =
     navigation.total > 0 ? ((navigation.currentIndex + 1) / navigation.total) * 100 : 0;
   useEffect(() => {
@@ -407,6 +551,7 @@ export function PresenterShell({
     }
 
     setLocalCursor(null);
+    setActiveOverlay(null);
   }, [canControl]);
 
   useEffect(() => {
@@ -432,11 +577,19 @@ export function PresenterShell({
         if (!canControl) return;
 
         event.preventDefault();
-        setOverviewOpen((value) => !value);
+        setActiveOverlay((value) => (value === "quick-overview" ? null : "quick-overview"));
         return;
       }
 
-      if (key === "escape") setOverviewOpen(false);
+      if (key === "n") {
+        if (!canControl) return;
+
+        event.preventDefault();
+        setActiveOverlay((value) => (value === "notes-overview" ? null : "notes-overview"));
+        return;
+      }
+
+      if (key === "escape") setActiveOverlay(null);
     };
 
     window.addEventListener("keydown", onKeyDown);
@@ -446,11 +599,11 @@ export function PresenterShell({
   useEffect(() => {
     if (typeof document === "undefined") return;
 
-    document.body.dataset.quickOverview = overviewOpen ? "open" : "closed";
+    document.body.dataset.presenterOverlay = activeOverlay ? "open" : "closed";
     return () => {
-      delete document.body.dataset.quickOverview;
+      delete document.body.dataset.presenterOverlay;
     };
-  }, [overviewOpen]);
+  }, [activeOverlay]);
 
   return (
     <>
@@ -471,7 +624,9 @@ export function PresenterShell({
         onStrokesChange={onStrokesChange}
       >
         <div
-          className={`relative grid h-dvh max-h-dvh grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden ${isPresenterRole ? "bg-[#eef4ff]" : "bg-black"}`}
+          className={`relative grid h-dvh max-h-dvh grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden ${
+            isPresenterRole ? "bg-[#eef4ff]" : "bg-black"
+          } ${hideCursor ? "cursor-none" : ""}`}
         >
           {isPresenterRole && (
             <>
@@ -503,12 +658,30 @@ export function PresenterShell({
               isRecording={recorder.isRecording}
               recordingElapsedMs={recorder.elapsedMs}
               recordingError={recorder.error}
+              wakeLockSupported={wakeLock.supported}
+              wakeLockRequested={wakeLock.requested}
+              wakeLockActive={wakeLock.active}
+              wakeLockError={wakeLock.error}
+              fullscreenSupported={fullscreen.supported}
+              fullscreenActive={fullscreen.active}
+              stageScale={stageScale}
+              cursorMode={cursorMode}
               onStartRecording={() => {
                 void recorder.start();
               }}
               onStopRecording={() => {
                 void recorder.stop();
               }}
+              onToggleWakeLock={() => {
+                void wakeLock.toggle();
+              }}
+              onToggleFullscreen={() => {
+                void fullscreen.toggle();
+              }}
+              onStageScaleChange={handleStageScaleChange}
+              onCursorModeChange={handleCursorModeChange}
+              onOpenMirrorStage={handleOpenMirrorStage}
+              onOpenPrintExport={handleOpenPrintExport}
               onSyncModeChange={onSyncModeChange}
             />
           )}
@@ -526,9 +699,12 @@ export function PresenterShell({
                         slideId={currentSlide.id}
                         meta={currentSlide.meta}
                         deckLayout={deckLayout}
+                        deckBackground={deckBackground}
+                        deckTransition={deckTransition}
                         remoteCursor={canControl ? null : remoteCursor}
                         onCursorChange={canControl ? setLocalCursor : undefined}
-                        onStageAdvance={canControl && !overviewOpen ? advanceReveal : undefined}
+                        onStageAdvance={canControl && !activeOverlay ? advanceReveal : undefined}
+                        scaleMultiplier={stageScale}
                       />
                     </RevealProvider>
                   </div>
@@ -540,10 +716,12 @@ export function PresenterShell({
                       indexLabel={nextSlide ? String(navigation.currentIndex + 2) : "--"}
                       slide={nextSlide}
                       deckLayout={deckLayout}
+                      deckBackground={deckBackground}
                     />
                     <SpeakerNotesPanel
                       currentClicks={currentClicks}
                       currentClicksTotal={currentClicksTotal}
+                      notes={currentSlide.meta.notes}
                     />
                   </div>
                 </aside>
@@ -555,6 +733,8 @@ export function PresenterShell({
                   slideId={currentSlide.id}
                   meta={currentSlide.meta}
                   deckLayout={deckLayout}
+                  deckBackground={deckBackground}
+                  deckTransition={deckTransition}
                   remoteCursor={canControl ? null : remoteCursor}
                   onCursorChange={canControl ? setLocalCursor : undefined}
                 />
@@ -569,13 +749,19 @@ export function PresenterShell({
             canNext={canNext}
             showPresenterModeButton={session.role !== "presenter"}
             overviewOpen={overviewOpen}
+            notesOpen={notesOverviewOpen}
             onEnterPresenterMode={
               session.role !== "presenter" ? handleEnterPresenterMode : undefined
             }
             onToggleOverview={() => {
               if (!canControl) return;
 
-              setOverviewOpen((value) => !value);
+              setActiveOverlay((value) => (value === "quick-overview" ? null : "quick-overview"));
+            }}
+            onToggleNotes={() => {
+              if (!canControl) return;
+
+              setActiveOverlay((value) => (value === "notes-overview" ? null : "notes-overview"));
             }}
             onPrev={retreatReveal}
             onNext={advanceReveal}
@@ -585,10 +771,21 @@ export function PresenterShell({
             open={overviewOpen && canControl}
             slides={slides}
             currentIndex={navigation.currentIndex}
-            onClose={() => setOverviewOpen(false)}
+            deckBackground={deckBackground}
+            onClose={() => setActiveOverlay(null)}
             onSelect={(index) => {
               goToSlideAtStart(index);
-              setOverviewOpen(false);
+              setActiveOverlay(null);
+            }}
+          />
+          <NotesOverview
+            open={notesOverviewOpen && canControl}
+            slides={slides}
+            currentIndex={navigation.currentIndex}
+            onClose={() => setActiveOverlay(null)}
+            onSelect={(index) => {
+              goToSlideAtStart(index);
+              setActiveOverlay(null);
             }}
           />
         </div>

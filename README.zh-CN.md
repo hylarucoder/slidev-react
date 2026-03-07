@@ -27,7 +27,7 @@
 - 支持 presenter / viewer 路由和同步状态管理
 - 基于 `BroadcastChannel` 的多标签页同步
 - 基于 WebSocket relay 的可选跨设备同步
-- 支持舞台涂鸦、光标同步、总览面板和浏览器录制
+- 支持舞台涂鸦、光标同步、总览面板、浏览器录制，以及 print/PDF 导出
 
 ## 当前状态
 
@@ -68,6 +68,35 @@ bun run build
 bun run preview
 ```
 
+### 用 Playwright 导出演示产物
+
+```bash
+bun run export:deck
+```
+
+### 检查 deck 编写问题
+
+```bash
+bun run lint:deck
+```
+
+如果你想在 CI 里把 warning 也当失败处理，可以用 `bun run lint:deck -- --strict`。
+
+它会把浏览器真实渲染后的产物写到 `output/export/<deck-name>/`：
+
+- 整套 deck 的 `*.pdf`
+- 每一页一张的 `png/*.png`
+
+常见变体：
+
+```bash
+bun run export:deck:pdf
+bun run export:deck:png
+bun run export:deck -- --slides 3-7
+bun run export:deck -- --with-clicks
+bun run export:deck -- --base-url http://127.0.0.1:4173
+```
+
 ### 清理生成产物
 
 ```bash
@@ -103,7 +132,10 @@ bun run presentation:server
 - 光标同步
 - 涂鸦同步
 - 基于 `MediaRecorder` 的浏览器录制
+- 基于浏览器打印能力的 print / PDF 导出
 - 总览面板和 presenter 控制面板
+- presenter 模式下的 wake lock、mirror stage 打开能力、fullscreen 切换、stage scale 和空闲隐藏光标设置
+- `bun run lint:deck`，用于在构建前发现未知 theme、addon、layout 等编写问题
 
 ## Deck 编写方式
 
@@ -118,21 +150,35 @@ Deck 源文件位于 [`slides.mdx`](./slides.mdx)。
 
 目前支持的 frontmatter：
 
-- Deck 级：`title`、`theme`、`layout`
-- Slide 级：`title`、`layout`、`class`
+- Deck 级：`title`、`theme`、`addons`、`layout`、`background`、`transition`、`exportFilename`
+- Slide 级：`title`、`layout`、`class`、`background`、`transition`、`clicks`、`notes`、`src`
 
 补充说明：
 
 - `layout:` 已经真实参与渲染
 - `class:` 会挂到舞台的 article 容器上
-- `theme:` 当前只会被解析成 metadata，还没有真正接入运行时主题切换
+- `background:` 支持颜色、渐变、CSS background 值，或裸写图片 URL
+- `transition:` 当前支持 `fade`、`slide-left`、`slide-up`、`zoom`
+- `exportFilename:` 可指定导出物和录制下载时优先使用的文件名前缀
+- `addons:` 用来启用 `src/addons/*/index.ts` 中注册的本地 addon
+- `clicks:` 可以显式声明这页的 reveal 步数，即使 `<Reveal />` 数量更少
+- `notes:` 已可在 presenter 模式中展示，推荐配合 YAML 多行字符串使用
+- `src:` 可按相对 `slides.mdx` 的路径载入单页外部文件
+- `theme:` 现在会从 `src/theme/themes/*/index.ts` 载入本地运行时主题，找不到时回退到默认主题
+- 非法 frontmatter 现在会尽量报到字段级别；编译期也会对未知本地 theme/addon 给出 warning
 
 示例：
 
 ```mdx
 ---
 title: Demo Deck
+theme: paper
+addons:
+  - insight
 layout: default
+background: "linear-gradient(180deg, #eff6ff 0%, #ffffff 100%)"
+transition: fade
+exportFilename: client-demo
 ---
 
 ---
@@ -140,6 +186,13 @@ layout: default
 title: Compare
 layout: two-cols
 class: px-20
+background: /images/compare-hero.png
+transition: slide-left
+clicks: 3
+src: ./slides/compare.mdx
+notes: |
+先讲取舍，不要先讲实现。
+图表讲完停半秒，再切到 API 边界。
 
 ---
 
@@ -153,6 +206,84 @@ class: px-20
   <Callout title="Tip">这段内容会在点击后出现。</Callout>
 </Reveal>
 ```
+
+推荐的 `src` 写法：
+
+```mdx
+---
+title: Imported Slide
+layout: cover
+src: ./slides/imported-intro.mdx
+notes: |
+  包装层 metadata 留在这里。
+  真正的 slide body 放到外部文件里。
+---
+```
+
+当使用 `src:` 时，同一个 slide block 里不要再写 inline 正文内容。
+
+当前如果要导出 deck，可以直接在 presenter 壳层里使用 `Print / PDF` 按钮、在当前 URL 后加上 `?export=print` 走浏览器打印，或者运行 `bun run export:deck`，由 Playwright 直接产出 PDF 和 PNG。
+
+## 本地主题
+
+当前内置的非默认示例主题是 `paper`：
+
+```mdx
+---
+title: Client Review
+theme: paper
+---
+```
+
+本地主题放在 `src/theme/themes/<theme-id>/` 下，只要在 `index.ts` 里导出 `theme`，运行时就会自动发现。
+
+当前的主题 contract 包括：
+
+- `rootAttributes` 和 `rootClassName`：给文档根节点挂 token 或选择器
+- `layouts`：覆盖或扩展 slide layout
+- `mdxComponents`：覆盖 `Badge` 这类 MDX helper
+- `provider`：在需要时注入主题级 React context
+
+放在 `src/theme/themes/<theme-id>/style.css` 的主题样式也会自动加载。如果请求的主题不存在，运行时会安全回退到默认主题。
+
+## 本地 Addons
+
+Deck 可以通过 frontmatter 启用本地 addon：
+
+```mdx
+---
+title: QBR Review
+addons:
+  - insight
+---
+```
+
+本地 addon 放在 `src/addons/<addon-id>/` 下，只要在 `index.ts` 里导出 `addon`，运行时就会自动发现。
+
+当前的 addon contract 包括：
+
+- `layouts`：新增或覆盖 layout 名称，包括像 `spotlight` 这样的自定义 layout
+- `mdxComponents`：新增像 `Insight` 这样的 MDX helper
+- `provider`：给运行时树包一层 addon 自己的 React context 或副作用
+
+当前内置的示例 addon 是 `insight`，它提供了 `spotlight` layout 和 `Insight` MDX 组件：
+
+```mdx
+---
+title: Executive Summary
+addons:
+  - insight
+layout: spotlight
+---
+
+# Three signals to act on now
+
+<Insight title="Board angle">
+  The margin story lands better when paired with hiring discipline.
+</Insight>
+```
+
+放在 `src/addons/<addon-id>/style.css` 的 addon 样式也会自动加载。当前如果 deck 请求了未知 addon，运行时会先忽略它，保证启动安全；这也意味着 addon API 现在仍属于早期实验态。
 
 ## MDX 辅助组件
 
@@ -190,6 +321,7 @@ class: px-20
 - `deck/`：deck 解析、frontmatter 处理、MDX 编译、生成物构建
 - `features/`：reveal、presenter、sync、draw、navigation 等产品能力
 - `features/player/`：舞台渲染和舞台交互
+- `addons/`：本地运行时扩展层，可挂 layout、MDX helper 和 provider
 - `ui/`：可复用展示组件和 MDX helper
 - `theme/`：布局与视觉 token
 

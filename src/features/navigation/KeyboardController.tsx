@@ -30,7 +30,8 @@ export function KeyboardController({
     const onKeyDown = (event: KeyboardEvent) => {
       if (isTypingElement(event.target)) return;
 
-      if (typeof document !== "undefined" && document.body.dataset.quickOverview === "open") return;
+      if (typeof document !== "undefined" && document.body.dataset.presenterOverlay === "open")
+        return;
 
       if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
         event.preventDefault();

@@ -8,4 +8,5 @@ export const layoutNames = [
   "statement",
 ] as const;
 
-export type LayoutName = (typeof layoutNames)[number];
+export type BuiltinLayoutName = (typeof layoutNames)[number];
+export type LayoutName = BuiltinLayoutName | (string & {});

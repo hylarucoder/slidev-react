@@ -1,0 +1,34 @@
+:root[data-slide-addon-insight="active"] {
+  --slide-insight-border: rgba(14, 116, 144, 0.24);
+  --slide-insight-bg: rgba(236, 254, 255, 0.88);
+  --slide-insight-title: #155e75;
+  --slide-insight-text: #164e63;
+}
+
+.slide-layout-spotlight {
+  background:
+    radial-gradient(circle at top left, rgba(103, 232, 249, 0.22), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.18), transparent 32%);
+}
+
+.slide-insight {
+  margin-top: 1.25rem;
+  border: 1px solid var(--slide-insight-border);
+  background: var(--slide-insight-bg);
+  border-radius: 1.25rem;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 16px 38px rgba(14, 116, 144, 0.08);
+}
+
+.slide-insight-title {
+  margin-bottom: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--slide-insight-title);
+}
+
+.slide-insight-body {
+  color: var(--slide-insight-text);
+}

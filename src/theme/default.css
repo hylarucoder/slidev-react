@@ -134,6 +134,18 @@ body {
   overscroll-behavior: none;
 }
 
+html[data-presentation-mode="print"],
+html[data-presentation-mode="print"] body,
+html[data-presentation-mode="print"] #root {
+  height: auto;
+  min-height: 100%;
+  overflow: auto;
+}
+
+html[data-presentation-mode="print"] body {
+  overscroll-behavior: auto;
+}
+
 .slide-prose {
   color: var(--slide-color-body);
   font-size: var(--slide-font-size-body);
@@ -173,6 +185,71 @@ body {
   line-height: var(--slide-p-line-height);
   letter-spacing: var(--slide-p-letter-spacing);
   font-weight: var(--slide-p-font-weight);
+}
+
+.print-slide-frame article {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+@media print {
+  @page {
+    size: landscape;
+    margin: 0.45in;
+  }
+
+  html,
+  body,
+  #root {
+    width: auto;
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+    background: #fff;
+  }
+
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .print-deck-toolbar {
+    display: none;
+  }
+
+  .print-deck-view {
+    min-height: auto;
+    background: #fff;
+  }
+
+  .print-slide-shell {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    break-after: page;
+    page-break-after: always;
+    margin: 0;
+  }
+
+  .print-slide-shell:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  .print-slide-frame {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .print-slide-frame article {
+    box-shadow: none;
+    width: 100%;
+    min-height: 0;
+  }
 }
 
 .slide-prose ul,
@@ -257,6 +334,76 @@ body {
   color: var(--slide-link-color-hover);
   text-decoration-color: var(--slide-link-decoration-color-hover);
   background: var(--slide-link-hover-bg);
+}
+
+.slide-transition {
+  min-height: 100%;
+  animation-duration: 360ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
+  will-change: opacity, transform;
+}
+
+.slide-transition--fade {
+  animation-name: slide-transition-fade;
+}
+
+.slide-transition--slide-left {
+  animation-name: slide-transition-slide-left;
+}
+
+.slide-transition--slide-up {
+  animation-name: slide-transition-slide-up;
+}
+
+.slide-transition--zoom {
+  animation-name: slide-transition-zoom;
+}
+
+@keyframes slide-transition-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-transition-slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(48px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-transition-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(42px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-transition-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .slide-prose a:focus-visible {

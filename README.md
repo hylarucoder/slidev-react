@@ -29,7 +29,7 @@ This repo is not a Vue Slidev runtime. It is a React + MDX implementation that b
 - Presenter and viewer routes with sync-ready state handling
 - Multi-tab sync through `BroadcastChannel`
 - Optional cross-device sync through a WebSocket relay
-- Stage drawing tools, cursor sync, quick overview, and browser recording
+- Stage drawing tools, cursor sync, quick overview, browser recording, and print/PDF export
 
 ## Status
 
@@ -70,6 +70,35 @@ bun run build
 bun run preview
 ```
 
+### Export deck artifacts with Playwright
+
+```bash
+bun run export:deck
+```
+
+### Lint deck authoring
+
+```bash
+bun run lint:deck
+```
+
+Use `bun run lint:deck -- --strict` to fail on warnings in CI.
+
+This writes browser-rendered artifacts to `output/export/<deck-name>/`:
+
+- `*.pdf` for the whole deck
+- `png/*.png` for one image per slide
+
+Useful variants:
+
+```bash
+bun run export:deck:pdf
+bun run export:deck:png
+bun run export:deck -- --slides 3-7
+bun run export:deck -- --with-clicks
+bun run export:deck -- --base-url http://127.0.0.1:4173
+```
+
 ### Clean generated output
 
 ```bash
@@ -105,7 +134,10 @@ The presenter shell currently includes:
 - cursor sync
 - drawing sync
 - browser recording via `MediaRecorder`
+- print-ready deck export via browser Print / Save as PDF
 - quick overview and presenter-side controls
+- wake lock, mirror-stage launch, fullscreen toggle, stage scale, and idle-cursor settings in presenter mode
+- `bun run lint:deck` for authoring warnings such as unknown themes, addons, or layouts
 
 ## Deck Authoring
 
@@ -120,21 +152,35 @@ Core authoring rules:
 
 Supported frontmatter today:
 
-- Deck: `title`, `theme`, `layout`
-- Slide: `title`, `layout`, `class`
+- Deck: `title`, `theme`, `addons`, `layout`, `background`, `transition`, `exportFilename`
+- Slide: `title`, `layout`, `class`, `background`, `transition`, `clicks`, `notes`, `src`
 
 Notes:
 
 - `layout:` is active and affects rendering
 - `class:` is applied to the stage article element
-- `theme:` is parsed as metadata but is not yet wired into runtime theme switching
+- `background:` accepts colors, gradients, CSS background values, or bare image URLs
+- `transition:` supports `fade`, `slide-left`, `slide-up`, and `zoom`
+- `exportFilename:` sets the preferred base name for deck exports and recording downloads
+- `addons:` enables locally registered addons from `src/addons/*/index.ts`
+- `clicks:` defines explicit reveal steps even when the slide has fewer `<Reveal />` blocks
+- `notes:` is available in presenter mode and works best with YAML block strings
+- `src:` loads a single external slide file relative to `slides.mdx`
+- `theme:` loads a local runtime theme from `src/theme/themes/*/index.ts`, with the default theme as fallback
+- invalid frontmatter now reports field-level parser errors, and compile-time generation warns for unknown local themes or addons
 
 Example:
 
 ```mdx
 ---
 title: Demo Deck
+theme: paper
+addons:
+  - insight
 layout: default
+background: "linear-gradient(180deg, #eff6ff 0%, #ffffff 100%)"
+transition: fade
+exportFilename: client-demo
 ---
 
 ---
@@ -142,6 +188,13 @@ layout: default
 title: Compare
 layout: two-cols
 class: px-20
+background: /images/compare-hero.png
+transition: slide-left
+clicks: 3
+src: ./slides/compare.mdx
+notes: |
+Open with the tradeoff, not the implementation.
+Pause after the chart before moving to the API boundary.
 
 ---
 
@@ -155,6 +208,84 @@ class: px-20
   <Callout title="Tip">This block appears on click.</Callout>
 </Reveal>
 ```
+
+Recommended `src` syntax:
+
+```mdx
+---
+title: Imported Slide
+layout: cover
+src: ./slides/imported-intro.mdx
+notes: |
+  Keep the wrapper metadata here.
+  Put the slide body in the external file.
+---
+```
+
+When `src:` is present, do not also put inline slide body content in the same slide block.
+
+To export a deck as PDF today, open the presenter shell and use the `Print / PDF` button, visit the current deck URL with `?export=print`, or run `bun run export:deck` for Playwright-driven PDF and PNG artifacts.
+
+## Local Themes
+
+The built-in non-default example theme is `paper`:
+
+```mdx
+---
+title: Client Review
+theme: paper
+---
+```
+
+Local themes live under `src/theme/themes/<theme-id>/` and are discovered automatically when they export `theme` from `index.ts`.
+
+Current theme contract:
+
+- `rootAttributes` and `rootClassName` for document-level tokens or selectors
+- `layouts` to override or extend slide layouts
+- `mdxComponents` to override MDX helpers such as `Badge`
+- `provider` for theme-scoped React context when needed
+
+Theme CSS files placed at `src/theme/themes/<theme-id>/style.css` are also auto-loaded. If a requested theme is missing, the runtime falls back to the default theme.
+
+## Local Addons
+
+Decks can opt into local addons with deck frontmatter:
+
+```mdx
+---
+title: QBR Review
+addons:
+  - insight
+---
+```
+
+Local addons live under `src/addons/<addon-id>/` and are discovered automatically when they export `addon` from `index.ts`.
+
+Current addon contract:
+
+- `layouts` to add or override layout names, including custom ones such as `spotlight`
+- `mdxComponents` to add deck-local helpers such as `Insight`
+- `provider` to wrap the runtime tree with addon-specific React context or side effects
+
+The built-in example addon is `insight`, which contributes a `spotlight` layout and an `Insight` MDX component:
+
+```mdx
+---
+title: Executive Summary
+addons:
+  - insight
+layout: spotlight
+---
+
+# Three signals to act on now
+
+<Insight title="Board angle">
+  The margin story lands better when paired with hiring discipline.
+</Insight>
+```
+
+Addon CSS files placed at `src/addons/<addon-id>/style.css` are also auto-loaded. Unknown addon ids are ignored for now, which keeps deck startup safe while the addon API is still experimental.
 
 ## MDX Helpers
 
@@ -192,6 +323,7 @@ Top-level source areas under [`src/`](./src):
 - `deck/`: deck parsing, frontmatter handling, MDX compilation, generated artifacts
 - `features/`: presentation capabilities such as reveal, presenter shell, sync, draw, and navigation
 - `features/player/`: stage rendering and stage interaction
+- `addons/`: local runtime extension points for layouts, MDX helpers, and providers
 - `ui/`: reusable presentation components and MDX helpers
 - `theme/`: layouts and visual tokens
 
