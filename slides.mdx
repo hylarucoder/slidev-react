@@ -45,7 +45,7 @@ This repo is a React-first slide runtime with a compile-time MDX deck pipeline.
 - Deck source file: `slides.mdx`
 - Page split syntax: `---`
 - Slide frontmatter: `title`, `layout`, `class`
-- MDX components: `Badge`, `Callout`, `AnnotationMark`, `Reveal`, `RevealGroup`
+- MDX components: `Badge`, `Callout`, `Annotate`, `Reveal`, `RevealGroup`
 - Built-in diagram fences: Mermaid and PlantUML
 - Presenter / viewer mode with sync-ready presentation flow
 
@@ -196,42 +196,59 @@ You can use React components directly in MDX.
 </div>
 
 ---
-title: AnnotationMark
+title: Annotate
 ---
 
-# AnnotationMark
+# Annotate
 
-Use `AnnotationMark` for presentation-style emphasis that feels more intentional than a plain highlight.
+Use `Annotate` for presentation-style emphasis that feels more intentional than a plain highlight.
 
 <div className="mt-6 grid gap-6 md:grid-cols-2">
 <div>
 
 ```mdx
-We use <AnnotationMark>default highlight</AnnotationMark> for the most important phrase.
-The presenter can <AnnotationMark type="underline">underline a key idea</AnnotationMark>.
-This slide can <AnnotationMark type="box">box an API boundary</AnnotationMark>.
+We use <Annotate>default highlight</Annotate> for the most important phrase.
+The presenter can <Annotate type="underline">underline a key idea</Annotate>.
+This slide can <Annotate type="box">box an API boundary</Annotate>.
 ```
 
 <div className="space-y-4">
-  <p>We use <AnnotationMark>default highlight</AnnotationMark> for the most important phrase.</p>
-  <p>The presenter can <AnnotationMark type="underline">underline a key idea</AnnotationMark>.</p>
-  <p>This slide can <AnnotationMark type="box">box an API boundary</AnnotationMark>.</p>
+  <p>We use <Annotate>default highlight</Annotate> for the most important phrase.</p>
+  <p>The presenter can <Annotate type="underline">underline a key idea</Annotate>.</p>
+  <p>This slide can <Annotate type="box">box an API boundary</Annotate>.</p>
 </div>
 
 </div>
 <div>
 
 ```mdx
-We can <AnnotationMark type="circle">circle launch</AnnotationMark> for timing.
-Use <AnnotationMark type="bracket" brackets={['left', 'right']}>brackets on a focus block</AnnotationMark>.
+We can <Annotate type="circle">circle launch</Annotate> for timing.
+Use <Annotate type="bracket" brackets={['left', 'right']}>brackets on a focus block</Annotate>.
 ```
 
 <div className="space-y-4">
-  <p>We can <AnnotationMark type="circle">circle launch</AnnotationMark> for timing.</p>
-  <p>Use <AnnotationMark type="bracket" brackets={['left', 'right']}>brackets on a focus block</AnnotationMark>.</p>
+  <p>We can <Annotate type="circle">circle launch</Annotate> for timing.</p>
+  <p>Use <Annotate type="bracket" brackets={['left', 'right']}>brackets on a focus block</Annotate>.</p>
 </div>
 
 </div>
+</div>
+
+<div className="mt-8 space-y-4">
+  <p>
+    Keep the copy visible first, then{" "}
+    <Annotate type="underline" revealStep={1}>
+      draw the mark on reveal
+    </Annotate>
+    .
+  </p>
+  <p>
+    Or{" "}
+    <Annotate type="box" revealStep={2} animate={false}>
+      show it instantly on the next reveal
+    </Annotate>
+    .
+  </p>
 </div>
 
 ---

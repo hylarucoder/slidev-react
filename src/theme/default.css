@@ -679,6 +679,161 @@ html[data-presentation-mode="print"] body {
   border-radius: 0 0 0.38em 0.38em;
 }
 
+@keyframes slide-mark-highlight-draw {
+  from {
+    opacity: 0;
+    transform: rotate(-0.8deg) scaleX(0.18) skewX(-8deg);
+  }
+
+  to {
+    opacity: 0.9;
+    transform: rotate(-0.8deg) scaleX(1) skewX(0deg);
+  }
+}
+
+@keyframes slide-mark-line-draw {
+  from {
+    opacity: 0;
+    transform: var(--mark-line-transform) scaleX(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: var(--mark-line-transform) scaleX(1);
+  }
+}
+
+@keyframes slide-mark-shape-draw {
+  from {
+    opacity: 0;
+    transform: var(--mark-shape-transform) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: var(--mark-shape-transform) scale(1);
+  }
+}
+
+@keyframes slide-mark-cross-a-draw {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(22deg) scaleX(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(22deg) scaleX(1);
+  }
+}
+
+@keyframes slide-mark-cross-b-draw {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-22deg) scaleX(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(-22deg) scaleX(1);
+  }
+}
+
+@keyframes slide-mark-bracket-y-draw {
+  from {
+    opacity: 0;
+    transform: scaleY(0.18);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@keyframes slide-mark-bracket-x-draw {
+  from {
+    opacity: 0;
+    transform: scaleX(0.18);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+.slide-mark--animate .slide-mark-overlay,
+.slide-mark--animate .slide-mark-bracket,
+.slide-mark--animate .slide-mark-overlay::before,
+.slide-mark--animate .slide-mark-overlay::after {
+  animation-duration: var(--mark-animation-duration);
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-iteration-count: var(--mark-animation-iterations);
+  will-change: transform, opacity;
+}
+
+.slide-mark--highlight.slide-mark--animate .slide-mark-overlay {
+  transform-origin: left center;
+  animation-name: slide-mark-highlight-draw;
+}
+
+.slide-mark--underline.slide-mark--animate .slide-mark-overlay {
+  --mark-line-transform: rotate(-1deg);
+  transform-origin: left center;
+  animation-name: slide-mark-line-draw;
+}
+
+.slide-mark--strike-through.slide-mark--animate .slide-mark-overlay {
+  --mark-line-transform: translateY(-50%) rotate(-2deg);
+  transform-origin: left center;
+  animation-name: slide-mark-line-draw;
+}
+
+.slide-mark--box.slide-mark--animate .slide-mark-overlay {
+  --mark-shape-transform: rotate(-1.3deg);
+  transform-origin: left center;
+  animation-name: slide-mark-shape-draw;
+}
+
+.slide-mark--circle.slide-mark--animate .slide-mark-overlay {
+  --mark-shape-transform: rotate(-5deg);
+  transform-origin: center;
+  animation-name: slide-mark-shape-draw;
+}
+
+.slide-mark--crossed-off.slide-mark--animate .slide-mark-overlay::before {
+  transform-origin: center;
+  animation-name: slide-mark-cross-a-draw;
+}
+
+.slide-mark--crossed-off.slide-mark--animate .slide-mark-overlay::after {
+  transform-origin: center;
+  animation-name: slide-mark-cross-b-draw;
+  animation-delay: calc(var(--mark-animation-duration) * 0.14);
+}
+
+.slide-mark--bracket.slide-mark--animate .slide-mark-bracket--left {
+  transform-origin: left top;
+  animation-name: slide-mark-bracket-y-draw;
+}
+
+.slide-mark--bracket.slide-mark--animate .slide-mark-bracket--right {
+  transform-origin: right top;
+  animation-name: slide-mark-bracket-y-draw;
+}
+
+.slide-mark--bracket.slide-mark--animate .slide-mark-bracket--top {
+  transform-origin: center top;
+  animation-name: slide-mark-bracket-x-draw;
+}
+
+.slide-mark--bracket.slide-mark--animate .slide-mark-bracket--bottom {
+  transform-origin: center bottom;
+  animation-name: slide-mark-bracket-x-draw;
+}
+
 .slide-prose pre.shiki {
   margin: var(--slide-pre-margin);
   border-radius: var(--slide-pre-radius);
@@ -908,6 +1063,13 @@ html[data-presentation-mode="print"] body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .slide-mark--animate .slide-mark-overlay,
+  .slide-mark--animate .slide-mark-bracket,
+  .slide-mark--animate .slide-mark-overlay::before,
+  .slide-mark--animate .slide-mark-overlay::after {
+    animation: none;
+  }
+
   .slide-reveal {
     animation: none;
   }

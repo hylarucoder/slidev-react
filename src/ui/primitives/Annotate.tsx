@@ -1,6 +1,7 @@
-import type { CSSProperties, ReactNode } from "react";
+import { useLayoutEffect, type CSSProperties, type ReactNode } from "react";
+import { useReveal } from "../../features/reveal/RevealContext";
 
-type AnnotationMarkType =
+type AnnotateType =
   | "underline"
   | "box"
   | "circle"
@@ -11,11 +12,12 @@ type AnnotationMarkType =
 type BracketSide = "left" | "right" | "top" | "bottom";
 type Padding = number | [number, number] | [number, number, number, number];
 
-type AnnotationMarkProps = {
+export type AnnotateProps = {
   children: ReactNode;
-  type?: AnnotationMarkType;
+  type?: AnnotateType;
   color?: string;
   show?: boolean;
+  revealStep?: number;
   animate?: boolean;
   animationDuration?: number;
   strokeWidth?: number;
@@ -28,7 +30,7 @@ type AnnotationMarkProps = {
   style?: CSSProperties;
 };
 
-const defaultColorByType: Record<AnnotationMarkType, string> = {
+const defaultColorByType: Record<AnnotateType, string> = {
   underline: "#2563eb",
   box: "#2563eb",
   circle: "#2563eb",
@@ -38,7 +40,7 @@ const defaultColorByType: Record<AnnotationMarkType, string> = {
   bracket: "#2563eb",
 };
 
-const defaultPaddingByType: Record<AnnotationMarkType, [number, number, number, number]> = {
+const defaultPaddingByType: Record<AnnotateType, [number, number, number, number]> = {
   underline: [0, 2, 2, 2],
   box: [2, 5, 2, 5],
   circle: [3, 7, 3, 7],
@@ -48,7 +50,7 @@ const defaultPaddingByType: Record<AnnotationMarkType, [number, number, number, 
   bracket: [3, 7, 3, 7],
 };
 
-const defaultStrokeWidthByType: Record<AnnotationMarkType, number> = {
+const defaultStrokeWidthByType: Record<AnnotateType, number> = {
   underline: 2.4,
   box: 2.2,
   circle: 2.2,
@@ -62,7 +64,7 @@ const toSides = (brackets: BracketSide | BracketSide[]) => {
   return Array.isArray(brackets) ? brackets : [brackets];
 };
 
-const normalizePadding = (padding: Padding | undefined, type: AnnotationMarkType) => {
+const normalizePadding = (padding: Padding | undefined, type: AnnotateType) => {
   if (typeof padding === "number") {
     return [padding, padding, padding, padding] as const;
   }
@@ -80,18 +82,43 @@ const normalizePadding = (padding: Padding | undefined, type: AnnotationMarkType
   return defaultPaddingByType[type];
 };
 
-export function AnnotationMark(props: AnnotationMarkProps) {
+const normalizeRevealStep = (step: number | undefined) => {
+  if (step === undefined) return undefined;
+  if (!Number.isFinite(step)) return 1;
+
+  return Math.max(1, Math.floor(step));
+};
+
+const joinClassNames = (...names: Array<string | undefined | false>) => {
+  return names.filter(Boolean).join(" ");
+};
+
+export function Annotate(props: AnnotateProps) {
   const {
     children,
     type = "highlight",
     color,
     show = true,
+    revealStep,
+    animate = revealStep !== undefined,
+    animationDuration,
     strokeWidth,
     padding,
+    iterations = 1,
     brackets = "right",
     className,
     style,
   } = props;
+  const reveal = useReveal();
+  const normalizedRevealStep = normalizeRevealStep(revealStep);
+  const registerStep = reveal?.registerStep;
+  const slideId = reveal?.slideId;
+
+  useLayoutEffect(() => {
+    if (!registerStep || normalizedRevealStep === undefined) return;
+
+    return registerStep(normalizedRevealStep);
+  }, [normalizedRevealStep, registerStep, slideId]);
 
   if (!show) {
     return <>{children}</>;
@@ -99,6 +126,9 @@ export function AnnotationMark(props: AnnotationMarkProps) {
 
   const [padTop, padRight, padBottom, padLeft] = normalizePadding(padding, type);
   const sides = toSides(brackets);
+  const isVisible =
+    normalizedRevealStep === undefined || !reveal || reveal.clicks >= normalizedRevealStep;
+  const shouldRenderMark = show && isVisible;
   const mergedStyle = {
     ...style,
     "--mark-color": color ?? defaultColorByType[type],
@@ -107,17 +137,22 @@ export function AnnotationMark(props: AnnotationMarkProps) {
     "--mark-pad-right": `${padRight}px`,
     "--mark-pad-bottom": `${padBottom}px`,
     "--mark-pad-left": `${padLeft}px`,
+    "--mark-animation-duration": `${animationDuration ?? 520}ms`,
+    "--mark-animation-iterations": `${Math.max(1, Math.floor(iterations))}`,
   } as CSSProperties;
 
   return (
     <span
-      className={
-        className ? `slide-mark slide-mark--${type} ${className}` : `slide-mark slide-mark--${type}`
-      }
+      className={joinClassNames(
+        "slide-mark",
+        `slide-mark--${type}`,
+        shouldRenderMark && animate && "slide-mark--animate",
+        className,
+      )}
       style={mergedStyle}
     >
       <span className="slide-mark-target">{children}</span>
-      {type === "bracket" ? (
+      {!shouldRenderMark ? null : type === "bracket" ? (
         sides.map((side) => (
           <span
             key={side}

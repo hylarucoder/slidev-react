@@ -1,6 +1,6 @@
 import { MermaidDiagram } from "../diagrams/MermaidDiagram";
 import { PlantUmlDiagram } from "../diagrams/PlantUmlDiagram";
-import { AnnotationMark } from "../primitives/AnnotationMark";
+import { Annotate } from "../primitives/Annotate";
 import { Badge } from "../primitives/Badge";
 import { Callout } from "../primitives/Callout";
 import { CourseCover } from "./CourseCover";
@@ -13,7 +13,7 @@ export const mdxComponents = {
   Callout,
   CourseCover,
   MagicMoveDemo,
-  AnnotationMark,
+  Annotate,
   MermaidDiagram,
   MinimaxReactVisualizer,
   PlantUmlDiagram,
