@@ -223,12 +223,12 @@ This slide can <Annotate type="box">box an API boundary</Annotate>.
 
 ```mdx
 We can <Annotate type="circle">circle launch</Annotate> for timing.
-Use <Annotate type="bracket" brackets={['left', 'right']}>brackets on a focus block</Annotate>.
+Use <Annotate type="strike-through">strike through an obsolete path</Annotate>.
 ```
 
 <div className="space-y-4">
   <p>We can <Annotate type="circle">circle launch</Annotate> for timing.</p>
-  <p>Use <Annotate type="bracket" brackets={['left', 'right']}>brackets on a focus block</Annotate>.</p>
+  <p>Use <Annotate type="strike-through">strike through an obsolete path</Annotate>.</p>
 </div>
 
 </div>
@@ -237,14 +237,14 @@ Use <Annotate type="bracket" brackets={['left', 'right']}>brackets on a focus bl
 <div className="mt-8 space-y-4">
   <p>
     Keep the copy visible first, then{" "}
-    <Annotate type="underline" revealStep={1}>
+    <Annotate type="underline" step={1}>
       draw the mark on reveal
     </Annotate>
     .
   </p>
   <p>
     Or{" "}
-    <Annotate type="box" revealStep={2} animate={false}>
+    <Annotate type="box" step={2} animate={false}>
       show it instantly on the next reveal
     </Annotate>
     .

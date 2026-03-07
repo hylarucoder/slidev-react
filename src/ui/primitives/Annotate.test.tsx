@@ -21,7 +21,7 @@ describe("Annotate", () => {
   it("keeps text visible before its reveal step", () => {
     const html = renderToStaticMarkup(
       <RevealProvider value={createRevealValue(0)}>
-        <Annotate type="underline" revealStep={1}>
+        <Annotate type="underline" step={1}>
           reveal copy
         </Annotate>
       </RevealProvider>,
@@ -29,13 +29,12 @@ describe("Annotate", () => {
 
     expect(html).toContain("reveal copy");
     expect(html).not.toContain("slide-mark-overlay");
-    expect(html).not.toContain("slide-mark-bracket");
   });
 
   it("renders an animated mark after the reveal step is reached", () => {
     const html = renderToStaticMarkup(
       <RevealProvider value={createRevealValue(1)}>
-        <Annotate type="underline" revealStep={1}>
+        <Annotate type="underline" step={1}>
           reveal copy
         </Annotate>
       </RevealProvider>,
@@ -49,7 +48,7 @@ describe("Annotate", () => {
   it("can reveal instantly without playback animation", () => {
     const html = renderToStaticMarkup(
       <RevealProvider value={createRevealValue(1)}>
-        <Annotate type="box" revealStep={1} animate={false}>
+        <Annotate type="box" step={1} animate={false}>
           instant reveal
         </Annotate>
       </RevealProvider>,
