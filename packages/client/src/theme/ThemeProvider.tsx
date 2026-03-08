@@ -1,14 +1,40 @@
-import { createContext, useContext, useEffect, useMemo, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  type ReactNode,
+} from "react";
+import {
+  isPortraitViewport,
+  type SlidesViewport,
+} from "@slidev-react/core/slides/viewport";
 import { resolveSlideTheme } from "./registry";
 import type { ResolvedSlideTheme } from "./types";
 
 const ThemeContext = createContext<ResolvedSlideTheme | null>(null);
 
-function applyRootThemeAttributes(theme: ResolvedSlideTheme) {
+export function resolveThemeRootAttributes(
+  theme: ResolvedSlideTheme,
+  slidesViewport?: SlidesViewport,
+) {
+  return {
+    ...theme.rootAttributes,
+    ...(slidesViewport
+      ? {
+          "data-slide-viewport-orientation": isPortraitViewport(slidesViewport)
+            ? "portrait"
+            : "landscape",
+        }
+      : {}),
+  };
+}
+
+function applyRootThemeAttributes(theme: ResolvedSlideTheme, slidesViewport?: SlidesViewport) {
   if (typeof document === "undefined") return () => {};
 
   const root = document.documentElement;
-  const appliedEntries = Object.entries(theme.rootAttributes);
+  const appliedEntries = Object.entries(resolveThemeRootAttributes(theme, slidesViewport));
   const previousAttributes = new Map(
     appliedEntries.map(([name]) => [name, root.getAttribute(name)]),
   );
@@ -31,10 +57,18 @@ function applyRootThemeAttributes(theme: ResolvedSlideTheme) {
   };
 }
 
-export function ThemeProvider({ themeId, children }: { themeId?: string; children: ReactNode }) {
+export function ThemeProvider({
+  themeId,
+  slidesViewport,
+  children,
+}: {
+  themeId?: string;
+  slidesViewport?: SlidesViewport;
+  children: ReactNode;
+}) {
   const theme = useMemo(() => resolveSlideTheme(themeId), [themeId]);
 
-  useEffect(() => applyRootThemeAttributes(theme), [theme]);
+  useEffect(() => applyRootThemeAttributes(theme, slidesViewport), [slidesViewport, theme]);
 
   return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;
 }

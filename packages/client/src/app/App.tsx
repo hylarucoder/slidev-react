@@ -104,7 +104,10 @@ export default function App() {
   });
 
   return (
-    <ThemeProvider themeId={slidesDocument.meta.theme}>
+    <ThemeProvider
+      themeId={slidesDocument.meta.theme}
+      slidesViewport={slidesDocument.meta.viewport}
+    >
       <AddonProvider addonIds={slidesDocument.meta.addons}>
         <ThemeBoundApp
           exportMode={exportMode}

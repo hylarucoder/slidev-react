@@ -35,7 +35,7 @@ function resolveBackgroundStyle(background: string | undefined): CSSProperties {
 }
 
 function resolveSurfacePaddingClass(layout: SlideMeta["layout"]) {
-  return layout === "immersive" ? "px-0 py-0" : "px-18 py-14";
+  return layout === "immersive" ? "px-0 py-0" : "slide-surface-frame";
 }
 
 export function resolveSlideSurfaceClassName({
