@@ -6,19 +6,19 @@ function joinClassNames(...classNames: Array<string | false | null | undefined>)
 
 const toneClassNames = {
   glass:
-    "border border-slate-200/70 bg-white/72 text-slate-900 shadow-[0_18px_44px_rgba(148,163,184,0.18)] backdrop-blur-md",
+    "border-slate-200/80 bg-white/88 text-slate-900",
   solid:
-    "border border-slate-200/80 bg-white/92 text-slate-900 shadow-[0_18px_40px_rgba(148,163,184,0.16)]",
-  inset: "border border-slate-200/80 bg-slate-50/78 text-slate-600",
-  frame: "border border-slate-200/80 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]",
-  dashed: "border border-dashed border-slate-200/80 bg-slate-50/75 text-slate-500",
+    "border-slate-200/80 bg-white/92 text-slate-900",
+  inset: "border-slate-200/80 bg-slate-50/78 text-slate-600",
+  frame: "border-slate-200/80 bg-white",
+  dashed: "border-slate-200/80 bg-slate-50/75 text-slate-500",
 } as const;
 
 const radiusClassNames = {
-  panel: "rounded-[8px]",
-  section: "rounded-2xl",
-  inset: "rounded-[6px]",
-  frame: "rounded-[5px]",
+  panel: "rounded-md",
+  section: "rounded-lg",
+  inset: "rounded-md",
+  frame: "rounded-md",
 } as const;
 
 const paddingClassNames = {

@@ -1085,50 +1085,6 @@ html[data-presentation-mode="print"] body {
   object-fit: contain;
 }
 
-@keyframes cc-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-@keyframes cc-pulse-slow {
-  0%,
-  100% {
-    opacity: 0.15;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.22;
-    transform: scale(1.05);
-  }
-}
-
-@keyframes cc-pulse-slow-delayed {
-  0%,
-  100% {
-    opacity: 0.1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.16;
-    transform: scale(1.08);
-  }
-}
-
-@keyframes cc-glow-breathe {
-  0%,
-  100% {
-    opacity: 0.12;
-  }
-  50% {
-    opacity: 0.19;
-  }
-}
-
 @keyframes slide-reveal-fade {
   from {
     opacity: 0;
@@ -1213,36 +1169,12 @@ html[data-presentation-mode="print"] body {
 }
 
 .course-cover[data-tone="light"] {
-  background:
-    radial-gradient(
-      circle at top right,
-      color-mix(in srgb, var(--cc-accent) 14%, white) 0%,
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at bottom left,
-      color-mix(in srgb, var(--cc-accent) 10%, white) 0%,
-      transparent 24%
-    ),
-    linear-gradient(180deg, #f8fdf8 0%, #f3f8f4 48%, #edf4ef 100%);
+  background: #f8fafc;
   color: #0f172a;
 }
 
 .course-cover::before {
   display: none !important;
-}
-
-.course-cover .noise-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 2;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-}
-
-.course-cover[data-tone="light"] .noise-layer {
-  opacity: 0.02;
 }
 
 .course-cover .lesson-number {
@@ -1263,67 +1195,6 @@ html[data-presentation-mode="print"] body {
   opacity: 0.13;
 }
 
-.course-cover .decor-circle {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.15;
-  filter: blur(60px);
-  pointer-events: none;
-  z-index: 0;
-  background: var(--cc-accent);
-}
-
-.course-cover[data-tone="light"] .decor-circle {
-  opacity: 0.08;
-}
-
-.course-cover .circle-1 {
-  width: 400px;
-  height: 400px;
-  top: -100px;
-  right: -50px;
-  animation: cc-pulse-slow 8s ease-in-out infinite;
-}
-
-.course-cover .circle-2 {
-  width: 300px;
-  height: 300px;
-  bottom: -80px;
-  left: -80px;
-  opacity: 0.1;
-  animation: cc-pulse-slow-delayed 8s ease-in-out infinite;
-}
-
-.course-cover .circle-3 {
-  width: 150px;
-  height: 150px;
-  top: 50%;
-  left: 15%;
-  opacity: 0.08;
-  filter: blur(40px);
-  animation: cc-float 6s ease-in-out infinite;
-}
-
-.course-cover .glow-bottom {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 80%;
-  height: 200px;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  filter: blur(80px);
-  background: var(--cc-accent);
-  opacity: 0.12;
-  pointer-events: none;
-  z-index: 0;
-  animation: cc-glow-breathe 4s ease-in-out infinite;
-}
-
-.course-cover[data-tone="light"] .glow-bottom {
-  opacity: 0.07;
-}
-
 .course-cover .cover-header {
   position: relative;
   z-index: 3;
@@ -1341,14 +1212,12 @@ html[data-presentation-mode="print"] body {
   border-radius: 9999px;
   border: 1px solid color-mix(in srgb, var(--cc-accent) 30%, #333 70%);
   background: rgba(37, 37, 37, 0.6);
-  backdrop-filter: blur(8px);
   font-family: var(--font-mono);
 }
 
 .course-cover[data-tone="light"] .progress-badge {
   border: 1px solid color-mix(in srgb, var(--cc-accent) 18%, #cbd5e1 82%);
   background: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 10px 30px rgba(148, 163, 184, 0.12);
 }
 
 .course-cover .badge-current {
@@ -1434,7 +1303,6 @@ html[data-presentation-mode="print"] body {
   border: 1px solid color-mix(in srgb, var(--cc-accent) 18%, #cbd5e1 82%);
   background: rgba(255, 255, 255, 0.72);
   color: color-mix(in srgb, var(--cc-accent) 72%, #14532d 28%);
-  box-shadow: 0 10px 30px rgba(148, 163, 184, 0.1);
 }
 
 .course-cover .spacer {

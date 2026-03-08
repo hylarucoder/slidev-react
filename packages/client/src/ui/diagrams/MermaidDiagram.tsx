@@ -318,7 +318,7 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
             onClick={() => setZoomed(false)}
           >
             <div
-              className="relative flex h-[min(92vh,1200px)] w-[min(96vw,1600px)] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_28px_90px_rgba(15,23,42,0.18)]"
+              className="relative flex h-[min(92vh,1200px)] w-[min(96vw,1600px)] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white "
               onClick={(event) => event.stopPropagation()}
             >
               <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3 text-sm text-slate-700">
@@ -339,12 +339,12 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
               <div className="flex-1 overflow-auto bg-slate-50 p-6">
                 {zoomSvg ? (
                   <div
-                    className="inline-block min-w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_18px_40px_rgba(15,23,42,0.08)] [&_svg]:h-auto [&_svg]:max-w-none [&_svg_tspan]:fill-current [&_svg_text]:fill-current"
+                    className="inline-block min-w-full rounded-2xl border border-slate-200 bg-white p-6  [&_svg]:h-auto [&_svg]:max-w-none [&_svg_tspan]:fill-current [&_svg_text]:fill-current"
                     style={diagramSurfaceStyle}
                     dangerouslySetInnerHTML={{ __html: zoomSvg }}
                   />
                 ) : (
-                  <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
+                  <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600 ">
                     {zoomLoading ? "Preparing Mermaid preview..." : "Rendering Mermaid..."}
                   </div>
                 )}

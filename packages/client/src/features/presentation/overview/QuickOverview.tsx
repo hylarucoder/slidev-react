@@ -26,7 +26,7 @@ function OverviewSlidePreview({
   return (
     <div
       style={{ aspectRatio: formatViewportAspectRatio(slidesViewport) }}
-      className={`relative mb-0 w-full overflow-hidden rounded-t-[9px] rounded-b-none bg-slate-100/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] ${active ? "ring-1 ring-emerald-200/80" : ""}`}
+      className={`relative mb-0 w-full overflow-hidden rounded-t-md rounded-b-none bg-slate-100/72  ${active ? "ring-1 ring-emerald-200/80" : ""}`}
     >
       <span className="absolute top-2 left-2 z-10">
         <ChromeTag tone={active ? "active" : "default"} size="xs" weight="semibold">
@@ -79,7 +79,7 @@ export function QuickOverview({
   if (!open) return null;
 
   return (
-    <div className="absolute inset-0 z-50 bg-[linear-gradient(180deg,rgba(241,245,249,0.82)_0%,rgba(248,250,252,0.9)_100%)] backdrop-blur-md">
+    <div className="absolute inset-0 z-50 bg-slate-100/84 backdrop-blur-md">
       <div className="mx-auto flex h-full w-full max-w-[2200px] flex-col px-6 py-6">
         <header className="mb-5 flex items-center justify-between">
           <div className="text-slate-900">
@@ -91,7 +91,7 @@ export function QuickOverview({
           <ChromeIconButton
             onClick={onClose}
             aria-label="Close quick overview"
-            className="rounded-full shadow-[0_10px_30px_rgba(148,163,184,0.22)]"
+            className="rounded-full "
           >
             <X size={18} />
           </ChromeIconButton>
@@ -110,7 +110,7 @@ export function QuickOverview({
                   onKeyDown={(event: KeyboardEvent<HTMLElement>) =>
                     handleSelectKeyDown(event, index)
                   }
-                  className={`group cursor-pointer overflow-hidden p-0 text-left transition focus:outline-none focus:ring-2 focus:ring-emerald-300/70 ${active ? "bg-white/96 shadow-[0_24px_64px_rgba(34,197,94,0.16)] ring-1 ring-emerald-300/70" : "bg-white/78 shadow-[0_18px_46px_rgba(148,163,184,0.18)] ring-1 ring-transparent hover:bg-white/92 hover:shadow-[0_26px_68px_rgba(148,163,184,0.24)] hover:ring-slate-300/70"}`}
+                  className={`group cursor-pointer overflow-hidden p-0 text-left transition focus:outline-none focus:ring-2 focus:ring-emerald-300/70 ${active ? "bg-white ring-1 ring-emerald-300/70" : "bg-white/90 ring-1 ring-transparent hover:bg-white/92  hover:ring-slate-300/70"}`}
                   aria-label={`Go to slide ${index + 1}`}
                   tone="solid"
                   radius="section"

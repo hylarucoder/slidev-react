@@ -27,6 +27,7 @@ import type { PresentationSyncMode } from "./types";
 import type { PresentationSyncStatus } from "./usePresentationSync";
 import { ChromeIconButton } from "../../ui/primitives/ChromeIconButton";
 import { ChromeTag } from "../../ui/primitives/ChromeTag";
+import { FormSelect } from "../../ui/primitives/FormSelect";
 
 const DRAW_COLORS = ["#ef4444", "#3b82f6", "#22c55e", "#f59e0b", "#111827"];
 const DRAW_WIDTHS = [3, 5, 8];
@@ -171,7 +172,7 @@ export function PresentationStatus({
     <aside className="pointer-events-none absolute inset-x-0 bottom-0 z-40">
       <div className="relative">
         {detailsOpen && (
-          <div className="pointer-events-auto absolute inset-x-0 bottom-full mb-2 border-t border-slate-200/80 bg-slate-50/72 px-3 py-3 text-slate-800 shadow-[0_-12px_36px_rgba(148,163,184,0.12)] ring-1 ring-white/45 backdrop-blur-xl">
+          <div className="pointer-events-auto absolute inset-x-0 bottom-full mb-2 border-t border-slate-200/80 bg-slate-50/72 px-3 py-3 text-slate-800  ring-1 ring-white/45 backdrop-blur-xl">
             <div className="mb-3 flex flex-wrap items-center gap-2">
               <ChromeTag size="md" weight="semibold" className="uppercase tracking-[0.18em]">
                 <span className={`size-2.5 rounded-full ${statusDotClassName(status)}`} />
@@ -182,21 +183,19 @@ export function PresentationStatus({
                   {statusLabel}
                 </span>
               </ChromeTag>
-              <label className="inline-flex items-center gap-2 rounded-[5px] border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-medium text-slate-700">
-                sync
-                <select
-                  value={session.syncMode}
-                  onChange={(event) => {
-                    onSyncModeChange?.(event.target.value as PresentationSyncMode);
-                  }}
-                  className="rounded-[5px] border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 outline-none"
-                >
-                  <option value="send">send</option>
-                  <option value="receive">receive</option>
-                  <option value="both">both</option>
-                  <option value="off">off</option>
-                </select>
-              </label>
+              <FormSelect
+                label="sync"
+                size="sm"
+                value={session.syncMode}
+                onChange={(event) => {
+                  onSyncModeChange?.(event.target.value as PresentationSyncMode);
+                }}
+              >
+                <option value="send">send</option>
+                <option value="receive">receive</option>
+                <option value="both">both</option>
+                <option value="off">off</option>
+              </FormSelect>
               {canCopyViewerLink && (
                 <button
                   type="button"
@@ -214,7 +213,7 @@ export function PresentationStatus({
                       setCopiedTarget(null);
                     }
                   }}
-                  className="inline-flex items-center justify-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-white"
+                  className="inline-flex items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-white"
                 >
                   {copiedTarget === "viewer" ? <Copy size={12} /> : <Link2 size={12} />}
                   {copiedTarget === "viewer" ? "Viewer copied" : "Copy viewer link"}
@@ -224,7 +223,7 @@ export function PresentationStatus({
                 <button
                   type="button"
                   onClick={onOpenMirrorStage}
-                  className="inline-flex items-center justify-center gap-1.5 rounded-[5px] border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-white"
+                  className="inline-flex items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-white"
                 >
                   <Link2 size={12} />
                   Open mirror stage
@@ -232,35 +231,31 @@ export function PresentationStatus({
               )}
             </div>
             <div className="mb-3 grid gap-2 sm:grid-cols-2">
-              <label className="inline-flex items-center gap-2 rounded-[5px] border border-slate-200 bg-white/88 px-3 py-2 text-xs font-medium text-slate-700">
-                stage scale
-                <select
-                  value={String(stageScale)}
-                  onChange={(event) => {
-                    onStageScaleChange(Number(event.target.value));
-                  }}
-                  className="rounded-[5px] border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 outline-none"
-                >
-                  <option value="0.9">90%</option>
-                  <option value="1">100%</option>
-                  <option value="1.08">108%</option>
-                </select>
-              </label>
-              <label className="inline-flex items-center gap-2 rounded-[5px] border border-slate-200 bg-white/88 px-3 py-2 text-xs font-medium text-slate-700">
-                cursor
-                <select
-                  value={cursorMode}
-                  onChange={(event) => {
-                    onCursorModeChange(event.target.value as "always" | "idle-hide");
-                  }}
-                  className="rounded-[5px] border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 outline-none"
-                >
-                  <option value="always">always visible</option>
-                  <option value="idle-hide">hide when idle</option>
-                </select>
-              </label>
+              <FormSelect
+                label="stage scale"
+                size="sm"
+                value={String(stageScale)}
+                onChange={(event) => {
+                  onStageScaleChange(Number(event.target.value));
+                }}
+              >
+                <option value="0.9">90%</option>
+                <option value="1">100%</option>
+                <option value="1.08">108%</option>
+              </FormSelect>
+              <FormSelect
+                label="cursor"
+                size="sm"
+                value={cursorMode}
+                onChange={(event) => {
+                  onCursorModeChange(event.target.value as "always" | "idle-hide");
+                }}
+              >
+                <option value="always">always visible</option>
+                <option value="idle-hide">hide when idle</option>
+              </FormSelect>
               <span
-                className={`inline-flex items-center gap-2 rounded-[5px] border px-3 py-2 text-xs ${
+                className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-xs ${
                   fullscreenSupported
                     ? fullscreenActive
                       ? "border-emerald-200 bg-emerald-50 text-emerald-700"
@@ -272,7 +267,7 @@ export function PresentationStatus({
                 {fullscreenSupported ? (fullscreenActive ? "active" : "off") : "unsupported"}
               </span>
               <span
-                className={`inline-flex items-center gap-2 rounded-[5px] border px-3 py-2 text-xs ${
+                className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-xs ${
                   wakeLockSupported
                     ? wakeLockActive
                       ? "border-emerald-200 bg-emerald-50 text-emerald-700"
@@ -322,7 +317,7 @@ export function PresentationStatus({
             )}
           </div>
         )}
-        <div className="pointer-events-auto w-full overflow-hidden rounded-t-[8px] border border-b-0 border-slate-200/80 bg-white/82 text-slate-800 shadow-[0_-12px_36px_rgba(148,163,184,0.16)] ring-1 ring-white/45 backdrop-blur-xl">
+        <div className="pointer-events-auto w-full overflow-hidden rounded-t-[6px] border border-b-0 border-slate-200/80 bg-white/82 text-slate-800  ring-1 ring-white/45 backdrop-blur-xl">
           <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-3">
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
               {canRecord && (

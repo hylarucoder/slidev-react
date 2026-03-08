@@ -97,9 +97,9 @@ export function NotesOverview({
                       key={slide.id}
                       type="button"
                       onClick={() => setSelectedIndex(index)}
-                      className={`w-full rounded-xl border p-4 text-left transition ${
+                      className={`w-full rounded-lg border p-4 text-left transition ${
                         active
-                          ? "border-emerald-400 bg-emerald-50 shadow-[0_0_0_1px_rgba(52,211,153,0.36)]"
+                          ? "border-emerald-400 bg-emerald-50 "
                           : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
                       }`}
                     >

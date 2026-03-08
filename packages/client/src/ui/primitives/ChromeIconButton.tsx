@@ -6,15 +6,15 @@ function joinClassNames(...classNames: Array<string | false | null | undefined>)
 
 const toneClassNames = {
   default:
-    "border-slate-200 bg-white/88 text-slate-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-45",
-  active: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    "border-slate-200/80 bg-white/88 text-slate-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-45",
+  active: "border-emerald-200/80 bg-emerald-50 text-emerald-700",
   danger:
-    "border-rose-300 bg-rose-50 text-rose-700 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-45",
+    "border-rose-300/80 bg-rose-50 text-rose-700 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-45",
   violet:
-    "border-violet-300 bg-violet-50 text-violet-700 hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-45",
+    "border-violet-300/80 bg-violet-50 text-violet-700 hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-45",
   success:
-    "border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-45",
-  info: "border-green-300 bg-green-50 text-green-700 hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-45",
+    "border-emerald-300/80 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-45",
+  info: "border-green-300/80 bg-green-50 text-green-700 hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-45",
 } as const;
 
 const sizeClassNames = {
@@ -24,7 +24,7 @@ const sizeClassNames = {
 
 const radiusClassNames = {
   soft: "rounded-md",
-  chrome: "rounded-[5px]",
+  chrome: "rounded-md",
 } as const;
 
 export function ChromeIconButton({

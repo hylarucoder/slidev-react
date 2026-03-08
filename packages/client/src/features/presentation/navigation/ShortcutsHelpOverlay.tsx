@@ -9,7 +9,7 @@ function ShortcutKeys({ value }: { value: string }) {
     <div className="flex flex-wrap items-center gap-1">
       {value.split(" / ").map((part, index, list) => (
         <span key={`${part}-${index}`} className="inline-flex items-center gap-1">
-          <kbd className="rounded-[6px] border border-slate-200 bg-white px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]">
+          <kbd className="rounded-md border border-slate-200 bg-white px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]">
             {part}
           </kbd>
           {index < list.length - 1 ? <span className="text-[10px] text-slate-300">/</span> : null}
@@ -31,13 +31,13 @@ export function ShortcutsHelpOverlay({
   if (!open) return null;
 
   return (
-    <div className="absolute inset-0 z-50 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.4),transparent_34%),linear-gradient(180deg,rgba(241,245,249,0.84)_0%,rgba(226,232,240,0.92)_100%)] backdrop-blur-md">
+    <div className="absolute inset-0 z-50 bg-black/30 backdrop-blur-sm">
       <div className="mx-auto flex h-full w-full max-w-[1640px] items-center justify-center px-4 py-4 sm:px-6">
         <ChromePanel
           tone="solid"
           radius="section"
           padding="none"
-          className="flex max-h-full w-full max-w-[1180px] flex-col overflow-hidden bg-white/90 shadow-[0_32px_90px_rgba(15,23,42,0.18)]"
+          className="flex max-h-full w-full max-w-[1180px] flex-col overflow-hidden bg-white/90"
         >
           <header className="border-b border-slate-200/80 px-4 py-4 sm:px-5">
             <div className="flex items-start justify-between gap-4">
@@ -66,7 +66,7 @@ export function ShortcutsHelpOverlay({
                 onClick={onClose}
                 aria-label="Close keyboard shortcuts"
                 title="Close keyboard shortcuts"
-                className="rounded-full shadow-[0_10px_30px_rgba(148,163,184,0.22)]"
+                className="rounded-full"
               >
                 <X size={18} />
               </ChromeIconButton>
@@ -92,7 +92,7 @@ export function ShortcutsHelpOverlay({
                       {section.items.map((item) => (
                         <div
                           key={`${section.title}:${item.keys}:${item.action}`}
-                          className="flex flex-col gap-1.5 rounded-[9px] border border-white/80 bg-white/82 px-2.5 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]"
+                          className="flex flex-col gap-1.5 rounded-md border border-white/80 bg-white/82 px-2.5 py-2.5"
                         >
                           <ShortcutKeys value={item.keys} />
                           <div className="text-[13px] leading-5 text-slate-700">{item.action}</div>

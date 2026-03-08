@@ -125,7 +125,6 @@ export function FlowTimelinePreview({
     className: resolveSlideSurfaceClassName({
       layout: slide.meta.layout ?? slidesLayout,
       overflowHidden: true,
-      shadowClass: "shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]",
     }),
   });
   const previewLabel = describePreviewStep(previewClicks, currentClicksTotal);
@@ -168,9 +167,9 @@ export function FlowTimelinePreview({
               key={value}
               type="button"
               onClick={() => setMode(value)}
-              className={`inline-flex flex-1 items-center justify-center rounded-[5px] px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition ${
+              className={`inline-flex flex-1 items-center justify-center rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition ${
                 active
-                  ? "bg-slate-900 text-white shadow-[0_8px_20px_rgba(15,23,42,0.18)]"
+                  ? "bg-slate-900 text-white"
                   : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
               }`}
             >
@@ -238,9 +237,9 @@ export function FlowTimelinePreview({
                   setMode("steps");
                   setSelectedClicks(step);
                 }}
-                className={`rounded-[6px] border px-3 py-2 text-left transition ${
+                className={`rounded-md border px-3 py-2 text-left transition ${
                   selected
-                    ? "border-slate-900 bg-slate-900 text-white shadow-[0_10px_20px_rgba(15,23,42,0.18)]"
+                    ? "border-slate-900 bg-slate-900 text-white"
                     : current
                       ? "border-emerald-300 bg-emerald-50 text-emerald-800"
                       : "border-slate-200 bg-white/90 text-slate-700 hover:border-slate-300 hover:bg-slate-50"

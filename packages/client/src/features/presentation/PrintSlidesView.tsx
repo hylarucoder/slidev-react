@@ -185,7 +185,7 @@ function PrintSlideGroup({
                   : `${slideNumber} / ${totalSlides}`}
               </span>
             </div>
-            <div className="print-slide-sheet rounded-[24px] border border-slate-200/80 bg-white shadow-[0_30px_80px_rgba(148,163,184,0.22)]">
+            <div className="print-slide-sheet rounded-[24px] border border-slate-200/80 bg-white ">
               <div className="print-slide-frame p-3">
                 {withClicks && typeof clickStep === "number" ? (
                   <SlidePreviewSurface
@@ -208,7 +208,7 @@ function PrintSlideGroup({
                     viewportClassName="print-slide-viewport relative w-full overflow-hidden"
                     viewportStyle={{ aspectRatio: formatViewportAspectRatio(slidesViewport) }}
                     overflowHidden
-                    shadowClass="shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
+                    shadowClass=""
                     articleProps={{
                       "data-export-surface": "slide",
                     }}
@@ -228,7 +228,7 @@ function PrintSlideGroup({
                     viewportClassName="print-slide-viewport relative w-full overflow-hidden"
                     viewportStyle={{ aspectRatio: formatViewportAspectRatio(slidesViewport) }}
                     overflowHidden
-                    shadowClass="shadow-[0_24px_60px_rgba(15,23,42,0.1)]"
+                    shadowClass=""
                     articleProps={{
                       "data-export-surface": "slide",
                     }}
@@ -284,7 +284,7 @@ export function PrintSlidesView({
       style={rootStyle}
     >
       <style>{`@page { size: ${pageSize.widthMm}mm ${pageSize.heightMm}mm; margin: 0; }`}</style>
-      <header className="print-slides-toolbar sticky top-0 z-20 border-b border-slate-200/80 bg-white/88 px-5 py-4 shadow-[0_16px_44px_rgba(148,163,184,0.18)] backdrop-blur-xl">
+      <header className="print-slides-toolbar sticky top-0 z-20 border-b border-slate-200/80 bg-white/88 px-5 py-4  backdrop-blur-xl">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-700">

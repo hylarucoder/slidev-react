@@ -310,12 +310,12 @@ export function PresenterShell({
       >
         <div
           className={`relative grid h-dvh max-h-dvh grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden ${
-            isPresenterRole ? "bg-[#eef4ff]" : "bg-black"
+            isPresenterRole ? "bg-slate-50" : "bg-black"
           } ${chrome.hideCursor ? "cursor-none" : ""}`}
         >
           {isPresenterRole && (
             <>
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.18),transparent_26%),radial-gradient(circle_at_78%_16%,rgba(244,114,182,0.14),transparent_20%),linear-gradient(180deg,#f8fbff_0%,#e8f0fb_52%,#f3f7ff_100%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-slate-50" />
               <PresenterTopProgress total={navigation.total} progressPercent={progressPercent} />
             </>
           )}
@@ -382,8 +382,7 @@ export function PresenterShell({
                 style={chrome.presenterLayoutStyle}
                 className="grid h-full min-h-0 grid-cols-1 gap-0"
               >
-                <section className="relative min-h-0 overflow-hidden rounded-[5px] border border-slate-200/75 bg-white/42 shadow-[0_24px_80px_rgba(148,163,184,0.22)] ring-1 ring-white/50">
-                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.55),transparent_38%)]" />
+                <section className="relative min-h-0 overflow-hidden rounded-md border border-slate-200 bg-white">
                   <div className="relative z-0 h-full">
                     <RevealProvider value={flow.revealContextValue}>
                       <SlideStage
@@ -411,25 +410,10 @@ export function PresenterShell({
                   tabIndex={0}
                   onPointerDown={chrome.handleSidebarResizeStart}
                   onKeyDown={chrome.handleSidebarResizeKeyDown}
-                  className={`group relative hidden lg:block ${
-                    chrome.isResizingSidebar ? "cursor-col-resize" : "cursor-col-resize"
-                  }`}
+                  className="group relative hidden cursor-col-resize lg:block"
                 >
-                  <div className="pointer-events-none absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-slate-200/90" />
-                  <div
-                    className={`pointer-events-none absolute inset-y-0 left-1/2 w-2 -translate-x-1/2 transition-colors ${
-                      chrome.isResizingSidebar
-                        ? "bg-emerald-400/16"
-                        : "bg-transparent group-hover:bg-emerald-400/10"
-                    }`}
-                  />
-                  <div
-                    className={`pointer-events-none absolute left-1/2 top-1/2 h-12 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full transition-colors ${
-                      chrome.isResizingSidebar
-                        ? "bg-emerald-500/70"
-                        : "bg-slate-300/90 group-hover:bg-emerald-500/55"
-                    }`}
-                  />
+                  <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-slate-200" />
+                  <div className="absolute inset-y-0 left-1/2 w-1.5 -translate-x-1/2 rounded-sm bg-slate-300 opacity-0 transition-opacity group-hover:opacity-100" />
                 </div>
                 <aside className="relative z-10 flex min-h-0 min-w-0 flex-col gap-0 text-slate-900">
                   <div className="grid min-h-0 flex-1 gap-0 lg:grid-rows-[minmax(220px,0.92fr)_12px_minmax(0,1.08fr)]">
@@ -441,9 +425,8 @@ export function PresenterShell({
                       slidesLayout={slidesLayout}
                       slidesBackground={slidesBackground}
                     />
-                    <div className="relative flex items-center justify-center px-2" aria-hidden>
-                      <div className="h-px w-full rounded-full bg-slate-200/85" />
-                      <div className="absolute h-2 w-10 rounded-full bg-[radial-gradient(circle,rgba(148,163,184,0.22),transparent_72%)]" />
+                    <div className="flex items-center justify-center px-2" aria-hidden>
+                      <div className="h-px w-full bg-slate-200" />
                     </div>
                     <SpeakerNotesPanel
                       currentClicks={flow.currentClicks}

@@ -5,13 +5,13 @@ function joinClassNames(...classNames: Array<string | false | null | undefined>)
 }
 
 const toneClassNames = {
-  default: "border-slate-200 bg-white/88 text-slate-500",
-  defaultStrong: "border-slate-200 bg-white/88 text-slate-800",
-  muted: "border-slate-200 bg-white/82 text-slate-600",
-  active: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  success: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  warning: "border-amber-200 bg-amber-50 text-amber-700",
-  danger: "border-rose-300 bg-rose-50 text-rose-700",
+  default: "border-slate-200/80 bg-white/88 text-slate-500",
+  defaultStrong: "border-slate-200/80 bg-white/88 text-slate-800",
+  muted: "border-slate-200/80 bg-white/82 text-slate-600",
+  active: "border-emerald-200/80 bg-emerald-50 text-emerald-700",
+  success: "border-emerald-200/80 bg-emerald-50 text-emerald-700",
+  warning: "border-amber-200/80 bg-amber-50 text-amber-700",
+  danger: "border-rose-300/80 bg-rose-50 text-rose-700",
 } as const;
 
 const sizeClassNames = {
@@ -37,7 +37,7 @@ export function chromeTagClassName({
   weight?: keyof typeof weightClassNames;
 }) {
   return joinClassNames(
-    "inline-flex items-center gap-2 rounded-[5px] border",
+    "inline-flex items-center gap-2 rounded-md border",
     toneClassNames[tone],
     sizeClassNames[size],
     weightClassNames[weight],
