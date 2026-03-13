@@ -1,5 +1,3 @@
-import { Chart } from "../diagrams/G2Chart";
-import { MermaidDiagram } from "../diagrams/MermaidDiagram";
 import { PlantUmlDiagram } from "../diagrams/PlantUmlDiagram";
 import { Annotate } from "../primitives/Annotate";
 import { Badge } from "../primitives/Badge";
@@ -12,11 +10,9 @@ import { Reveal, RevealGroup } from "../../features/presentation/reveal/Reveal";
 export const mdxComponents = {
   Badge,
   Callout,
-  Chart,
   CourseCover,
   MagicMoveDemo,
   Annotate,
-  MermaidDiagram,
   MinimaxReactVisualizer,
   PlantUmlDiagram,
   Reveal,

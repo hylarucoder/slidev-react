@@ -193,5 +193,14 @@ export async function validateSlidesAuthoring({
     );
   }
 
+  const declaredAddons = new Set(slides.meta.addons ?? []);
+  const allSource = slides.slides.map((slide) => slide.source).join("\n");
+
+  if (!declaredAddons.has("mermaid") && /^```mermaid\s*$/m.test(allSource)) {
+    warnings.push(
+      'Slides contain mermaid code fences but the "mermaid" addon is not declared. Add addons: ["mermaid"] to the deck frontmatter.',
+    );
+  }
+
   return warnings;
 }

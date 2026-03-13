@@ -467,4 +467,67 @@ describe("generateCompiledSlidesArtifacts", () => {
       'Unknown layout "spotlight" in slide 1 (Intro). The runtime will fall back to the default layout.',
     );
   });
+  it("warns when mermaid code fences are used without the mermaid addon", async () => {
+    const appRoot = await createTempAppRoot();
+    tempDirs.push(appRoot);
+    const slidesSourceFile = await writeSlidesSource(
+      appRoot,
+      [
+        "---",
+        "title: Demo Deck",
+        "---",
+        "",
+        "---",
+        "title: Diagrams",
+        "---",
+        "",
+        "```mermaid",
+        "graph TD",
+        "A-->B",
+        "```",
+      ].join("\n"),
+    );
+
+    const result = await generateCompiledSlidesArtifacts({
+      appRoot,
+      slidesSourceFile,
+    });
+
+    expect(result.warnings).toContain(
+      'Slides contain mermaid code fences but the "mermaid" addon is not declared. Add addons: ["mermaid"] to the deck frontmatter.',
+    );
+  });
+
+  it("does not warn about mermaid when the addon is declared", async () => {
+    const appRoot = await createTempAppRoot();
+    tempDirs.push(appRoot);
+    const slidesSourceFile = await writeSlidesSource(
+      appRoot,
+      [
+        "---",
+        "title: Demo Deck",
+        "addons:",
+        "  - mermaid",
+        "---",
+        "",
+        "---",
+        "title: Diagrams",
+        "---",
+        "",
+        "```mermaid",
+        "graph TD",
+        "A-->B",
+        "```",
+      ].join("\n"),
+    );
+
+    const result = await generateCompiledSlidesArtifacts({
+      appRoot,
+      slidesSourceFile,
+    });
+
+    expect(result.warnings).not.toContain(
+      'Slides contain mermaid code fences but the "mermaid" addon is not declared. Add addons: ["mermaid"] to the deck frontmatter.',
+    );
+  });
 });
