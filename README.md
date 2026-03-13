@@ -33,7 +33,8 @@ This repo is not a Vue Slidev runtime. It is a React + MDX implementation that b
 - Presenter and viewer routes with sync-ready state handling
 - Multi-tab sync through `BroadcastChannel`
 - Optional cross-device sync through a WebSocket relay
-- Stage drawing tools, cursor sync, quick overview, browser recording, and print/PDF export
+- Stage drawing tools, cursor sync, quick overview, browser recording, print/PDF export
+- PDF export via `Print / PDF` button, `?export=print` URL param, or Playwright-driven `pnpm export:slides:pdf`
 
 ## Status
 
