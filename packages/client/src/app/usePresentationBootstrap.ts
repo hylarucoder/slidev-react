@@ -19,13 +19,11 @@ export function usePresentationBootstrap({
   slidesDocument: typeof compiledSlides;
 }) {
   const exportMode = useMemo(
-    () =>
-      typeof window === "undefined" ? null : resolvePresentationExportMode(window.location.search),
+    () => resolvePresentationExportMode(window.location.search),
     [],
   );
   const exportWithClicks = useMemo(
-    () =>
-      typeof window === "undefined" ? false : resolvePrintExportWithClicks(window.location.search),
+    () => resolvePrintExportWithClicks(window.location.search),
     [],
   );
   const slidesHash = useMemo(() => slidesDocument.sourceHash, [slidesDocument.sourceHash]);

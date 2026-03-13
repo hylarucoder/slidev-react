@@ -147,7 +147,7 @@ describe("lint-slides CLI", () => {
     tempDirs.push(appRoot);
     await writeSupportFile(
       appRoot,
-      "packages/client/src/theme/themes/paper/index.ts",
+      "packages/theme-paper/index.ts",
       [
         "export const theme = {",
         "  id: 'paper',",
@@ -194,6 +194,8 @@ describe("lint-slides CLI", () => {
     });
 
     expect(result.code).toBe(0);
+    console.log("STDOUT:", JSON.stringify(result.stdout));
+    console.log("STDERR:", JSON.stringify(result.stderr));
     expect(result.stdout).toContain("Slides lint passed: no authoring warnings for slides.mdx");
     expect(result.stderr).toBe("");
   });

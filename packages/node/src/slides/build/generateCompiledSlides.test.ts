@@ -410,7 +410,7 @@ describe("generateCompiledSlidesArtifacts", () => {
     tempDirs.push(appRoot);
     await writeSupportFile(
       appRoot,
-      "packages/client/src/theme/themes/paper/index.ts",
+      "packages/theme-paper/index.ts",
       [
         "export const theme = {",
         "  id: 'paper',",

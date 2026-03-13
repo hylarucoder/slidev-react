@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import "katex/dist/katex.min.css";
 import "shiki-magic-move/dist/style.css";
 import App from "./app/App";
-import "./theme/default.css";
+import "./theme/index.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

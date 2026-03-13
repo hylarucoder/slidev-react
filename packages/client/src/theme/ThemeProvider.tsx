@@ -58,15 +58,13 @@ function applyRootThemeAttributes(theme: ResolvedSlideTheme, slidesViewport?: Sl
 }
 
 export function ThemeProvider({
-  themeId,
   slidesViewport,
   children,
 }: {
-  themeId?: string;
   slidesViewport?: SlidesViewport;
   children: ReactNode;
 }) {
-  const theme = useMemo(() => resolveSlideTheme(themeId), [themeId]);
+  const theme = useMemo(() => resolveSlideTheme(), []);
 
   useEffect(() => applyRootThemeAttributes(theme, slidesViewport), [slidesViewport, theme]);
 

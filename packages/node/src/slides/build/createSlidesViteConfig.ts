@@ -6,6 +6,7 @@ import {
   generatedSlidesEntry,
   pluginCompileTimeSlides,
 } from "./generateCompiledSlides.ts";
+import { pluginTheme } from "./themePlugin.ts";
 import { resolveSlidesSourceFile } from "./slidesSourceFile.ts";
 
 export function createSlidesViteConfig(options: {
@@ -22,6 +23,9 @@ export function createSlidesViteConfig(options: {
         appRoot,
         slidesSourceFile,
       }),
+      pluginTheme({
+        slidesSourceFile,
+      }),
       react(),
     ],
     resolve: {
@@ -36,3 +40,4 @@ export function createSlidesViteConfig(options: {
     },
   };
 }
+

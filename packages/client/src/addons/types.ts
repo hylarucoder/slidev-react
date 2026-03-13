@@ -1,6 +1,5 @@
-import type { MDXComponents } from "../types/mdx-components";
+import type { ThemeMDXComponents, LayoutRegistry } from "../theme/types";
 import type { ComponentType, ReactNode } from "react";
-import type { LayoutRegistry } from "../theme/layouts/types";
 
 export type AddonProviderComponent = ComponentType<{ children: ReactNode }>;
 
@@ -10,12 +9,12 @@ export interface SlideAddonDefinition {
   experimental?: boolean;
   provider?: AddonProviderComponent;
   layouts?: LayoutRegistry;
-  mdxComponents?: MDXComponents;
+  mdxComponents?: ThemeMDXComponents;
 }
 
 export interface ResolvedSlideAddons {
   definitions: SlideAddonDefinition[];
   providers: AddonProviderComponent[];
   layouts: LayoutRegistry;
-  mdxComponents: MDXComponents;
+  mdxComponents: ThemeMDXComponents;
 }

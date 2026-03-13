@@ -306,8 +306,6 @@ export function DrawProvider({
   }, [currentSlideId, enabled, overlayOpen, readOnly]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     try {
       const raw = window.localStorage.getItem(storageKey);
       if (!raw) {
@@ -328,8 +326,6 @@ export function DrawProvider({
   }, [storageKey]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     const payload = createPersistedDrawState(strokesBySlideId);
 
     try {

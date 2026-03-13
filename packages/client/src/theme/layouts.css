@@ -1,0 +1,133 @@
+.slide-layout-cover {
+  --slide-h1-margin: 0 0 1rem;
+  --slide-h1-size: clamp(3.4rem, 7vw, 7.2rem);
+  --slide-h1-line-height: 1;
+  --slide-h1-letter-spacing: -0.04em;
+  --slide-h2-margin: 0.5rem 0 0.85rem;
+  --slide-h2-size: clamp(1.35rem, 2.3vw, 2.35rem);
+  --slide-h2-color: #334155;
+}
+
+:root[data-slide-viewport-orientation="portrait"] .slide-layout-cover {
+  --slide-h1-size: clamp(3.7rem, 7.15vw, 6.5rem);
+  --slide-h2-size: clamp(1.55rem, 2.7vw, 2.62rem);
+}
+
+:root[data-slide-viewport-orientation="portrait"] .slide-layout-cover-content {
+  max-width: 62rem;
+}
+
+.slide-layout-center {
+  --slide-p-margin: 0.55rem 0 0.75rem;
+}
+
+:root[data-slide-viewport-orientation="portrait"] .slide-layout-center-content {
+  max-width: 54rem;
+}
+
+.slide-layout-section {
+  --slide-h1-margin: 0 0 0.6rem;
+  --slide-h1-size: clamp(3rem, 6vw, 6rem);
+  --slide-h1-line-height: 1.03;
+  --slide-h1-letter-spacing: -0.035em;
+  --slide-h2-size: clamp(1.1rem, 1.8vw, 1.8rem);
+  --slide-h2-color: #475569;
+  --slide-color-body: #475569;
+  --slide-font-size-body: clamp(1.1rem, 1.8vw, 1.8rem);
+  --slide-p-color: #475569;
+  --slide-p-font-size: clamp(1.1rem, 1.8vw, 1.8rem);
+  --slide-p-line-height: 1.48;
+  --slide-li-color: #475569;
+  --slide-li-font-size: clamp(1.1rem, 1.8vw, 1.8rem);
+  --slide-li-line-height: 1.48;
+  --slide-badge-font-size: clamp(1.1rem, 1.8vw, 1.8rem);
+  --slide-badge-line-height: 1.48;
+}
+
+:root[data-slide-viewport-orientation="portrait"] .slide-layout-section {
+  --slide-h1-size: clamp(3.35rem, 6.35vw, 6.2rem);
+  --slide-h2-size: clamp(1.32rem, 2.22vw, 2.08rem);
+  --slide-font-size-body: clamp(1.26rem, 2.02vw, 1.96rem);
+  --slide-p-font-size: clamp(1.26rem, 2.02vw, 1.96rem);
+  --slide-li-font-size: clamp(1.26rem, 2.02vw, 1.96rem);
+  --slide-badge-font-size: clamp(1.26rem, 2.02vw, 1.96rem);
+}
+
+:root[data-slide-viewport-orientation="portrait"] .slide-layout-section-content {
+  max-width: 56rem;
+}
+
+.slide-layout-statement {
+  --slide-h1-margin: 0;
+  --slide-h1-size: clamp(2.2rem, 4.4vw, 4.8rem);
+  --slide-h1-line-height: 1.14;
+  --slide-h1-letter-spacing: -0.03em;
+  --slide-h1-weight: 760;
+  --slide-h2-margin: 0;
+  --slide-h2-size: clamp(2.2rem, 4.4vw, 4.8rem);
+  --slide-h2-line-height: 1.14;
+  --slide-h2-letter-spacing: -0.03em;
+  --slide-h2-weight: 760;
+  --slide-h2-color: var(--slide-color-heading);
+  --slide-p-margin: 0.9rem 0 0;
+  --slide-color-body: #475569;
+  --slide-font-size-body: clamp(1rem, 1.45vw, 1.55rem);
+  --slide-p-color: #475569;
+  --slide-p-font-size: clamp(1rem, 1.45vw, 1.55rem);
+  --slide-p-line-height: 1.42;
+  --slide-p-letter-spacing: -0.01em;
+  --slide-li-color: #475569;
+  --slide-li-font-size: clamp(1rem, 1.45vw, 1.55rem);
+  --slide-li-line-height: 1.42;
+  --slide-li-letter-spacing: -0.01em;
+  --slide-badge-font-size: clamp(1rem, 1.45vw, 1.55rem);
+  --slide-badge-line-height: 1.42;
+  --slide-blockquote-font-size: clamp(2.2rem, 4.4vw, 4.8rem);
+  --slide-blockquote-line-height: 1.14;
+  --slide-blockquote-letter-spacing: -0.03em;
+  --slide-blockquote-font-weight: 760;
+  --slide-blockquote-color: var(--slide-color-heading);
+}
+
+:root[data-slide-viewport-orientation="portrait"] .slide-layout-statement {
+  --slide-h1-size: clamp(2.55rem, 4.85vw, 5.2rem);
+  --slide-h2-size: clamp(2.55rem, 4.85vw, 5.2rem);
+  --slide-font-size-body: clamp(1.18rem, 1.75vw, 1.88rem);
+  --slide-p-font-size: clamp(1.18rem, 1.75vw, 1.88rem);
+  --slide-li-font-size: clamp(1.18rem, 1.75vw, 1.88rem);
+  --slide-badge-font-size: clamp(1.18rem, 1.75vw, 1.88rem);
+}
+
+:root[data-slide-viewport-orientation="portrait"] .slide-layout-statement-content {
+  max-width: 52rem;
+}
+
+.slide-layout-two-cols > div,
+.slide-layout-image-right > div {
+  min-width: 0;
+}
+
+:root[data-slide-viewport-orientation="portrait"] .slide-layout-two-cols {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+  align-content: start;
+}
+
+:root[data-slide-viewport-orientation="portrait"] .slide-layout-two-cols-pane,
+:root[data-slide-viewport-orientation="portrait"] .slide-layout-image-right-pane {
+  width: 100%;
+  max-width: 54rem;
+  margin-inline: auto;
+}
+
+:root[data-slide-viewport-orientation="portrait"] .slide-layout-image-right {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+  align-content: start;
+}
+
+.slide-layout-image-right img {
+  width: 100%;
+  max-height: 640px;
+  object-fit: contain;
+}

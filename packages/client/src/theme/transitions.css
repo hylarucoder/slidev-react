@@ -1,0 +1,141 @@
+.slide-transition {
+  min-height: 100%;
+  animation-duration: 360ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
+  will-change: opacity, transform;
+}
+
+.slide-transition--fade {
+  animation-name: slide-transition-fade;
+}
+
+.slide-transition--slide-left {
+  animation-name: slide-transition-slide-left;
+}
+
+.slide-transition--slide-up {
+  animation-name: slide-transition-slide-up;
+}
+
+.slide-transition--zoom {
+  animation-name: slide-transition-zoom;
+}
+
+@keyframes slide-transition-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-transition-slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(48px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-transition-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(42px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-transition-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-reveal-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-reveal-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-reveal-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.slide-reveal {
+  animation-duration: 220ms;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.slide-reveal--fade {
+  animation-name: slide-reveal-fade;
+}
+
+.slide-reveal--fade-up {
+  animation-name: slide-reveal-fade-up;
+}
+
+.slide-reveal--scale-in {
+  animation-name: slide-reveal-scale-in;
+}
+
+.slide-reveal--reserve {
+  animation: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide-mark--animate .slide-mark-overlay,
+  .slide-mark--animate .slide-mark-overlay::before,
+  .slide-mark--animate .slide-mark-overlay::after {
+    animation: none;
+  }
+
+  .slide-reveal {
+    animation: none;
+  }
+}

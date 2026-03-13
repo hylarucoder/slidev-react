@@ -45,14 +45,10 @@ function installWindow(url: string) {
 }
 
 afterEach(() => {
-  if (typeof originalWindow === "undefined") {
-    delete (globalThis as { window?: Window }).window;
-  } else {
-    Object.defineProperty(globalThis, "window", {
-      configurable: true,
-      value: originalWindow,
-    });
-  }
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    value: originalWindow,
+  });
   vi.restoreAllMocks();
 });
 

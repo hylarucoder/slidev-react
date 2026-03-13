@@ -3,8 +3,8 @@ import path from "node:path";
 import type { SlidesDocument } from "@slidev-react/core/slides/slides";
 import { layoutNames } from "@slidev-react/core/slides/layout";
 
-const CLIENT_THEME_THEMES_DIR = "packages/client/src/theme/themes";
 const CLIENT_ADDONS_DIR = "packages/client/src/addons";
+const THEME_PACKAGE_PREFIX = "theme-";
 
 function collectKnownLayouts() {
   return new Set<string>(layoutNames);
@@ -20,6 +20,19 @@ async function readLocalIds(rootDir: string) {
   try {
     const entries = await readdir(rootDir, { withFileTypes: true });
     return entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
+  } catch {
+    return [];
+  }
+}
+
+async function readThemePackageIds(packagesDir: string) {
+  try {
+    const entries = await readdir(packagesDir, { withFileTypes: true });
+    return entries
+      .filter(
+        (entry) => entry.isDirectory() && entry.name.startsWith(THEME_PACKAGE_PREFIX),
+      )
+      .map((entry) => entry.name.slice(THEME_PACKAGE_PREFIX.length));
   } catch {
     return [];
   }
@@ -95,6 +108,39 @@ async function readCustomLayoutIds(rootDir: string) {
   return layouts;
 }
 
+async function readThemePackageLayoutIds(packagesDir: string) {
+  const layouts = new Set<string>();
+
+  try {
+    const entries = await readdir(packagesDir, { withFileTypes: true });
+    const themeEntries = entries.filter(
+      (entry) => entry.isDirectory() && entry.name.startsWith(THEME_PACKAGE_PREFIX),
+    );
+
+    await Promise.all(
+      themeEntries.map(async (entry) => {
+        const definitionFile = await findDefinitionFile(
+          path.join(packagesDir, entry.name),
+        );
+        if (!definitionFile) return;
+
+        try {
+          const source = await readFile(definitionFile, "utf8");
+          for (const layoutName of extractObjectLiteralKeys(source, "layouts")) {
+            layouts.add(layoutName);
+          }
+        } catch {
+          // Ignore.
+        }
+      }),
+    );
+  } catch {
+    // packages dir doesn't exist.
+  }
+
+  return layouts;
+}
+
 export async function validateSlidesAuthoring({
   appRoot,
   slides,
@@ -103,19 +149,19 @@ export async function validateSlidesAuthoring({
   slides: SlidesDocument;
 }) {
   const warnings: string[] = [];
-  const themeRootDir = path.join(appRoot, CLIENT_THEME_THEMES_DIR);
   const addonsRootDir = path.join(appRoot, CLIENT_ADDONS_DIR);
-  const [themeIdList, addonIdList, themeLayouts, addonLayouts] = await Promise.all([
-    readLocalIds(themeRootDir),
+  const packagesDir = path.join(appRoot, "packages");
+  const [themePackageIdList, addonIdList, themePackageLayouts, addonLayouts] = await Promise.all([
+    readThemePackageIds(packagesDir),
     readLocalIds(addonsRootDir),
-    readCustomLayoutIds(themeRootDir),
+    readThemePackageLayoutIds(packagesDir),
     readCustomLayoutIds(addonsRootDir),
   ]);
-  const themeIds = new Set(themeIdList);
+  const themeIds = new Set(themePackageIdList);
   const addonIds = new Set(addonIdList);
   const knownLayouts = collectKnownLayouts();
 
-  for (const layoutName of themeLayouts) knownLayouts.add(layoutName);
+  for (const layoutName of themePackageLayouts) knownLayouts.add(layoutName);
   for (const layoutName of addonLayouts) knownLayouts.add(layoutName);
 
   if (slides.meta.theme && !themeIds.has(slides.meta.theme)) {

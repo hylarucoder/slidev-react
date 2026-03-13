@@ -1,25 +1,9 @@
-import type { ComponentType, ReactNode } from "react";
-import type { MDXComponents } from "../types/mdx-components";
-import type { LayoutRegistry } from "./layouts/types";
-
-export interface SlideThemeDefinition {
-  id: string;
-  label: string;
-  colorScheme?: "light" | "dark";
-  rootAttributes?: Record<string, string>;
-  rootClassName?: string;
-  provider?: ThemeProviderComponent;
-  layouts?: LayoutRegistry;
-  mdxComponents?: MDXComponents;
-}
-
-export interface ResolvedSlideTheme {
-  definition: SlideThemeDefinition;
-  rootAttributes: Record<string, string>;
-  rootClassName?: string;
-  provider?: ThemeProviderComponent;
-  layouts: LayoutRegistry;
-  mdxComponents: MDXComponents;
-}
-
-export type ThemeProviderComponent = ComponentType<{ children: ReactNode }>;
+export type {
+  LayoutComponent,
+  LayoutRegistry,
+  ThemeProviderComponent,
+  ThemeMDXComponents,
+  SlideThemeDefinition,
+  ResolvedSlideTheme,
+} from "@slidev-react/core/theme";
+export { defineTheme } from "@slidev-react/core/theme";

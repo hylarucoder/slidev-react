@@ -26,24 +26,15 @@ export function SlidesNavigationProvider({
   total: number;
   children: React.ReactNode;
 }) {
-  const initialLocation =
-    typeof window === "undefined"
-      ? null
-      : resolveSlidesLocationState(window.location.pathname, total);
-  const [currentIndex, setCurrentIndex] = useState(() => {
-    if (typeof window === "undefined") return 0;
-
-    return initialLocation?.index ?? 0;
-  });
-  const routeModeRef = useRef<PresentationRouteMode | null>(initialLocation?.mode ?? null);
+  const initialLocation = resolveSlidesLocationState(window.location.pathname, total);
+  const [currentIndex, setCurrentIndex] = useState(initialLocation.index);
+  const routeModeRef = useRef<PresentationRouteMode | null>(initialLocation.mode);
 
   useEffect(() => {
     setCurrentIndex((index) => clampSlideIndex(index, total));
   }, [total]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     const syncFromLocation = () => {
       const locationState = resolveSlidesLocationState(window.location.pathname, total);
       routeModeRef.current = locationState.mode;
@@ -57,8 +48,6 @@ export function SlidesNavigationProvider({
   }, [total]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     const routeMode =
       routeModeRef.current ?? resolveSlidesLocationState(window.location.pathname, total).mode;
 

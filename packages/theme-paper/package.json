@@ -1,0 +1,15 @@
+{
+  "name": "@slidev-react/theme-paper",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./style.css": "./style.css"
+  },
+  "peerDependencies": {
+    "@slidev-react/core": "workspace:*",
+    "react": "^19.0.0"
+  }
+}

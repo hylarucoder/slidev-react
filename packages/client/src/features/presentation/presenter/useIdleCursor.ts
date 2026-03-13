@@ -4,7 +4,7 @@ export function useIdleCursor({ enabled, idleMs = 2500 }: { enabled: boolean; id
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    if (!enabled || typeof window === "undefined") {
+    if (!enabled) {
       setHidden(false);
       return;
     }

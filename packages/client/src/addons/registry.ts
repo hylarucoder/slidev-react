@@ -1,5 +1,4 @@
-import type { MDXComponents } from "../types/mdx-components";
-import type { LayoutRegistry } from "../theme/layouts/types";
+import type { ThemeMDXComponents, LayoutRegistry } from "../theme/types";
 import type { ResolvedSlideAddons, SlideAddonDefinition } from "./types";
 
 import.meta.glob("./*/style.css", { eager: true });
@@ -28,8 +27,8 @@ function mergeLayouts(definitions: SlideAddonDefinition[]): LayoutRegistry {
   );
 }
 
-function mergeMdxComponents(definitions: SlideAddonDefinition[]): MDXComponents {
-  return definitions.reduce<MDXComponents>(
+function mergeMdxComponents(definitions: SlideAddonDefinition[]): ThemeMDXComponents {
+  return definitions.reduce<ThemeMDXComponents>(
     (components, definition) => ({
       ...components,
       ...definition.mdxComponents,

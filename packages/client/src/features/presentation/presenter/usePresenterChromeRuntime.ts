@@ -41,8 +41,6 @@ export type PresenterOverlay =
   | null;
 
 function readInitialStageScale() {
-  if (typeof window === "undefined") return 1;
-
   try {
     return parsePersistedPresenterStageScale(
       window.localStorage.getItem(PRESENTER_STAGE_SCALE_STORAGE_KEY),
@@ -53,8 +51,6 @@ function readInitialStageScale() {
 }
 
 function readInitialCursorMode(): PresenterCursorMode {
-  if (typeof window === "undefined") return "always";
-
   try {
     return (
       parsePersistedPresenterCursorMode(
@@ -79,8 +75,6 @@ function clampPresenterSidebarWidth(value: number, containerWidth: number) {
 }
 
 function readInitialSidebarWidth() {
-  if (typeof window === "undefined") return 300;
-
   try {
     const parsedValue = parsePersistedPresenterSidebarWidth(
       window.localStorage.getItem(PRESENTER_SIDEBAR_WIDTH_STORAGE_KEY),
@@ -106,16 +100,14 @@ export function usePresenterChromeRuntime({
   const [stageScale, setStageScale] = useState(readInitialStageScale);
   const [cursorMode, setCursorMode] = useState<PresenterCursorMode>(readInitialCursorMode);
   const [sidebarWidth, setSidebarWidth] = useState(readInitialSidebarWidth);
-  const [isWidePresenterLayout, setIsWidePresenterLayout] = useState(() =>
-    typeof window !== "undefined" ? window.innerWidth >= PRESENTER_DESKTOP_BREAKPOINT : false,
+  const [isWidePresenterLayout, setIsWidePresenterLayout] = useState(
+    () => window.innerWidth >= PRESENTER_DESKTOP_BREAKPOINT,
   );
   const [isResizingSidebar, setIsResizingSidebar] = useState(false);
   const shortcutHelpTriggerRef = useRef(createShortcutHelpTriggerState());
   const presenterLayoutRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     try {
       window.localStorage.setItem(PRESENTER_STAGE_SCALE_STORAGE_KEY, String(stageScale));
     } catch {
@@ -124,8 +116,6 @@ export function usePresenterChromeRuntime({
   }, [stageScale]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     try {
       window.localStorage.setItem(PRESENTER_CURSOR_MODE_STORAGE_KEY, cursorMode);
     } catch {
@@ -134,8 +124,6 @@ export function usePresenterChromeRuntime({
   }, [cursorMode]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     try {
       window.localStorage.setItem(PRESENTER_SIDEBAR_WIDTH_STORAGE_KEY, String(sidebarWidth));
     } catch {
@@ -144,8 +132,6 @@ export function usePresenterChromeRuntime({
   }, [sidebarWidth]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     const updatePresenterLayoutMode = () => {
       setIsWidePresenterLayout(window.innerWidth >= PRESENTER_DESKTOP_BREAKPOINT);
 

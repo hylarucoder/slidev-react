@@ -9,7 +9,7 @@ import { buildSlidesUrl } from "@slidev-react/core/presentation/export/urls";
 import { type PresentationSession } from "../features/presentation/session";
 import type { PresentationSyncMode } from "../features/presentation/types";
 import { ThemeProvider, useSlideTheme } from "../theme/ThemeProvider";
-import type { MDXComponents } from "../types/mdx-components";
+import type { ThemeMDXComponents } from "../theme/types";
 import { usePresentationBootstrap } from "./usePresentationBootstrap";
 
 function ThemeBoundApp({
@@ -31,7 +31,7 @@ function ThemeBoundApp({
 }) {
   const theme = useSlideTheme();
   const addons = useSlideAddons();
-  const mdxComponents = useMemo<MDXComponents>(
+  const mdxComponents = useMemo<ThemeMDXComponents>(
     () => ({
       ...theme.mdxComponents,
       ...addons.mdxComponents,
@@ -105,7 +105,6 @@ export default function App() {
 
   return (
     <ThemeProvider
-      themeId={slidesDocument.meta.theme}
       slidesViewport={slidesDocument.meta.viewport}
     >
       <AddonProvider addonIds={slidesDocument.meta.addons}>

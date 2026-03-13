@@ -68,6 +68,10 @@
     },
     "./slides/compiled-slides": {
       "types": "./dist/slides/compiled-slides.d.ts"
+    },
+    "./theme": {
+      "types": "./dist/theme/types.d.ts",
+      "import": "./dist/theme/types.js"
     }
   },
   "dependencies": {

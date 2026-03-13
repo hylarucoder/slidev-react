@@ -25,10 +25,7 @@ function defaultSyncModeForRole(role: PresentationRole): PresentationSyncMode {
 }
 
 function createSenderId() {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function")
-    return crypto.randomUUID();
-
-  return `sender-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  return crypto.randomUUID();
 }
 
 function createDefaultSessionId(seed: string) {
@@ -54,15 +51,11 @@ function parseWsUrl(value: string | null): string | null {
 }
 
 function createDefaultWsUrl(): string | null {
-  if (typeof window === "undefined") return null;
-
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   return parseWsUrl(`${protocol}//${window.location.hostname}:4860/ws`);
 }
 
 function buildUrl(role: "presenter" | "viewer", slideNumber: number) {
-  if (typeof window === "undefined") return null;
-
   const pathname =
     role === "presenter"
       ? buildRolePathFromPathname(window.location.pathname, role, slideNumber)
@@ -92,22 +85,14 @@ export function createPrintExportSession(): PresentationSession {
 }
 
 export function buildPresentationEntryUrl(role: "presenter", deckKey: string) {
-  if (typeof window === "undefined") return null;
-
   void deckKey;
 
   const currentSlideNumber = resolveSessionLocationState(window.location.pathname).currentSlideNumber;
-
   return buildUrl(role, currentSlideNumber);
 }
 
 export function resolvePresentationSession(deckKey: string): PresentationSession {
   const senderId = createSenderId();
-
-  if (typeof window === "undefined") {
-    return createDisabledPresentationSession(senderId);
-  }
-
   const locationState = resolveSessionLocationState(window.location.pathname);
   if (!locationState.enabled) return createDisabledPresentationSession(senderId);
 
