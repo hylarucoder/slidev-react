@@ -6,3 +6,5 @@ output
 .playwright-cli
 .DS_Store
 *.log
+.vitest-attachments
+__screenshots__

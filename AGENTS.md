@@ -45,7 +45,7 @@ Name components in PascalCase (`PresenterShell.tsx`), helpers in camelCase (`par
 
 ## Testing Guidelines
 
-Vitest is the test runner. Add or update tests when changing parsing, compilation, reveal navigation, or presentation session behavior. Place tests in a `__tests__/` directory adjacent to the source, such as `packages/node/src/slides/parsing/__tests__/parseSlides.test.ts`. Run `pnpm test` before opening a PR.
+Vitest is the test runner. Add or update tests when changing parsing, compilation, reveal navigation, or presentation session behavior. Place tests in a `__tests__/` directory adjacent to the source, such as `packages/node/src/slides/parsing/__tests__/parseSlides.test.ts`. Name browser-level component tests as `*.browser.test.tsx` — they run in headless Chromium via Vitest browser mode. Run `pnpm test` before opening a PR.
 
 ## Commit & Pull Request Guidelines
 
