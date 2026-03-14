@@ -1,6 +1,6 @@
 {
   "name": "@slidev-react/node",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "private": false,
   "description": "Node-side command APIs for slidev-react authoring and build workflows",
   "license": "MIT",
@@ -35,7 +35,7 @@
     "remark-gfm": "4.0.1",
     "remark-math": "6.0.0",
     "shiki": "4.0.1",
-    "vite": "^8.0.0",
+    "vite": "catalog:",
     "yaml": "2.8.2",
     "zod": "4.3.6"
   },
@@ -61,5 +61,8 @@
   },
   "engines": {
     "node": ">=22"
+  },
+  "devDependencies": {
+    "vite-plus": "catalog:"
   }
 }

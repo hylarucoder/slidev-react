@@ -1,9 +1,9 @@
 import path from "node:path";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   test: {
-    include: ["packages/**/*.test.{ts,tsx}", "components/**/*.test.{ts,tsx}"],
+    include: ["packages/**/__tests__/*.test.{ts,tsx}", "components/**/__tests__/*.test.{ts,tsx}"],
     exclude: ["e2e/**", "**/node_modules/**"],
   },
   resolve: {
