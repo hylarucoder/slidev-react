@@ -1,7 +1,6 @@
 {
   "name": "@slidev-react/client",
   "version": "0.2.5",
-  "private": true,
   "description": "Browser-side React app and presentation UI for slidev-react",
   "license": "MIT",
   "type": "module",
@@ -38,5 +37,8 @@
   },
   "engines": {
     "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
