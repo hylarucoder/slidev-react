@@ -18,77 +18,126 @@ let renderQueue = Promise.resolve();
 const mermaidFontFamily =
   'Inter, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif';
 
-const themeVariables: Record<string, string> = {
-  fontFamily: mermaidFontFamily,
-  fontSize: "19px",
-  primaryColor: "#22C55E",
-  primaryTextColor: "#000000",
-  primaryBorderColor: "#16A34A",
-  lineColor: "#334155",
-  background: "#ffffff",
-  mainBkg: "#ffffff",
-  secondBkg: "#f8fafc",
-  tertiaryColor: "#f1f5f9",
-  textColor: "#000000",
-  secondaryColor: "#475569",
-  tertiaryTextColor: "#000000",
-  border1: "#cbd5e1",
-  border2: "#e2e8f0",
-  nodeBkg: "#f8fafc",
-  nodeBorder: "#94a3b8",
-  nodeTextColor: "#000000",
-  clusterBkg: "#f8fafc",
-  clusterBorder: "#cbd5e1",
-  edgeLabelBackground: "#ffffff",
-  arrowheadColor: "#475569",
-  actorBkg: "#ffffff",
-  actorBorder: "#22C55E",
-  actorTextColor: "#000000",
-  actorLineColor: "#94a3b8",
-  signalColor: "#334155",
-  signalTextColor: "#000000",
-  labelBoxBkgColor: "#f8fafc",
-  labelBoxBorderColor: "#cbd5e1",
-  labelTextColor: "#000000",
-  loopTextColor: "#000000",
-  noteBkgColor: "#fefce8",
-  noteTextColor: "#000000",
-  noteBorderColor: "#e2e8f0",
-  activationBkgColor: "#86efac",
-  activationBorderColor: "#22C55E",
-  labelColor: "#000000",
-  classText: "#000000",
-  git0: "#60a5fa",
-  git1: "#34d399",
-  git2: "#a78bfa",
-  git3: "#f472b6",
-  git4: "#fbbf24",
-  git5: "#f87171",
-  git6: "#22d3ee",
-  git7: "#fb923c",
-  gitInv0: "#ffffff",
-  gitInv1: "#ffffff",
-  gitInv2: "#ffffff",
-  gitInv3: "#ffffff",
-  gitInv4: "#ffffff",
-  gitInv5: "#ffffff",
-  gitInv6: "#ffffff",
-  gitInv7: "#ffffff",
-  commitLabelColor: "#000000",
-  commitLabelBackground: "#f8fafc",
-  fillType0: "#22C55E",
-  fillType1: "#50e3c2",
-  fillType2: "#7928ca",
-  fillType3: "#ff0080",
-  fillType4: "#f5a623",
-  fillType5: "#ff0000",
-  fillType6: "#22C55E",
-  fillType7: "#50e3c2",
-};
+function resolveThemeVar(name: string, fallback: string) {
+  if (typeof document === "undefined") return fallback;
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return value || fallback;
+}
+
+export function resolveMermaidThemeVariables(): Record<string, string> {
+  const fontFamily = resolveThemeVar("--font-sans", mermaidFontFamily);
+  const primary = resolveThemeVar("--slide-diagram-primary", "#22C55E");
+  const primaryBorder = resolveThemeVar("--slide-diagram-primary-border", "#16A34A");
+  const line = resolveThemeVar("--slide-diagram-line", "#334155");
+  const surface = resolveThemeVar("--slide-diagram-surface", "#ffffff");
+  const surfaceAlt = resolveThemeVar("--slide-diagram-surface-alt", "#f8fafc");
+  const text = resolveThemeVar("--slide-diagram-text", "#000000");
+  const note = resolveThemeVar("--slide-diagram-note", "#fefce8");
+  const chartOne = resolveThemeVar("--slide-chart-category-1", "#60a5fa");
+  const chartTwo = resolveThemeVar("--slide-chart-category-2", "#34d399");
+  const chartThree = resolveThemeVar("--slide-chart-category-3", "#a78bfa");
+  const chartFour = resolveThemeVar("--slide-chart-category-4", "#f472b6");
+  const chartFive = resolveThemeVar("--slide-chart-category-5", "#fbbf24");
+  const chartSix = resolveThemeVar("--slide-chart-category-6", "#f87171");
+  const chartAccent = resolveThemeVar("--slide-chart-accent", primaryBorder);
+
+  return {
+    fontFamily,
+    fontSize: "19px",
+    primaryColor: primary,
+    primaryTextColor: text,
+    primaryBorderColor: primaryBorder,
+    lineColor: line,
+    background: surface,
+    mainBkg: surface,
+    secondBkg: surfaceAlt,
+    tertiaryColor: surfaceAlt,
+    textColor: text,
+    secondaryColor: line,
+    tertiaryTextColor: text,
+    border1: primaryBorder,
+    border2: line,
+    nodeBkg: surfaceAlt,
+    nodeBorder: line,
+    nodeTextColor: text,
+    clusterBkg: surfaceAlt,
+    clusterBorder: primaryBorder,
+    edgeLabelBackground: surface,
+    arrowheadColor: line,
+    actorBkg: surface,
+    actorBorder: primaryBorder,
+    actorTextColor: text,
+    actorLineColor: line,
+    signalColor: line,
+    signalTextColor: text,
+    labelBoxBkgColor: surfaceAlt,
+    labelBoxBorderColor: primaryBorder,
+    labelTextColor: text,
+    loopTextColor: text,
+    noteBkgColor: note,
+    noteTextColor: text,
+    noteBorderColor: primaryBorder,
+    activationBkgColor: primary,
+    activationBorderColor: primaryBorder,
+    labelColor: text,
+    classText: text,
+    git0: chartOne,
+    git1: chartTwo,
+    git2: chartThree,
+    git3: chartFour,
+    git4: chartFive,
+    git5: chartSix,
+    git6: chartAccent,
+    git7: line,
+    gitInv0: surface,
+    gitInv1: surface,
+    gitInv2: surface,
+    gitInv3: surface,
+    gitInv4: surface,
+    gitInv5: surface,
+    gitInv6: surface,
+    gitInv7: surface,
+    commitLabelColor: text,
+    commitLabelBackground: surfaceAlt,
+    fillType0: chartAccent,
+    fillType1: chartTwo,
+    fillType2: chartThree,
+    fillType3: chartFour,
+    fillType4: chartFive,
+    fillType5: chartSix,
+    fillType6: primaryBorder,
+    fillType7: line,
+  };
+}
+
+export function resolveMermaidSurfaceStyle() {
+  return {
+    color: resolveThemeVar("--slide-diagram-text", "#000000"),
+    fontFamily: resolveThemeVar("--font-sans", mermaidFontFamily),
+  };
+}
+
+function resolveMermaidFrameStyle() {
+  return {
+    borderColor: resolveThemeVar("--slide-absolutely-line", "#cbd5e1"),
+    background: resolveThemeVar("--slide-diagram-surface", "#ffffff"),
+  };
+}
+
+function resolveMermaidMutedSurfaceStyle() {
+  return {
+    borderColor: resolveThemeVar("--slide-absolutely-line", "#cbd5e1"),
+    background: resolveThemeVar("--slide-diagram-surface-alt", "#f8fafc"),
+    color: resolveThemeVar("--slide-diagram-line", "#475569"),
+  };
+}
 
 type MermaidRenderVariant = "preview" | "zoom";
 
 function createMermaidConfig(variant: MermaidRenderVariant) {
+  const themeVariables = resolveMermaidThemeVariables();
+  const fontFamily = themeVariables.fontFamily ?? mermaidFontFamily;
+
   if (variant === "preview") {
     return {
       startOnLoad: false,
@@ -101,7 +150,7 @@ function createMermaidConfig(variant: MermaidRenderVariant) {
       },
       themeCSS: `
         svg, svg * {
-          font-family: ${mermaidFontFamily};
+          font-family: ${fontFamily};
         }
         .label,
         .label text,
@@ -110,7 +159,7 @@ function createMermaidConfig(variant: MermaidRenderVariant) {
         .cluster-label,
         .stateLabel text,
         foreignObject div {
-          font-family: ${mermaidFontFamily};
+          font-family: ${fontFamily};
         }
       `,
       flowchart: {
@@ -142,7 +191,7 @@ function createMermaidConfig(variant: MermaidRenderVariant) {
     themeVariables,
     themeCSS: `
       svg, svg * {
-        font-family: ${mermaidFontFamily};
+        font-family: ${fontFamily};
       }
       .label,
       .label text,
@@ -151,7 +200,7 @@ function createMermaidConfig(variant: MermaidRenderVariant) {
       .cluster-label,
       .stateLabel text,
       foreignObject div {
-        font-family: ${mermaidFontFamily};
+        font-family: ${fontFamily};
       }
     `,
     flowchart: {
@@ -192,11 +241,7 @@ async function enqueueMermaidRender<T>(task: () => Promise<T>) {
   return next;
 }
 
-async function renderMermaidSvg(
-  id: string,
-  source: string,
-  variant: MermaidRenderVariant,
-) {
+async function renderMermaidSvg(id: string, source: string, variant: MermaidRenderVariant) {
   ensureMermaid();
   mermaid.initialize(createMermaidConfig(variant));
   const result = await mermaid.render(id, source);
@@ -212,10 +257,9 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
   const [zoomLoading, setZoomLoading] = useState(false);
   const previewId = useMemo(() => `mermaid-preview-${Math.random().toString(36).slice(2, 10)}`, []);
   const zoomId = useMemo(() => `mermaid-zoom-${Math.random().toString(36).slice(2, 10)}`, []);
-  const diagramSurfaceStyle = useMemo(
-    () => ({ color: "#000000", fontFamily: mermaidFontFamily }),
-    [],
-  );
+  const diagramSurfaceStyle = useMemo(() => resolveMermaidSurfaceStyle(), []);
+  const diagramFrameStyle = useMemo(() => resolveMermaidFrameStyle(), []);
+  const diagramMutedSurfaceStyle = useMemo(() => resolveMermaidMutedSurfaceStyle(), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -252,9 +296,7 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
     const render = async () => {
       try {
         setZoomLoading(true);
-        const svg = await enqueueMermaidRender(() =>
-          renderMermaidSvg(zoomId, source, "zoom"),
-        );
+        const svg = await enqueueMermaidRender(() => renderMermaidSvg(zoomId, source, "zoom"));
         if (!cancelled) {
           setZoomSvg(svg);
           setError(null);
@@ -300,7 +342,7 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
 
   if (!previewSvg) {
     return (
-      <div className="my-3 rounded-xl border border-slate-300 bg-white/70 p-3 text-sm text-slate-700">
+      <div className="my-3 rounded-xl border p-3 text-sm" style={diagramMutedSurfaceStyle}>
         Rendering Mermaid...
       </div>
     );
@@ -319,7 +361,9 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
             >
               <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3 text-sm text-slate-700">
                 <div>
-                  <div className="font-semibold tracking-[0.16em] text-slate-900 uppercase">Mermaid</div>
+                  <div className="font-semibold tracking-[0.16em] text-slate-900 uppercase">
+                    Mermaid
+                  </div>
                   <div className="mt-1 text-xs text-slate-500">Esc or click outside to close</div>
                 </div>
                 <button
@@ -335,12 +379,12 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
               <div className="flex-1 overflow-auto bg-slate-50 p-6">
                 {zoomSvg ? (
                   <div
-                    className="inline-block min-w-full rounded-2xl border border-slate-200 bg-white p-6  [&_svg]:h-auto [&_svg]:max-w-none [&_svg_tspan]:fill-current [&_svg_text]:fill-current"
-                    style={diagramSurfaceStyle}
+                    className="inline-block min-w-full rounded-2xl border p-6 [&_svg]:h-auto [&_svg]:max-w-none [&_svg_tspan]:fill-current [&_svg_text]:fill-current"
+                    style={{ ...diagramSurfaceStyle, ...diagramFrameStyle }}
                     dangerouslySetInnerHTML={{ __html: zoomSvg }}
                   />
                 ) : (
-                  <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600 ">
+                  <div className="rounded-2xl border p-6 text-sm" style={diagramMutedSurfaceStyle}>
                     {zoomLoading ? "Preparing Mermaid preview..." : "Rendering Mermaid..."}
                   </div>
                 )}
@@ -354,7 +398,10 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
   return (
     <>
       <div className="my-3">
-        <div className="relative w-full overflow-hidden rounded-xl border border-slate-300 bg-white p-3 shadow-sm">
+        <div
+          className="relative w-full overflow-hidden rounded-xl border p-3 shadow-sm"
+          style={diagramFrameStyle}
+        >
           <button
             type="button"
             onClick={() => setZoomed(true)}

@@ -1,5 +1,7 @@
+import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import type { UserConfig } from "vite";
 import {
@@ -20,6 +22,7 @@ const frameworkDepsToExclude = [
   "react/jsx-runtime",
   "react/jsx-dev-runtime",
   "@mdx-js/react",
+  "lucide-react",
 ];
 
 /**
@@ -33,6 +36,14 @@ function resolveFrameworkDep(specifier: string) {
   return path.dirname(require.resolve(`${specifier}/package.json`));
 }
 
+function resolvePackageLocalModule(paths: { source: string; built: string }) {
+  const packageRoot = fileURLToPath(new URL("../../..", import.meta.url));
+  const builtPath = path.join(packageRoot, paths.built);
+  if (existsSync(builtPath)) return builtPath;
+
+  return path.join(packageRoot, paths.source);
+}
+
 export function createSlidesViteConfig(options: {
   appRoot: string;
   slidesFile?: string;
@@ -40,6 +51,10 @@ export function createSlidesViteConfig(options: {
   const { appRoot, slidesFile } = options;
   const slidesSourceFile = resolveSlidesSourceFile(appRoot, slidesFile);
   const runtimeManifest = loadClientRuntimeManifest();
+  const reactCompatEntry = resolvePackageLocalModule({
+    source: "src/slides/build/reactCompat.ts",
+    built: "dist/src/slides/build/reactCompat.mjs",
+  });
 
   return {
     root: appRoot,
@@ -74,10 +89,11 @@ export function createSlidesViteConfig(options: {
     resolve: {
       alias: {
         [generatedSlidesAlias]: path.resolve(appRoot, generatedSlidesEntry),
+        "@slidev-react/framework/react": resolveFrameworkDep("react"),
         "@mdx-js/react": require.resolve("@mdx-js/react"),
         "react/jsx-runtime": resolveFrameworkDep("react") + "/jsx-runtime",
         "react/jsx-dev-runtime": resolveFrameworkDep("react") + "/jsx-dev-runtime",
-        react: resolveFrameworkDep("react"),
+        react: reactCompatEntry,
         "react-dom/client": resolveFrameworkDep("react-dom") + "/client",
         "react-dom": resolveFrameworkDep("react-dom"),
       },

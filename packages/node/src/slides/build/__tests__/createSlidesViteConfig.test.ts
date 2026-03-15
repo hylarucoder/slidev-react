@@ -13,6 +13,7 @@ describe("createSlidesViteConfig", () => {
       "react/jsx-runtime",
       "react/jsx-dev-runtime",
       "@mdx-js/react",
+      "lucide-react",
     ]);
   });
 
@@ -23,5 +24,7 @@ describe("createSlidesViteConfig", () => {
 
     expect(config.resolve?.alias).not.toHaveProperty("@");
     expect(config.resolve?.alias).toHaveProperty("@mdx-js/react");
+    expect(config.resolve?.alias).toHaveProperty("@slidev-react/framework/react");
+    expect(String(config.resolve?.alias?.react)).toContain("reactCompat");
   });
 });

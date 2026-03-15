@@ -3,6 +3,7 @@
   --slide-insight-bg: rgba(236, 254, 255, 0.88);
   --slide-insight-title: #155e75;
   --slide-insight-text: #164e63;
+  --slide-insight-shadow: 0 16px 38px rgba(14, 116, 144, 0.08);
 }
 
 .slide-layout-spotlight {

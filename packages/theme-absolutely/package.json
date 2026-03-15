@@ -1,0 +1,29 @@
+{
+  "name": "@slidev-react/theme-absolutely",
+  "version": "0.4.1",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build:pkg": "pnpm exec tsdown",
+    "dev:pkg": "pnpm exec tsdown --watch",
+    "prepack": "pnpm run build:pkg"
+  },
+  "peerDependencies": {
+    "@slidev-react/core": "workspace:*",
+    "react": "^19.0.0"
+  }
+}

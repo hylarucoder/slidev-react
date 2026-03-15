@@ -251,25 +251,12 @@ describe("generateCompiledSlidesArtifacts", () => {
     await writeSupportFile(
       appRoot,
       "slides/module.mdx",
-      [
-        "---",
-        "title: Imported Intro",
-        "src: ./slides/nested.mdx",
-        "---",
-      ].join("\n"),
+      ["---", "title: Imported Intro", "src: ./slides/nested.mdx", "---"].join("\n"),
     );
     await writeSupportFile(appRoot, "slides/nested.mdx", "# Nested");
     const slidesSourceFile = await writeSlidesSource(
       appRoot,
-      [
-        "---",
-        "title: Demo Deck",
-        "---",
-        "",
-        "---",
-        "src: ./slides/module.mdx",
-        "---",
-      ].join("\n"),
+      ["---", "title: Demo Deck", "---", "", "---", "src: ./slides/module.mdx", "---"].join("\n"),
     );
 
     await expect(
@@ -465,6 +452,69 @@ describe("generateCompiledSlidesArtifacts", () => {
     );
     expect(result.warnings).not.toContain(
       'Unknown layout "spotlight" in slide 1 (Intro). The runtime will fall back to the default layout.',
+    );
+  });
+
+  it("accepts the absolutely theme package and its custom layouts", async () => {
+    const appRoot = await createTempAppRoot();
+    tempDirs.push(appRoot);
+    await writeSupportFile(
+      appRoot,
+      "packages/theme-absolutely/index.ts",
+      [
+        "export const theme = {",
+        "  id: 'absolutely',",
+        "  layouts: {",
+        "    cover: CoverLayout,",
+        "    section: SectionLayout,",
+        "    statement: StatementLayout,",
+        "  },",
+        "  mdxComponents: {",
+        "    Eyebrow: Eyebrow,",
+        "    KeyStat: KeyStat,",
+        "    PullQuote: PullQuote,",
+        "  },",
+        "}",
+      ].join("\n"),
+    );
+    const slidesSourceFile = await writeSlidesSource(
+      appRoot,
+      [
+        "---",
+        "title: Brand Story",
+        "theme: absolutely",
+        "layout: cover",
+        "---",
+        "",
+        "---",
+        "title: Act One",
+        "layout: section",
+        "---",
+        "",
+        "# Framing the shift",
+        "",
+        "---",
+        "title: Thesis",
+        "layout: statement",
+        "---",
+        "",
+        "# The presentation should feel edited, not decorated.",
+      ].join("\n"),
+    );
+
+    const result = await generateCompiledSlidesArtifacts({
+      appRoot,
+      slidesSourceFile,
+    });
+
+    expect(result.warnings).not.toContain(
+      'Unknown theme "absolutely". The runtime will fall back to the default theme.',
+    );
+    expect(result.warnings).not.toContain(
+      'Unknown layout "section" in slide 1 (Act One). The runtime will fall back to the default layout.',
+    );
+    expect(result.warnings).not.toContain(
+      'Unknown layout "statement" in slide 2 (Thesis). The runtime will fall back to the default layout.',
     );
   });
   it("warns when mermaid code fences are used without the mermaid addon", async () => {

@@ -1,0 +1,104 @@
+---
+title: Absolutely Theme Smoke
+theme: absolutely
+addons:
+  - insight
+  - mermaid
+  - g2
+layout: cover
+---
+
+<Eyebrow>Absolutely Theme</Eyebrow>
+
+# A warm, editorial deck system for narrative talks
+
+This smoke deck exercises the `Absolutely` theme package without changing the repository's default demo.
+
+<Badge>Light-first</Badge>
+
+---
+
+title: Chapter
+layout: section
+
+---
+
+<Eyebrow>Section</Eyebrow>
+
+# The deck should feel edited, not decorated
+
+One accent, one thesis, and enough restraint to let the story breathe.
+
+---
+
+title: Brand Surface
+layout: default
+
+---
+
+<div className="grid gap-8 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+  <div>
+    <Eyebrow>Components</Eyebrow>
+    <PullQuote by="Absolutely" meta="theme brand component">
+      Good presentation themes create pacing and tone before they create decoration.
+    </PullQuote>
+
+    <Callout title="What this proves">
+      The theme overrides high-frequency MDX primitives and introduces a few brand components without forcing a new authoring model.
+    </Callout>
+
+  </div>
+
+  <div className="grid gap-6">
+    <KeyStat value="78%" label="Retention lift" detail="Compared with the previous deck style in an internal dry run." />
+    <KeyStat value="3" label="Brand components" detail="Eyebrow, KeyStat, and PullQuote are enough for a strong first version." />
+  </div>
+</div>
+
+<Insight title="Insight">
+  Insight inherits the active theme palette too, so side-notes no longer snap back to the default
+  cyan styling.
+</Insight>
+
+---
+
+title: Addon Sync
+layout: default
+
+---
+
+<div className="grid gap-8 md:grid-cols-2">
+  <div>
+
+```mermaid
+flowchart LR
+  A[Warm surface] --> B[Editorial typography]
+  B --> C[Brand components]
+  C --> D[Charts and diagrams follow]
+```
+
+  </div>
+  <div>
+
+<BarChart
+  size="half"
+  data={[
+    { label: "Story", value: 78 },
+    { label: "Density", value: 61 },
+    { label: "Clarity", value: 84 },
+  ]}
+  x="label"
+  y="value"
+/>
+
+  </div>
+</div>
+
+---
+
+title: Statement
+layout: statement
+
+---
+
+# A themed deck should stay coherent even when charts, diagrams, and notes appear.

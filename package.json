@@ -10,8 +10,8 @@
   "scripts": {
     "clean": "rm -rf dist .generated .slidev-react output packages/*/dist",
     "changeset": "changeset",
-    "build:packages": "pnpm -r --filter @slidev-react/core --filter @slidev-react/client --filter @slidev-react/theme-paper --filter @slidev-react/node --filter @slidev-react/cli run build:pkg",
-    "dev:packages": "pnpm -r --parallel --filter @slidev-react/core --filter @slidev-react/client --filter @slidev-react/theme-paper --filter @slidev-react/node --filter @slidev-react/cli run dev:pkg",
+    "build:packages": "pnpm -r --filter @slidev-react/core --filter @slidev-react/client --filter @slidev-react/theme-paper --filter @slidev-react/theme-absolutely --filter @slidev-react/node --filter @slidev-react/cli run build:pkg",
+    "dev:packages": "pnpm -r --parallel --filter @slidev-react/core --filter @slidev-react/client --filter @slidev-react/theme-paper --filter @slidev-react/theme-absolutely --filter @slidev-react/node --filter @slidev-react/cli run dev:pkg",
     "dev": "vp dev",
     "dev:e2e": "vp dev --host 127.0.0.1 --port 4173",
     "build": "pnpm run build:packages && vp build",

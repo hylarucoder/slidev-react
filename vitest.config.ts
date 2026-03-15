@@ -24,7 +24,7 @@ export default defineConfig({
             "packages/**/__tests__/*.test.{ts,tsx}",
             "components/**/__tests__/*.test.{ts,tsx}",
           ],
-          exclude: ["e2e/**", "**/node_modules/**", "**/*.browser.test.{ts,tsx}"],
+          exclude: ["e2e/**", "**/dist/**", "**/node_modules/**", "**/*.browser.test.{ts,tsx}"],
         },
         resolve: { alias: sharedAlias },
       },
@@ -32,6 +32,7 @@ export default defineConfig({
         test: {
           name: "browser",
           include: ["packages/**/__tests__/*.browser.test.{ts,tsx}"],
+          exclude: ["**/dist/**"],
           browser: {
             enabled: true,
             provider: playwright(),

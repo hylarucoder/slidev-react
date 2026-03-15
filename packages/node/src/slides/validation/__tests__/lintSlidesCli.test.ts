@@ -198,6 +198,62 @@ describe("lint-slides CLI", () => {
     expect(result.stderr).toBe("");
   });
 
+  it("accepts the absolutely theme package and its brand layouts", async () => {
+    const appRoot = await createTempAppRoot();
+    tempDirs.push(appRoot);
+    await writeSupportFile(
+      appRoot,
+      "packages/theme-absolutely/index.ts",
+      [
+        "export const theme = {",
+        "  id: 'absolutely',",
+        "  layouts: {",
+        "    cover: CoverLayout,",
+        "    section: SectionLayout,",
+        "    statement: StatementLayout,",
+        "  },",
+        "  mdxComponents: {",
+        "    Eyebrow: Eyebrow,",
+        "    KeyStat: KeyStat,",
+        "    PullQuote: PullQuote,",
+        "  },",
+        "}",
+      ].join("\n"),
+    );
+    await writeSlidesSource(
+      appRoot,
+      [
+        "---",
+        "title: Demo Deck",
+        "theme: absolutely",
+        "layout: cover",
+        "---",
+        "",
+        "---",
+        "title: Section Intro",
+        "layout: section",
+        "---",
+        "",
+        "# Story arc",
+        "",
+        "---",
+        "title: Core Message",
+        "layout: statement",
+        "---",
+        "",
+        "# The deck should feel edited.",
+      ].join("\n"),
+    );
+
+    const result = await runLintSlides({
+      cwd: appRoot,
+    });
+
+    expect(result.code).toBe(0);
+    expect(result.stdout).toContain("Slides lint passed: no authoring warnings for slides.mdx");
+    expect(result.stderr).toBe("");
+  });
+
   it("fails with a parse error for invalid frontmatter", async () => {
     const appRoot = await createTempAppRoot();
     tempDirs.push(appRoot);
