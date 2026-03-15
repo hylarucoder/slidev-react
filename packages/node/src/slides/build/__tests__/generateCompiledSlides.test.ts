@@ -365,10 +365,10 @@ describe("generateCompiledSlidesArtifacts", () => {
     });
 
     expect(result.warnings).toContain(
-      'Unknown theme "missing-theme". The runtime will fall back to the default theme.',
+      'Unknown theme "missing-theme". Add packages/theme-missing-theme/index.ts or install @slidev-react/theme-missing-theme.',
     );
     expect(result.warnings).toContain(
-      'Unknown addon "missing-addon". It will be ignored until a matching local addon exists.',
+      'Unknown addon "missing-addon". Add packages/addon-missing-addon/index.ts or install @slidev-react/addon-missing-addon.',
     );
   });
 
@@ -422,10 +422,10 @@ describe("generateCompiledSlidesArtifacts", () => {
     );
     await writeSupportFile(
       appRoot,
-      "packages/client/src/addons/insight/index.ts",
+      "packages/addon-focus/index.ts",
       [
         "export const addon = {",
-        "  id: 'insight',",
+        "  id: 'focus',",
         "  layouts: {",
         "    spotlight: SpotlightLayout,",
         "  },",
@@ -439,7 +439,7 @@ describe("generateCompiledSlidesArtifacts", () => {
         "title: Demo Deck",
         "theme: paper",
         "addons:",
-        "  - insight",
+        "  - focus",
         "layout: cover",
         "---",
         "",
@@ -461,7 +461,7 @@ describe("generateCompiledSlidesArtifacts", () => {
       'Unknown theme "paper". The runtime will fall back to the default theme.',
     );
     expect(result.warnings).not.toContain(
-      'Unknown addon "insight". It will be ignored until a matching local addon exists.',
+      'Unknown addon "focus". Add packages/addon-focus/index.ts or install @slidev-react/addon-focus.',
     );
     expect(result.warnings).not.toContain(
       'Unknown layout "spotlight" in slide 1 (Intro). The runtime will fall back to the default layout.',

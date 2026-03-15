@@ -1,78 +1,39 @@
-import { readFileSync } from "node:fs";
 import type { Plugin } from "vite";
-import { parse as parseYaml } from "yaml";
+import { readSlidesDeckExtensions, resolveThemeExtension } from "./extensionResolution.ts";
 
 const VIRTUAL_THEME = "virtual:slidev-react/active-theme";
 const RESOLVED_VIRTUAL = "\0" + VIRTUAL_THEME;
 
-function extractThemeIdFromSlidesFile(slidesSourceFile: string): string | undefined {
-  let source: string;
-  try {
-    source = readFileSync(slidesSourceFile, "utf8");
-  } catch {
-    return undefined;
-  }
-
-  const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  if (!match) return undefined;
-
-  try {
-    const data = parseYaml(match[1]);
-    return typeof data?.theme === "string" ? data.theme : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
-function resolveThemePackage(themeId: string): string | undefined {
-  const candidates = [
-    `@slidev-react/theme-${themeId}`,
-    `slidev-react-theme-${themeId}`,
-  ];
-
-  for (const pkg of candidates) {
-    try {
-      require.resolve(pkg);
-      return pkg;
-    } catch {
-      // Not installed.
-    }
-  }
-
-  return undefined;
-}
-
 function generateThemeModuleCode(options: {
-  themeId: string | undefined;
+  appRoot: string;
+  slidesSourceFile: string;
 }): string {
-  const { themeId } = options;
+  const { appRoot, slidesSourceFile } = options;
+  const { themeId } = readSlidesDeckExtensions(slidesSourceFile);
 
   if (!themeId) {
     return "export default undefined;\n";
   }
 
-  // Check npm package
-  const themePackage = resolveThemePackage(themeId);
-  if (themePackage) {
-    return [
-      `import theme from '${themePackage}';`,
-      `import '${themePackage}/style.css';`,
-      `export default theme;`,
-      "",
-    ].join("\n");
+  const resolvedTheme = resolveThemeExtension(appRoot, themeId);
+  if (!resolvedTheme) {
+    throw new Error(
+      `[slidev-react] Theme "${themeId}" was declared but could not be resolved. Add packages/theme-${themeId}/index.ts or install @slidev-react/theme-${themeId}.`,
+    );
   }
 
-  console.warn(
-    `[slidev-react] Theme "${themeId}" not found. Falling back to default theme.`,
-  );
-  return "export default undefined;\n";
+  return [
+    `import theme from '${resolvedTheme.importPath}';`,
+    ...(resolvedTheme.styleImportPath ? [`import '${resolvedTheme.styleImportPath}';`] : []),
+    `export default theme;`,
+    "",
+  ].join("\n");
 }
 
 export function pluginTheme(options: {
+  appRoot: string;
   slidesSourceFile: string;
 }): Plugin {
-  const themeId = extractThemeIdFromSlidesFile(options.slidesSourceFile);
-
   return {
     name: "slidev-react:themes",
     enforce: "pre",
@@ -83,7 +44,7 @@ export function pluginTheme(options: {
 
     load(id) {
       if (id !== RESOLVED_VIRTUAL) return;
-      return generateThemeModuleCode({ themeId });
+      return generateThemeModuleCode(options);
     },
   };
 }

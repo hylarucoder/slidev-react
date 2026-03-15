@@ -1,4 +1,5 @@
-import { readFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import path from "node:path";
 import type { Plugin } from "vite";
 import { parse as parseYaml } from "yaml";
 
@@ -39,12 +40,51 @@ function generateIndexHtml(options: { title: string }) {
 </html>`;
 }
 
-function generateEntryModule(clientEntryPath: string) {
+function prepareBuildIndexHtml(options: {
+  appRoot: string;
+  title: string;
+}) {
+  const filePath = path.join(options.appRoot, "index.html");
+  const backupDir = path.join(options.appRoot, ".slidev-react");
+  const backupFilePath = path.join(backupDir, "index.original.html");
+  const legacyBuildIndexPath = path.join(backupDir, "index.html");
+  const generatedHtml = generateIndexHtml({ title: options.title });
+  const existingHtml = existsSync(filePath) ? readFileSync(filePath, "utf8") : null;
+  const hasRestorableOriginal = existingHtml !== null && existingHtml !== generatedHtml;
+
+  if (hasRestorableOriginal) {
+    mkdirSync(backupDir, { recursive: true });
+    copyFileSync(filePath, backupFilePath);
+  }
+
+  writeFileSync(filePath, generatedHtml, "utf8");
+
+  return {
+    filePath,
+    cleanup() {
+      if (hasRestorableOriginal && existsSync(backupFilePath)) {
+        copyFileSync(backupFilePath, filePath);
+        rmSync(backupFilePath, { force: true });
+      } else {
+        rmSync(filePath, { force: true });
+      }
+
+      rmSync(legacyBuildIndexPath, { force: true });
+    },
+  };
+}
+
+function generateEntryModule(options: {
+  clientEntryPath: string;
+  clientStylePath: string;
+}) {
+  const { clientEntryPath, clientStylePath } = options;
+
   return `import { createElement } from "react"
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import App from "${clientEntryPath}"
-import "${clientEntryPath.replace(/\/index$/, "")}/theme/index.css"
+import "${clientStylePath}"
 
 createRoot(document.getElementById("root")).render(
   createElement(StrictMode, null, createElement(App)),
@@ -62,20 +102,54 @@ createRoot(document.getElementById("root")).render(
  * through to our virtual HTML.
  */
 export function pluginVirtualEntry(options: {
+  appRoot: string;
   slidesSourceFile: string;
   clientEntryPath: string;
+  clientStylePath: string;
 }): Plugin {
-  const { slidesSourceFile, clientEntryPath } = options;
+  const { appRoot, slidesSourceFile, clientEntryPath, clientStylePath } = options;
   const title = extractTitleFromSlidesFile(slidesSourceFile);
+  let buildIndexCleanup: (() => void) | undefined;
+
+  function cleanupBuildIndex() {
+    buildIndexCleanup?.();
+    buildIndexCleanup = undefined;
+  }
 
   return {
     name: "slidev-react:virtual-entry",
     enforce: "pre",
 
-    config() {
+    config(_config, env) {
+      const virtualBuildIndex = env.command === "build"
+        ? prepareBuildIndexHtml({
+            appRoot,
+            title,
+          })
+        : undefined;
+
+      buildIndexCleanup = virtualBuildIndex?.cleanup;
+
       return {
         appType: "custom",
+        ...(virtualBuildIndex
+          ? {
+              build: {
+                rollupOptions: {
+                  input: virtualBuildIndex.filePath,
+                },
+              },
+            }
+          : {}),
       };
+    },
+
+    buildEnd() {
+      cleanupBuildIndex();
+    },
+
+    closeBundle() {
+      cleanupBuildIndex();
     },
 
     configureServer(server) {
@@ -114,7 +188,10 @@ export function pluginVirtualEntry(options: {
 
     load(id) {
       if (id === RESOLVED_VIRTUAL_ENTRY) {
-        return generateEntryModule(clientEntryPath);
+        return generateEntryModule({
+          clientEntryPath,
+          clientStylePath,
+        });
       }
     },
   };

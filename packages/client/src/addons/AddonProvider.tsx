@@ -5,14 +5,11 @@ import type { ResolvedSlideAddons } from "./types";
 const AddonContext = createContext<ResolvedSlideAddons | null>(null);
 
 export function AddonProvider({
-  addonIds,
   children,
 }: {
-  addonIds?: string[];
   children: ReactNode;
 }) {
-  const addonKey = useMemo(() => (addonIds ?? []).join("\0"), [addonIds]);
-  const addons = useMemo(() => resolveSlideAddons(addonIds), [addonIds, addonKey]);
+  const addons = useMemo(() => resolveSlideAddons(), []);
 
   return <AddonContext.Provider value={addons}>{children}</AddonContext.Provider>;
 }

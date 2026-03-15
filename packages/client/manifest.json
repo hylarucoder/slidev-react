@@ -1,0 +1,20 @@
+{
+  "runtimeEntry": "dist/index.js",
+  "styleEntry": "dist/style.css",
+  "addons": [
+    {
+      "id": "mermaid",
+      "module": "dist/addons/mermaid.js"
+    },
+    {
+      "id": "g2",
+      "module": "dist/addons/g2.js",
+      "style": "dist/addons/g2/style.css"
+    },
+    {
+      "id": "insight",
+      "module": "dist/addons/insight.js",
+      "style": "dist/addons/insight/style.css"
+    }
+  ]
+}

@@ -10,8 +10,8 @@
   "scripts": {
     "clean": "rm -rf dist .generated .slidev-react output packages/*/dist",
     "changeset": "changeset",
-    "build:packages": "pnpm -r --filter @slidev-react/core --filter @slidev-react/node --filter @slidev-react/cli run build:pkg",
-    "dev:packages": "pnpm -r --parallel --filter @slidev-react/core --filter @slidev-react/node --filter @slidev-react/cli run dev:pkg",
+    "build:packages": "pnpm -r --filter @slidev-react/core --filter @slidev-react/client --filter @slidev-react/theme-paper --filter @slidev-react/node --filter @slidev-react/cli run build:pkg",
+    "dev:packages": "pnpm -r --parallel --filter @slidev-react/core --filter @slidev-react/client --filter @slidev-react/theme-paper --filter @slidev-react/node --filter @slidev-react/cli run dev:pkg",
     "dev": "vp dev",
     "dev:e2e": "vp dev --host 127.0.0.1 --port 4173",
     "build": "pnpm run build:packages && vp build",
@@ -28,11 +28,12 @@
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:install": "playwright install chromium",
+    "test:smoke:runtime": "node --import tsx ./scripts/smoke-runtime-self-contained.ts",
     "lint": "vp lint --type-aware --tsconfig tsconfig.json packages scripts e2e vite.config.ts vitest.config.ts playwright.config.ts postcss.config.mjs",
     "format": "vp fmt .",
     "format:check": "vp fmt --check .",
     "release:version": "changeset version && pnpm install --lockfile-only",
-    "release:publish": "pnpm run build:packages && changeset publish",
+    "release:publish": "pnpm run build:packages && pnpm run test:smoke:runtime && changeset publish",
     "prepare": "vp config"
   },
   "dependencies": {

@@ -112,7 +112,7 @@ describe("lint-slides CLI", () => {
     expect(result.code).toBe(0);
     expect(result.stderr).toContain("Slides lint found 3 warnings:");
     expect(result.stderr).toContain(
-      'Unknown theme "missing-theme". The runtime will fall back to the default theme.',
+      'Unknown theme "missing-theme". Add packages/theme-missing-theme/index.ts or install @slidev-react/theme-missing-theme.',
     );
     expect(result.stderr).toContain(
       'Unknown slides layout "nebula". The runtime will fall back to the default layout.',
@@ -159,10 +159,10 @@ describe("lint-slides CLI", () => {
     );
     await writeSupportFile(
       appRoot,
-      "packages/client/src/addons/insight/index.ts",
+      "packages/addon-focus/index.ts",
       [
         "export const addon = {",
-        "  id: 'insight',",
+        "  id: 'focus',",
         "  layouts: {",
         "    spotlight: SpotlightLayout,",
         "  },",
@@ -176,7 +176,7 @@ describe("lint-slides CLI", () => {
         "title: Demo Deck",
         "theme: paper",
         "addons:",
-        "  - insight",
+        "  - focus",
         "layout: cover",
         "---",
         "",
@@ -194,8 +194,6 @@ describe("lint-slides CLI", () => {
     });
 
     expect(result.code).toBe(0);
-    console.log("STDOUT:", JSON.stringify(result.stdout));
-    console.log("STDERR:", JSON.stringify(result.stderr));
     expect(result.stdout).toContain("Slides lint passed: no authoring warnings for slides.mdx");
     expect(result.stderr).toBe("");
   });

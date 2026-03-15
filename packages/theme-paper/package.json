@@ -1,12 +1,24 @@
 {
   "name": "@slidev-react/theme-paper",
   "version": "0.2.9",
-  "type": "module",
-  "main": "./index.ts",
-  "exports": {
-    ".": "./index.ts",
-    "./style.css": "./style.css"
+  "scripts": {
+    "build:pkg": "pnpm exec tsdown",
+    "dev:pkg": "pnpm exec tsdown --watch",
+    "prepack": "pnpm run build:pkg"
   },
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "peerDependencies": {
     "@slidev-react/core": "workspace:*",
     "react": "^19.0.0"

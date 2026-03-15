@@ -1,57 +1,11 @@
-import { createRequire } from "node:module";
-import { readdir, readFile } from "node:fs/promises";
-import path from "node:path";
 import type { SlidesDocument } from "@slidev-react/core/slides/slides";
 import { layoutNames } from "@slidev-react/core/slides/layout";
-
-const require = createRequire(import.meta.url);
-const THEME_PACKAGE_PREFIX = "theme-";
-
-/**
- * Resolve the addons directory from @slidev-react/client's package location.
- * Works both inside the monorepo (workspace link → packages/client/src/addons)
- * and in standalone projects (npm install → node_modules/.../src/addons).
- */
-function resolveClientAddonsDir() {
-  try {
-    const clientPkgPath = require.resolve("@slidev-react/client/package.json");
-    return path.join(path.dirname(clientPkgPath), "src", "addons");
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Read addon IDs from both the framework's bundled addons dir and any local dir.
- * Deduplicates results.
- */
-async function readCombinedAddonIds(
-  clientAddonsDir: string | null,
-  localAddonsDir: string,
-) {
-  const [clientIds, localIds] = await Promise.all([
-    clientAddonsDir ? readLocalIds(clientAddonsDir) : [],
-    readLocalIds(localAddonsDir),
-  ]);
-  return [...new Set([...clientIds, ...localIds])];
-}
-
-/**
- * Read custom layout IDs from both the framework's bundled addons dir and any local dir.
- */
-async function readCombinedAddonLayouts(
-  clientAddonsDir: string | null,
-  localAddonsDir: string,
-) {
-  const [clientLayouts, localLayouts] = await Promise.all([
-    clientAddonsDir ? readCustomLayoutIds(clientAddonsDir) : new Set<string>(),
-    readCustomLayoutIds(localAddonsDir),
-  ]);
-  const merged = new Set<string>();
-  for (const l of clientLayouts) merged.add(l);
-  for (const l of localLayouts) merged.add(l);
-  return merged;
-}
+import {
+  readAddonLayoutIds,
+  readThemeLayoutIds,
+  resolveAddonExtension,
+  resolveThemeExtension,
+} from "../build/extensionResolution.ts";
 
 function collectKnownLayouts() {
   return new Set<string>(layoutNames);
@@ -63,131 +17,6 @@ function formatSlideLabel(slide: SlidesDocument["slides"][number]) {
     : `slide ${slide.index + 1}`;
 }
 
-async function readLocalIds(rootDir: string) {
-  try {
-    const entries = await readdir(rootDir, { withFileTypes: true });
-    return entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
-  } catch {
-    return [];
-  }
-}
-
-async function readThemePackageIds(packagesDir: string) {
-  try {
-    const entries = await readdir(packagesDir, { withFileTypes: true });
-    return entries
-      .filter(
-        (entry) => entry.isDirectory() && entry.name.startsWith(THEME_PACKAGE_PREFIX),
-      )
-      .map((entry) => entry.name.slice(THEME_PACKAGE_PREFIX.length));
-  } catch {
-    return [];
-  }
-}
-
-async function findDefinitionFile(rootDir: string) {
-  const candidates = ["index.ts", "index.tsx", "index.js", "index.jsx"];
-
-  for (const candidate of candidates) {
-    const filePath = path.join(rootDir, candidate);
-
-    try {
-      await readFile(filePath, "utf8");
-      return filePath;
-    } catch {
-      // Try the next candidate.
-    }
-  }
-
-  return null;
-}
-
-function extractObjectLiteralKeys(source: string, propertyName: string) {
-  const propertyIndex = source.indexOf(`${propertyName}:`);
-  if (propertyIndex === -1) return [];
-
-  const objectStart = source.indexOf("{", propertyIndex);
-  if (objectStart === -1) return [];
-
-  let depth = 0;
-  let objectEnd = -1;
-  for (let index = objectStart; index < source.length; index += 1) {
-    const char = source[index];
-    if (char === "{") depth += 1;
-    if (char === "}") depth -= 1;
-
-    if (depth === 0) {
-      objectEnd = index;
-      break;
-    }
-  }
-
-  if (objectEnd === -1) return [];
-
-  const objectBody = source.slice(objectStart + 1, objectEnd);
-  const keys = objectBody.matchAll(/(?:^|\n|\s)(["']?[\w-]+["']?)\s*:/g);
-
-  return [...keys]
-    .map((match) => match[1]?.replace(/^["']|["']$/g, ""))
-    .filter((key): key is string => Boolean(key));
-}
-
-async function readCustomLayoutIds(rootDir: string) {
-  const ids = await readLocalIds(rootDir);
-  const layouts = new Set<string>();
-
-  await Promise.all(
-    ids.map(async (id) => {
-      const definitionFile = await findDefinitionFile(path.join(rootDir, id));
-      if (!definitionFile) return;
-
-      try {
-        const source = await readFile(definitionFile, "utf8");
-        for (const layoutName of extractObjectLiteralKeys(source, "layouts")) {
-          layouts.add(layoutName);
-        }
-      } catch {
-        // Ignore broken local definitions here. Build/runtime will report them separately.
-      }
-    }),
-  );
-
-  return layouts;
-}
-
-async function readThemePackageLayoutIds(packagesDir: string) {
-  const layouts = new Set<string>();
-
-  try {
-    const entries = await readdir(packagesDir, { withFileTypes: true });
-    const themeEntries = entries.filter(
-      (entry) => entry.isDirectory() && entry.name.startsWith(THEME_PACKAGE_PREFIX),
-    );
-
-    await Promise.all(
-      themeEntries.map(async (entry) => {
-        const definitionFile = await findDefinitionFile(
-          path.join(packagesDir, entry.name),
-        );
-        if (!definitionFile) return;
-
-        try {
-          const source = await readFile(definitionFile, "utf8");
-          for (const layoutName of extractObjectLiteralKeys(source, "layouts")) {
-            layouts.add(layoutName);
-          }
-        } catch {
-          // Ignore.
-        }
-      }),
-    );
-  } catch {
-    // packages dir doesn't exist.
-  }
-
-  return layouts;
-}
-
 export async function validateSlidesAuthoring({
   appRoot,
   slides,
@@ -196,33 +25,33 @@ export async function validateSlidesAuthoring({
   slides: SlidesDocument;
 }) {
   const warnings: string[] = [];
-  const clientAddonsDir = resolveClientAddonsDir();
-  const localAddonsDir = path.join(appRoot, "packages/client/src/addons");
-  const packagesDir = path.join(appRoot, "packages");
-  const [themePackageIdList, addonIdList, themePackageLayouts, addonLayouts] = await Promise.all([
-    readThemePackageIds(packagesDir),
-    readCombinedAddonIds(clientAddonsDir, localAddonsDir),
-    readThemePackageLayoutIds(packagesDir),
-    readCombinedAddonLayouts(clientAddonsDir, localAddonsDir),
-  ]);
-  const themeIds = new Set(themePackageIdList);
-  const addonIds = new Set(addonIdList);
   const knownLayouts = collectKnownLayouts();
 
-  for (const layoutName of themePackageLayouts) knownLayouts.add(layoutName);
-  for (const layoutName of addonLayouts) knownLayouts.add(layoutName);
+  const resolvedTheme = slides.meta.theme
+    ? resolveThemeExtension(appRoot, slides.meta.theme)
+    : null;
 
-  if (slides.meta.theme && !themeIds.has(slides.meta.theme)) {
+  if (slides.meta.theme && !resolvedTheme) {
     warnings.push(
-      `Unknown theme "${slides.meta.theme}". The runtime will fall back to the default theme.`,
+      `Unknown theme "${slides.meta.theme}". Add packages/theme-${slides.meta.theme}/index.ts or install @slidev-react/theme-${slides.meta.theme}.`,
     );
   }
 
+  for (const layoutName of await readThemeLayoutIds(resolvedTheme)) {
+    knownLayouts.add(layoutName);
+  }
+
   for (const addonId of slides.meta.addons ?? []) {
-    if (!addonIds.has(addonId)) {
+    const resolvedAddon = resolveAddonExtension(appRoot, addonId);
+    if (!resolvedAddon) {
       warnings.push(
-        `Unknown addon "${addonId}". It will be ignored until a matching local addon exists.`,
+        `Unknown addon "${addonId}". Add packages/addon-${addonId}/index.ts or install @slidev-react/addon-${addonId}.`,
       );
+      continue;
+    }
+
+    for (const layoutName of await readAddonLayoutIds(resolvedAddon)) {
+      knownLayouts.add(layoutName);
     }
   }
 

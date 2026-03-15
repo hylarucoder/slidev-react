@@ -109,7 +109,7 @@ export default function App() {
     <ThemeProvider
       slidesViewport={slidesDocument.meta.viewport}
     >
-      <AddonProvider addonIds={slidesDocument.meta.addons}>
+      <AddonProvider>
         <ThemeBoundApp
           exportMode={exportMode}
           exportWithClicks={exportWithClicks}

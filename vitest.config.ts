@@ -7,6 +7,10 @@ const sharedAlias = {
     import.meta.dirname,
     "packages/client/src/theme/__mocks__/active-theme.ts",
   ),
+  "virtual:slidev-react/active-addons": path.resolve(
+    import.meta.dirname,
+    "packages/client/src/addons/__mocks__/active-addons.ts",
+  ),
   "@": path.resolve(import.meta.dirname, "packages/client/src"),
 };
 

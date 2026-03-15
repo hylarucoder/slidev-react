@@ -3,10 +3,38 @@
   "version": "0.2.9",
   "description": "Browser-side React app and presentation UI for slidev-react",
   "license": "MIT",
+  "scripts": {
+    "build:pkg": "pnpm exec tsdown",
+    "dev:pkg": "pnpm exec tsdown --watch",
+    "prepack": "pnpm run build:pkg"
+  },
   "type": "module",
+  "types": "./dist/src/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "exports": {
-    ".": "./src/index.ts",
-    "./theme/*": "./src/theme/*",
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./style.css": "./dist/style.css",
+    "./manifest": "./dist/manifest.json",
+    "./addons/mermaid": {
+      "types": "./dist/src/addons/mermaid/index.d.ts",
+      "import": "./dist/addons/mermaid.js"
+    },
+    "./addons/g2": {
+      "types": "./dist/src/addons/g2/index.d.ts",
+      "import": "./dist/addons/g2.js"
+    },
+    "./addons/g2/style.css": "./dist/addons/g2/style.css",
+    "./addons/insight": {
+      "types": "./dist/src/addons/insight/index.d.ts",
+      "import": "./dist/addons/insight.js"
+    },
+    "./addons/insight/style.css": "./dist/addons/insight/style.css",
     "./package.json": "./package.json"
   },
   "dependencies": {
