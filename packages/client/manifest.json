@@ -1,5 +1,5 @@
 {
-  "runtimeEntry": "dist/index.js",
+  "runtimeEntry": "dist/runtime.js",
   "styleEntry": "dist/style.css",
   "addons": [
     {

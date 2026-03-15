@@ -80,15 +80,10 @@ function generateEntryModule(options: {
 }) {
   const { clientEntryPath, clientStylePath } = options;
 
-  return `import { createElement } from "react"
-import { StrictMode } from "react"
-import { createRoot } from "react-dom/client"
-import App from "${clientEntryPath}"
+  return `import { mountSlidesApp } from "${clientEntryPath}"
 import "${clientStylePath}"
 
-createRoot(document.getElementById("root")).render(
-  createElement(StrictMode, null, createElement(App)),
-)
+mountSlidesApp(document.getElementById("root"))
 `;
 }
 

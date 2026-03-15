@@ -2,29 +2,24 @@ import { describe, expect, it } from "vite-plus/test";
 import { createSlidesViteConfig } from "../createSlidesViteConfig.ts";
 
 describe("createSlidesViteConfig", () => {
-  it("excludes framework-owned React deps from optimization", () => {
+  it("keeps dependency optimization on the default Vite path", () => {
     const config = createSlidesViteConfig({
       appRoot: process.cwd(),
     });
 
-    expect(config.optimizeDeps?.exclude).toEqual([
-      "react",
-      "react-dom",
-      "react/jsx-runtime",
-      "react/jsx-dev-runtime",
-      "@mdx-js/react",
-      "lucide-react",
-    ]);
+    expect(config.optimizeDeps).toBeUndefined();
   });
 
-  it("does not alias the client package to src", () => {
+  it("only aliases app-owned runtime modules", () => {
     const config = createSlidesViteConfig({
       appRoot: process.cwd(),
     });
 
     expect(config.resolve?.alias).not.toHaveProperty("@");
-    expect(config.resolve?.alias).toHaveProperty("@mdx-js/react");
-    expect(config.resolve?.alias).toHaveProperty("@slidev-react/framework/react");
-    expect(String(config.resolve?.alias?.react)).toContain("reactCompat");
+    expect(config.resolve?.alias).toHaveProperty("@generated/slides");
+    expect(Object.keys(config.resolve?.alias ?? {})).toHaveLength(1);
+    expect(config.resolve?.alias).not.toHaveProperty("react");
+    expect(config.resolve?.alias).not.toHaveProperty("react-dom");
+    expect(config.resolve?.alias).not.toHaveProperty("react-dom/client");
   });
 });
