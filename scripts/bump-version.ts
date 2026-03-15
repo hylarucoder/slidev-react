@@ -40,7 +40,8 @@ function bumpVersion(current: string, bump: string) {
 const scriptDir = path.dirname(fileURLToPath(import.meta.url))
 const rootDir = path.resolve(scriptDir, '..')
 const packagesDir = path.join(rootDir, 'packages')
-const bump = process.argv[2] ?? 'patch'
+const args = process.argv.slice(2).filter((arg) => arg !== '--')
+const bump = args[0] ?? 'patch'
 
 if (!existsSync(packagesDir)) {
   throw new Error('No packages directory found.')
