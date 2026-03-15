@@ -1,5 +1,13 @@
 # @slidev-react/cli
 
+## 0.2.9
+
+### Patch Changes
+
+- Release 0.3.0
+- Updated dependencies
+  - @slidev-react/node@0.2.9
+
 ## 0.2.0
 
 ### Minor Changes

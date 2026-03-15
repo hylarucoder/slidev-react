@@ -1,5 +1,11 @@
 # @slidev-react/core
 
+## 0.2.9
+
+### Patch Changes
+
+- Release 0.3.0
+
 ## 0.2.0
 
 ### Minor Changes
