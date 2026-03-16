@@ -238,6 +238,7 @@ async function main() {
     [
       "---",
       "title: npm Install Smoke",
+      "addons: [g2]",
       "---",
       "",
       "# Hello",

@@ -1,12 +1,5 @@
-import { Chart as G2Chart, type G2Spec, register } from "@antv/g2";
-import { Renderer as SvgRenderer } from "@antv/g-svg";
 import { useEffect, useMemo, useRef, useState } from "react";
-
-// Register composite marks from plotlib (gauge, liquid, wordCloud, boxplot)
-import { plotlib } from "@antv/g2/esm/lib/plot";
-for (const [key, value] of Object.entries(plotlib())) {
-  register(key as Parameters<typeof register>[0], value as Parameters<typeof register>[1]);
-}
+import type { G2Spec } from "@antv/g2";
 
 import { useSlideThemeTokens } from "../../../theme/ThemeProvider";
 import {
@@ -16,6 +9,52 @@ import {
   type ChartSize,
 } from "./chartThemeTokens";
 import { chartPresets, type PresetName } from "./chartPresets";
+
+type G2RuntimeModule = typeof import("@antv/g2");
+type G2PlotModule = typeof import("@antv/g2/esm/lib/plot");
+type G2SvgModule = typeof import("@antv/g-svg");
+type G2ChartInstance = InstanceType<G2RuntimeModule["Chart"]>;
+
+let g2RuntimePromise:
+  | Promise<{
+      Chart: G2RuntimeModule["Chart"];
+      register: G2RuntimeModule["register"];
+      SvgRenderer: G2SvgModule["Renderer"];
+    }>
+  | undefined;
+
+function loadG2Runtime() {
+  g2RuntimePromise ??= Promise.all([
+    import("@antv/g2"),
+    import("@antv/g-svg"),
+    import("@antv/g2/esm/lib/plot"),
+  ]).then(([g2Module, gSvgModule, plotModule]) => {
+    registerPlotlib(g2Module, plotModule);
+
+    return {
+      Chart: g2Module.Chart,
+      register: g2Module.register,
+      SvgRenderer: gSvgModule.Renderer,
+    };
+  });
+
+  return g2RuntimePromise;
+}
+
+let hasRegisteredPlotlib = false;
+
+function registerPlotlib(g2Module: G2RuntimeModule, plotModule: G2PlotModule) {
+  if (hasRegisteredPlotlib) return;
+
+  for (const [key, value] of Object.entries(plotModule.plotlib())) {
+    g2Module.register(
+      key as Parameters<G2RuntimeModule["register"]>[0],
+      value as Parameters<G2RuntimeModule["register"]>[1],
+    );
+  }
+
+  hasRegisteredPlotlib = true;
+}
 
 // ---------------------------------------------------------------------------
 // Base Chart — L1 (G2Spec passthrough with theme/preset support)
@@ -34,7 +73,7 @@ export function Chart({ width, height, size, preset, ...spec }: ChartProps) {
   const resolved = resolveSize(width, height, size);
   const themeTokens = useSlideThemeTokens();
   const containerRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<G2Chart | null>(null);
+  const chartRef = useRef<G2ChartInstance | null>(null);
   const [error, setError] = useState<string | null>(null);
   const userTheme = useMemo(() => (typeof spec.theme === "object" ? spec.theme : {}), [spec.theme]);
   const themeSignature = useMemo(() => JSON.stringify(themeTokens), [themeTokens]);
@@ -50,6 +89,7 @@ export function Chart({ width, height, size, preset, ...spec }: ChartProps) {
     const render = async () => {
       try {
         setError(null);
+        const runtime = await loadG2Runtime();
 
         if (chartRef.current) {
           try {
@@ -60,9 +100,9 @@ export function Chart({ width, height, size, preset, ...spec }: ChartProps) {
           chartRef.current = null;
         }
 
-        const chart = new G2Chart({
+        const chart = new runtime.Chart({
           container: el,
-          renderer: new SvgRenderer(),
+          renderer: new runtime.SvgRenderer(),
           width: resolved.width,
           height: resolved.height,
         });
