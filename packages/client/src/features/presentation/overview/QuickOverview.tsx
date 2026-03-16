@@ -1,4 +1,4 @@
-import type { KeyboardEvent } from "react";
+import { startTransition, useEffect, useState, type KeyboardEvent } from "react";
 import { X } from "lucide-react";
 import { formatViewportAspectRatio } from "@slidev-react/core/slides/viewport";
 import type { CompiledSlide, SlidesConfig } from "../presenter/model/types";
@@ -11,11 +11,13 @@ function OverviewSlidePreview({
   index,
   active,
   slide,
+  ready,
   slidesConfig,
 }: {
   index: number;
   active: boolean;
   slide: CompiledSlide;
+  ready: boolean;
   slidesConfig: Pick<SlidesConfig, "slidesViewport" | "slidesLayout" | "slidesBackground">;
 }) {
   const { slidesViewport } = slidesConfig;
@@ -34,13 +36,23 @@ function OverviewSlidePreview({
           <ChromeTag size="xs">{slide.meta.layout}</ChromeTag>
         </span>
       )}
-      <SlidePreviewSurface
-        Slide={slide.component}
-        meta={slide.meta}
-        slidesConfig={slidesConfig}
-        viewportClassName="size-full"
-        stageClassName="pointer-events-none select-none"
-      />
+      {ready ? (
+        <SlidePreviewSurface
+          Slide={slide.component}
+          meta={slide.meta}
+          slidesConfig={slidesConfig}
+          viewportClassName="size-full"
+          stageClassName="pointer-events-none select-none"
+        />
+      ) : (
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.78),rgba(241,245,249,0.94))]" />
+          <div className="absolute inset-x-5 top-14 h-5 rounded-full bg-white/90 shadow-[0_1px_0_rgba(255,255,255,0.6)] animate-pulse" />
+          <div className="absolute inset-x-10 top-24 h-3 rounded-full bg-slate-200/90 animate-pulse" />
+          <div className="absolute inset-x-12 top-[7.75rem] h-3 rounded-full bg-slate-200/70 animate-pulse" />
+          <div className="absolute left-8 right-8 bottom-10 top-40 rounded-[24px] border border-slate-200/80 bg-white/88 shadow-[0_18px_40px_rgba(148,163,184,0.12)]" />
+        </div>
+      )}
     </div>
   );
 }
@@ -60,6 +72,31 @@ export function QuickOverview({
   onClose: () => void;
   onSelect: (index: number) => void;
 }) {
+  const [previewsReady, setPreviewsReady] = useState(false)
+
+  useEffect(() => {
+    if (!open) {
+      setPreviewsReady(false)
+      return
+    }
+
+    setPreviewsReady(false)
+
+    let secondFrameId = 0
+    const firstFrameId = window.requestAnimationFrame(() => {
+      secondFrameId = window.requestAnimationFrame(() => {
+        startTransition(() => {
+          setPreviewsReady(true)
+        })
+      })
+    })
+
+    return () => {
+      window.cancelAnimationFrame(firstFrameId)
+      if (secondFrameId) window.cancelAnimationFrame(secondFrameId)
+    }
+  }, [open, slides.length])
+
   function handleSelectKeyDown(event: KeyboardEvent<HTMLElement>, index: number) {
     if (event.key !== "Enter" && event.key !== " ") return;
     event.preventDefault();
@@ -110,6 +147,7 @@ export function QuickOverview({
                     index={index}
                     active={active}
                     slide={slide}
+                    ready={previewsReady}
                     slidesConfig={slidesConfig}
                   />
                   <div className="truncate px-2.5 py-2 text-sm font-medium text-slate-900">

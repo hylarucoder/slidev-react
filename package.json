@@ -1,6 +1,7 @@
 {
   "name": "slidev-react",
   "version": "0.4.3",
+  "private": true,
   "description": "Open-source React + MDX presentation app/runtime (not published to npm)",
   "license": "MIT",
   "workspaces": [

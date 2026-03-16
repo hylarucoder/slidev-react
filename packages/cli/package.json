@@ -1,6 +1,6 @@
 {
   "name": "@slidev-react/cli",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "private": false,
   "description": "CLI entrypoint for slidev-react authoring and build workflows",
   "homepage": "https://github.com/hylarucoder/slidev-react/tree/main/packages/cli",
