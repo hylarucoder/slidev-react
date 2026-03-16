@@ -1,8 +1,22 @@
-# 零配置开箱即用：Framework-Owns-The-Shell 架构方案
+# 历史方案归档：Framework-Owns-The-Shell
+
+> [!WARNING]
+> 这份文档描述的是一条已经不再主推的历史方向：让用户直接通过裸 CLI / `npx @slidev-react/cli` 起手。
+>
+> 当前产品入口已经统一为 `create-slidev-react`，推荐路径是：
+>
+> ```bash
+> npm create slidev-react@latest my-deck
+> cd my-deck
+> pnpm install
+> pnpm dev
+> ```
+>
+> `@slidev-react/cli` 现在主要作为模板项目 scripts 背后的内部执行层保留。
 
 ## 目标
 
-让用户在任意目录只需要一个 `slides.mdx`，就能通过 `npx @slidev-react/cli dev` 直接跑起来——不需要 `index.html`、`main.tsx`、`vite.config.ts`，也不需要 clone 仓库。
+这份归档记录的是之前设想的一条更激进的方向：让用户在任意目录只需要一个 `slides.mdx`，就能通过裸 CLI 直接跑起来——不需要 `index.html`、`main.tsx`、`vite.config.ts`，也不需要 clone 仓库。
 
 ## 现状问题
 
@@ -31,9 +45,11 @@
 用户侧的极简体验：
 
 ```bash
-# 在任意目录
-echo "# Hello World\n\n---\n\n# Slide 2" > slides.mdx
-npx @slidev-react/cli dev
+# 已不再推荐
+npm create slidev-react@latest my-deck
+cd my-deck
+pnpm install
+pnpm dev
 ```
 
 用户目录结构：
@@ -55,7 +71,7 @@ my-talk/
        └─ @slidev-react/core
 ```
 
-用户 `npx @slidev-react/cli` 时，整条依赖链自动拉下来。
+这条历史方向的核心前提，是用户通过裸 CLI 直接拉起整条依赖链。
 
 ---
 

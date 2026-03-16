@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import net from "node:net";
@@ -306,47 +306,6 @@ async function packPackage(packageDir: string, packDir: string) {
   return path.join(packDir, tarballName);
 }
 
-async function writeSmokeSlides(appRoot: string, options: { title: string; intro: string }) {
-  await writeFile(
-    path.join(appRoot, "slides.mdx"),
-    [
-      "---",
-      `title: ${options.title}`,
-      "addons: [g2, mermaid]",
-      "---",
-      "",
-      "# Hello",
-      "",
-      options.intro,
-      "",
-      '<div id="g2-smoke">',
-      "",
-      "<BarChart",
-      '  width={480}',
-      '  height={240}',
-      "  data={[",
-      '    { genre: "Sports", sold: 275 },',
-      '    { genre: "Strategy", sold: 115 },',
-      '    { genre: "Action", sold: 120 },',
-      "  ]}",
-      '  x="genre"',
-      '  y="sold"',
-      '  color="genre"',
-      "/>",
-      "",
-      "</div>",
-      "",
-      '<div id="mermaid-smoke">',
-      "",
-      '<MermaidDiagram code={`graph TD\\nA[Deck] --> B[Mermaid]\\nA --> C[G2]`} />',
-      "",
-      "</div>",
-      "",
-    ].join("\n"),
-    "utf8",
-  );
-}
-
 async function assertDevServerInBrowser(options: {
   devUrl: string;
   expectedTitle: string;
@@ -396,232 +355,6 @@ async function assertDevServerInBrowser(options: {
     `Timed out waiting for smoke dev server to shut down:\n${options.devOutput()}`,
   );
   assertNoKnownPackagingErrors(devResult.stdout + devResult.stderr);
-}
-
-async function runInstalledCliSmoke(options: {
-  appRoot: string;
-  coreTarball: string;
-  clientTarball: string;
-  nodeTarball: string;
-  cliTarball: string;
-  reactVersion: string;
-  reactDomVersion: string;
-  mdxReactVersion: string;
-  relayPort: number;
-}) {
-  await writeSmokeSlides(options.appRoot, {
-    title: "npm Install Smoke",
-    intro: "This deck boots from npm-installed tarballs.",
-  });
-
-  const installProcess = spawnCommand(
-    "npm",
-    [
-      "install",
-      `react@${options.reactVersion}`,
-      `react-dom@${options.reactDomVersion}`,
-      `@mdx-js/react@${options.mdxReactVersion}`,
-      options.coreTarball,
-      options.clientTarball,
-      options.nodeTarball,
-      options.cliTarball,
-    ],
-    {
-      cwd: options.appRoot,
-      env: {
-        PRESENTATION_WS_PORT: String(options.relayPort),
-      },
-    },
-  );
-  const installResult = await installProcess.completed;
-
-  if (installResult.code !== 0) {
-    throw new Error(`npm install smoke failed:\n${installResult.stderr || installResult.stdout}`);
-  }
-
-  assertNoKnownPackagingErrors(installResult.stdout + installResult.stderr);
-
-  const cliFile = path.join(options.appRoot, "node_modules", "@slidev-react", "cli", "dist", "bin", "slidev-react.mjs");
-
-  const helpProcess = spawnCommand("node", [cliFile, "--help"], {
-    cwd: options.appRoot,
-    env: {
-      PRESENTATION_WS_PORT: String(options.relayPort),
-    },
-  });
-  const helpResult = await helpProcess.completed;
-
-  if (helpResult.code !== 0) {
-    throw new Error(`npm-installed CLI help failed:\n${helpResult.stderr || helpResult.stdout}`);
-  }
-
-  assertNoKnownPackagingErrors(helpResult.stdout + helpResult.stderr);
-
-  const buildProcess = spawnCommand("node", [cliFile, "build", "slides.mdx", "--outDir", "dist"], {
-    cwd: options.appRoot,
-    env: {
-      PRESENTATION_WS_PORT: String(options.relayPort),
-    },
-  });
-  const buildResult = await buildProcess.completed;
-
-  if (buildResult.code !== 0) {
-    throw new Error(`npm-installed CLI build failed:\n${buildResult.stderr || buildResult.stdout}`);
-  }
-
-  assertNoKnownPackagingErrors(buildResult.stdout + buildResult.stderr);
-
-  const builtHtml = await readFile(path.join(options.appRoot, "dist/index.html"), "utf8");
-  if (!builtHtml.includes("npm Install Smoke")) {
-    throw new Error("npm-installed build produced output, but dist/index.html is missing the deck title.");
-  }
-
-  const port = await findFreePort();
-  const devUrl = `http://localhost:${port}/`;
-  let devOutput = "";
-  const devProcess = spawnCommand("node", [cliFile, "dev", "slides.mdx", "--port", String(port)], {
-    cwd: options.appRoot,
-    env: {
-      PRESENTATION_WS_PORT: String(options.relayPort),
-    },
-    onStdout: (output) => {
-      devOutput += output;
-    },
-    onStderr: (output) => {
-      devOutput += output;
-    },
-  });
-
-  await waitForOutput(() => /Local:\s+http:\/\/localhost:/i.test(devOutput), 30_000);
-  assertNoKnownPackagingErrors(devOutput);
-
-  await assertDevServerInBrowser({
-    devUrl,
-    expectedTitle: "npm Install Smoke",
-    devProcess,
-    devOutput: () => devOutput,
-  });
-}
-
-async function runExecCliSmoke(options: {
-  appRoot: string;
-  coreTarball: string;
-  clientTarball: string;
-  nodeTarball: string;
-  cliTarball: string;
-  relayPort: number;
-}) {
-  await writeSmokeSlides(options.appRoot, {
-    title: "npm Exec Smoke",
-    intro: "This deck boots from npm exec with only the CLI tarball.",
-  });
-
-  const helpProcess = spawnCommand(
-    "npm",
-    [
-      "exec",
-      "--yes",
-      `--package=${options.coreTarball}`,
-      `--package=${options.clientTarball}`,
-      `--package=${options.nodeTarball}`,
-      `--package=${options.cliTarball}`,
-      "--",
-      "slidev-react",
-      "--help",
-    ],
-    {
-      cwd: options.appRoot,
-      env: {
-        PRESENTATION_WS_PORT: String(options.relayPort),
-      },
-    },
-  );
-  const helpResult = await helpProcess.completed;
-
-  if (helpResult.code !== 0) {
-    throw new Error(`npm exec CLI help failed:\n${helpResult.stderr || helpResult.stdout}`);
-  }
-
-  assertNoKnownPackagingErrors(helpResult.stdout + helpResult.stderr);
-
-  const buildProcess = spawnCommand(
-    "npm",
-    [
-      "exec",
-      "--yes",
-      `--package=${options.coreTarball}`,
-      `--package=${options.clientTarball}`,
-      `--package=${options.nodeTarball}`,
-      `--package=${options.cliTarball}`,
-      "--",
-      "slidev-react",
-      "build",
-      "slides.mdx",
-      "--outDir",
-      "dist",
-    ],
-    {
-      cwd: options.appRoot,
-      env: {
-        PRESENTATION_WS_PORT: String(options.relayPort),
-      },
-    },
-  );
-  const buildResult = await buildProcess.completed;
-
-  if (buildResult.code !== 0) {
-    throw new Error(`npm exec CLI build failed:\n${buildResult.stderr || buildResult.stdout}`);
-  }
-
-  assertNoKnownPackagingErrors(buildResult.stdout + buildResult.stderr);
-
-  const builtHtml = await readFile(path.join(options.appRoot, "dist/index.html"), "utf8");
-  if (!builtHtml.includes("npm Exec Smoke")) {
-    throw new Error("npm exec build produced output, but dist/index.html is missing the deck title.");
-  }
-
-  const port = await findFreePort();
-  const devUrl = `http://localhost:${port}/`;
-  let devOutput = "";
-  const devProcess = spawnCommand(
-    "npm",
-    [
-      "exec",
-      "--yes",
-      `--package=${options.coreTarball}`,
-      `--package=${options.clientTarball}`,
-      `--package=${options.nodeTarball}`,
-      `--package=${options.cliTarball}`,
-      "--",
-      "slidev-react",
-      "dev",
-      "slides.mdx",
-      "--port",
-      String(port),
-    ],
-    {
-      cwd: options.appRoot,
-      env: {
-        PRESENTATION_WS_PORT: String(options.relayPort),
-      },
-      onStdout: (output) => {
-        devOutput += output;
-      },
-      onStderr: (output) => {
-        devOutput += output;
-      },
-    },
-  );
-
-  await waitForOutput(() => /Local:\s+http:\/\/localhost:/i.test(devOutput), 30_000);
-  assertNoKnownPackagingErrors(devOutput);
-
-  await assertDevServerInBrowser({
-    devUrl,
-    expectedTitle: "npm Exec Smoke",
-    devProcess,
-    devOutput: () => devOutput,
-  });
 }
 
 async function runCreateAppSmoke(options: {
@@ -747,8 +480,6 @@ async function runCreateAppSmoke(options: {
 async function main() {
   const repoRoot = path.resolve(import.meta.dirname, "..");
   const packDir = await mkdtemp(path.join(tmpdir(), "slidev-react-pack-"));
-  const npmInstallAppRoot = await mkdtemp(path.join(tmpdir(), "slidev-react-npm-install-"));
-  const npmExecAppRoot = await mkdtemp(path.join(tmpdir(), "slidev-react-npm-exec-"));
   const createAppRoot = path.join(await mkdtemp(path.join(tmpdir(), "slidev-react-create-app-")), "starter-deck");
   const relayPort = await findFreePort();
   const rootPackageJson = readJson<PackageJson>(path.join(repoRoot, "package.json"));
@@ -785,27 +516,6 @@ async function main() {
       reactVersion,
       reactDomVersion,
       mdxReactVersion,
-      relayPort,
-    });
-
-    await runInstalledCliSmoke({
-      appRoot: npmInstallAppRoot,
-      coreTarball,
-      clientTarball,
-      nodeTarball,
-      cliTarball,
-      reactVersion,
-      reactDomVersion,
-      mdxReactVersion,
-      relayPort,
-    });
-
-    await runExecCliSmoke({
-      appRoot: npmExecAppRoot,
-      coreTarball,
-      clientTarball,
-      nodeTarball,
-      cliTarball,
       relayPort,
     });
   } finally {
