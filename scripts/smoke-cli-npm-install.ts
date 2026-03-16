@@ -3,7 +3,7 @@ import { mkdtemp, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import net from "node:net";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { chromium, type Page } from "@playwright/test";
 
 interface PackageJson {
@@ -156,6 +156,52 @@ async function waitForCompletion<T>(promise: Promise<T>, timeoutMs: number, mess
       setTimeout(() => reject(new Error(message)), timeoutMs);
     }),
   ]);
+}
+
+async function stopProcess(processHandle: ReturnType<typeof spawnCommand>, output: () => string) {
+  const childPid = processHandle.child.pid;
+
+  function killProcessTree(signal: "SIGINT" | "SIGTERM" | "SIGKILL") {
+    if (childPid) {
+      const pkillSignal = signal === "SIGKILL" ? "KILL" : signal === "SIGTERM" ? "TERM" : "INT";
+      spawnSync("pkill", [`-${pkillSignal}`, "-P", String(childPid)], {
+        stdio: "ignore",
+      });
+    }
+
+    processHandle.child.kill(signal);
+  }
+
+  if (processHandle.child.exitCode != null) {
+    return await processHandle.completed;
+  }
+
+  killProcessTree("SIGINT");
+
+  try {
+    return await waitForCompletion(
+      processHandle.completed,
+      5_000,
+      `Timed out waiting for process to stop after SIGINT:\n${output()}`,
+    );
+  } catch {
+    killProcessTree("SIGTERM");
+
+    try {
+      return await waitForCompletion(
+        processHandle.completed,
+        5_000,
+        `Timed out waiting for process to stop after SIGTERM:\n${output()}`,
+      );
+    } catch {
+      killProcessTree("SIGKILL");
+      return await waitForCompletion(
+        processHandle.completed,
+        5_000,
+        `Timed out waiting for process to stop after SIGKILL:\n${output()}`,
+      );
+    }
+  }
 }
 
 async function waitForPageReady(page: Page, url: string, expectedTitle: string, timeoutMs: number) {
@@ -346,14 +392,14 @@ async function assertDevServerInBrowser(options: {
     await page.close();
     await browser.close();
     if (!devExited) {
-      options.devProcess.child.kill("SIGINT");
+      await stopProcess(options.devProcess, options.devOutput);
     }
   }
 
   const devResult = await waitForCompletion(
     options.devProcess.completed,
-    10_000,
-    `Timed out waiting for smoke dev server to shut down:\n${options.devOutput()}`,
+    1_000,
+    `Timed out waiting for smoke dev server to report shutdown:\n${options.devOutput()}`,
   );
   assertNoKnownPackagingErrors(devResult.stdout + devResult.stderr);
 }
@@ -399,14 +445,24 @@ async function runCreateAppSmoke(options: {
   if (generatedPackageJson.name !== path.basename(options.appRoot)) {
     throw new Error("create-slidev-react generated package.json, but the package name does not match the target directory.");
   }
-  if (generatedPackageJson.scripts?.dev !== "slidev-react dev slides.mdx") {
+  if (generatedPackageJson.scripts?.dev !== "vp dev") {
     throw new Error("create-slidev-react generated package.json, but the dev script does not match the starter contract.");
+  }
+  if (generatedPackageJson.scripts?.build !== "vp build") {
+    throw new Error("create-slidev-react generated package.json, but the build script does not match the starter contract.");
   }
 
   const generatedSlides = await readFile(path.join(options.appRoot, "slides.mdx"), "utf8");
   if (!generatedSlides.includes("addons:") || !generatedSlides.includes("g2") || !generatedSlides.includes("mermaid")) {
     throw new Error("create-slidev-react generated slides.mdx, but the default g2 + mermaid starter content is missing.");
   }
+
+  const localVpBin = path.join(
+    options.appRoot,
+    "node_modules",
+    ".bin",
+    process.platform === "win32" ? "vp.cmd" : "vp",
+  );
 
   const installProcess = spawnCommand(
     "npm",
@@ -436,7 +492,7 @@ async function runCreateAppSmoke(options: {
 
   assertNoKnownPackagingErrors(createResult.stdout + createResult.stderr + installResult.stdout + installResult.stderr);
 
-  const buildProcess = spawnCommand("npm", ["run", "build"], {
+  const buildProcess = spawnCommand(localVpBin, ["build"], {
     cwd: options.appRoot,
     env: {
       PRESENTATION_WS_ENABLED: "true",
@@ -457,7 +513,7 @@ async function runCreateAppSmoke(options: {
   const port = await findFreePort();
   const devUrl = `http://localhost:${port}/`;
   let devOutput = "";
-  const devProcess = spawnCommand("npm", ["run", "dev", "--", "--port", String(port)], {
+  const devProcess = spawnCommand(localVpBin, ["dev", "--port", String(port)], {
     cwd: options.appRoot,
     env: {
       PRESENTATION_WS_ENABLED: "true",

@@ -12,6 +12,7 @@ interface TemplatePackageJson {
   private: true
   scripts: Record<string, string>
   dependencies: Record<string, string>
+  devDependencies?: Record<string, string>
   engines: {
     node: string
   }
@@ -111,16 +112,20 @@ function createTemplatePackageJson(packageName: string) {
     name: packageName,
     private: true,
     scripts: {
-      dev: 'slidev-react dev slides.mdx',
-      build: 'slidev-react build slides.mdx',
+      dev: 'vp dev',
+      build: 'vp build',
       export: 'slidev-react export slides.mdx',
       lint: 'slidev-react lint slides.mdx --strict',
     },
     dependencies: {
       '@mdx-js/react': templateVersions['@mdx-js/react'] ?? '3.1.1',
       '@slidev-react/cli': ownPackageJson.version,
+      '@slidev-react/node': ownPackageJson.version,
       react: templateVersions.react ?? '19.2.3',
       'react-dom': templateVersions['react-dom'] ?? '19.2.3',
+    },
+    devDependencies: {
+      'vite-plus': templateVersions['vite-plus'] ?? '0.1.11',
     },
     engines: {
       node: '>=22',

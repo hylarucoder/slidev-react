@@ -24,16 +24,21 @@ describe('create-slidev-react scaffoldProject', () => {
     const packageJson = readJson<{
       name: string
       dependencies: Record<string, string>
+      devDependencies?: Record<string, string>
       scripts: Record<string, string>
     }>(path.join(result.projectRoot, 'package.json'))
 
     expect(packageJson.name).toBe('demo-deck')
     expect(packageJson.dependencies['@slidev-react/cli']).toBe(ownPackageJson.version)
+    expect(packageJson.dependencies['@slidev-react/node']).toBe(ownPackageJson.version)
     expect(packageJson.dependencies.react).toBe(ownPackageJson.slidevReactTemplate.react)
     expect(packageJson.dependencies['react-dom']).toBe(ownPackageJson.slidevReactTemplate['react-dom'])
     expect(packageJson.dependencies['@mdx-js/react']).toBe(ownPackageJson.slidevReactTemplate['@mdx-js/react'])
-    expect(packageJson.scripts.dev).toBe('slidev-react dev slides.mdx')
+    expect(packageJson.devDependencies?.['vite-plus']).toBe(ownPackageJson.slidevReactTemplate['vite-plus'])
+    expect(packageJson.scripts.dev).toBe('vp dev')
+    expect(packageJson.scripts.build).toBe('vp build')
     expect(readFileSync(path.join(result.projectRoot, 'slides.mdx'), 'utf8')).toContain('<MermaidDiagram>')
+    expect(readFileSync(path.join(result.projectRoot, 'vite.config.mts'), 'utf8')).toContain('createSlidesViteConfig')
     expect(readFileSync(path.join(result.projectRoot, '.gitignore'), 'utf8')).toContain('node_modules')
   })
 
