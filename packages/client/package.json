@@ -1,6 +1,6 @@
 {
   "name": "@slidev-react/client",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "description": "Browser-side React app and presentation UI for slidev-react",
   "license": "MIT",
   "files": [
@@ -57,7 +57,7 @@
   "dependencies": {
     "@antv/g-svg": "^2.1.1",
     "@antv/g2": "^5.4.8",
-    "@slidev-react/core": "0.4.10",
+    "@slidev-react/core": "0.4.11",
     "katex": "0.16.33",
     "lucide-react": "0.568.0",
     "mermaid": "11.12.3",

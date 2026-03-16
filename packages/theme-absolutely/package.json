@@ -1,6 +1,6 @@
 {
   "name": "@slidev-react/theme-absolutely",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "files": [
     "dist",
     "README.md"
@@ -23,7 +23,7 @@
     "prepack": "pnpm run build:pkg"
   },
   "peerDependencies": {
-    "@slidev-react/core": "^0.4.10",
+    "@slidev-react/core": "^0.4.11",
     "react": "^19.0.0"
   }
 }
