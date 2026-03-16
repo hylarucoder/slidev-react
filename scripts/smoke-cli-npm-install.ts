@@ -11,6 +11,12 @@ interface PackageJson {
   devDependencies?: Record<string, string>;
 }
 
+interface BrowserProbe {
+  consoleErrors: string[];
+  pageErrors: string[];
+  requestFailures: string[];
+}
+
 function readJson<T>(filePath: string) {
   return JSON.parse(readFileSync(filePath, "utf8")) as T;
 }
@@ -165,6 +171,39 @@ async function waitForAddonRender(page: Page, timeoutMs: number) {
   );
 }
 
+function createBrowserProbe(page: Page): BrowserProbe {
+  const consoleErrors: string[] = [];
+  const pageErrors: string[] = [];
+  const requestFailures: string[] = [];
+
+  page.on("console", (message) => {
+    if (message.type() !== "error") return;
+    const text = message.text();
+    if (/Outdated Optimize Dep/i.test(text)) return;
+    consoleErrors.push(`[console.error] ${text}`);
+  });
+
+  page.on("pageerror", (error) => {
+    pageErrors.push(`[pageerror] ${error.message}`);
+  });
+
+  page.on("requestfailed", (request) => {
+    const resourceType = request.resourceType();
+    if (!["document", "script", "stylesheet", "fetch", "xhr"].includes(resourceType)) return;
+
+    const failure = request.failure()?.errorText ?? "unknown request failure";
+    if (resourceType === "script" && failure === "net::ERR_ABORTED") return;
+    if (/Outdated Optimize Dep/i.test(failure)) return;
+    requestFailures.push(`[requestfailed] ${resourceType} ${request.url()} -> ${failure}`);
+  });
+
+  return {
+    consoleErrors,
+    pageErrors,
+    requestFailures,
+  };
+}
+
 function assertNoKnownPackagingErrors(output: string) {
   const patterns = [
     /Unsupported URL Type "catalog:"/i,
@@ -226,37 +265,18 @@ async function packPackage(packageDir: string, packDir: string) {
   return path.join(packDir, tarballName);
 }
 
-async function main() {
-  const repoRoot = path.resolve(import.meta.dirname, "..");
-  const packDir = await mkdtemp(path.join(tmpdir(), "slidev-react-pack-"));
-  const appRoot = await mkdtemp(path.join(tmpdir(), "slidev-react-npm-install-"));
-  const rootPackageJson = readJson<PackageJson>(path.join(repoRoot, "package.json"));
-  const reactVersion = rootPackageJson.dependencies?.react;
-  const reactDomVersion = rootPackageJson.dependencies?.["react-dom"];
-  const mdxReactVersion = rootPackageJson.devDependencies?.["@mdx-js/react"];
-
-  if (!reactVersion || !reactDomVersion || !mdxReactVersion) {
-    throw new Error("Missing runtime peer versions needed for npm install smoke test.");
-  }
-
-  const [coreTarball, clientTarball, nodeTarball, cliTarball] = await Promise.all([
-    packPackage(path.join(repoRoot, "packages/core"), packDir),
-    packPackage(path.join(repoRoot, "packages/client"), packDir),
-    packPackage(path.join(repoRoot, "packages/node"), packDir),
-    packPackage(path.join(repoRoot, "packages/cli"), packDir),
-  ]);
-
+async function writeSmokeSlides(appRoot: string, options: { title: string; intro: string }) {
   await writeFile(
     path.join(appRoot, "slides.mdx"),
     [
       "---",
-      "title: npm Install Smoke",
+      `title: ${options.title}`,
       "addons: [g2, mermaid]",
       "---",
       "",
       "# Hello",
       "",
-      "This deck boots from npm-installed tarballs.",
+      options.intro,
       "",
       '<div id="g2-smoke">',
       "",
@@ -284,21 +304,88 @@ async function main() {
     ].join("\n"),
     "utf8",
   );
+}
+
+async function assertDevServerInBrowser(options: {
+  devUrl: string;
+  expectedTitle: string;
+  devProcess: ReturnType<typeof spawnCommand>;
+  devOutput: () => string;
+}) {
+  const browser = await chromium.launch();
+  const page = await browser.newPage();
+  const browserProbe = createBrowserProbe(page);
+  let devExited = false;
+
+  void options.devProcess.completed.then(() => {
+    devExited = true;
+  });
+
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 1_500));
+    await waitForPageReady(page, options.devUrl, options.expectedTitle, 30_000);
+    await waitForPresentationMount(page, 10_000);
+    await waitForAddonRender(page, 10_000);
+    await page.waitForTimeout(1_500);
+
+    if (
+      browserProbe.consoleErrors.length > 0
+      || browserProbe.pageErrors.length > 0
+      || browserProbe.requestFailures.length > 0
+    ) {
+      throw new Error(
+        `Dev server opened in Chromium, but browser errors were detected:\n${formatBrowserFailures({
+          consoleErrors: browserProbe.consoleErrors,
+          pageErrors: browserProbe.pageErrors,
+          requestFailures: browserProbe.requestFailures,
+        })}`,
+      );
+    }
+  } finally {
+    await page.close();
+    await browser.close();
+    if (!devExited) {
+      options.devProcess.child.kill("SIGINT");
+    }
+  }
+
+  const devResult = await waitForCompletion(
+    options.devProcess.completed,
+    10_000,
+    `Timed out waiting for smoke dev server to shut down:\n${options.devOutput()}`,
+  );
+  assertNoKnownPackagingErrors(devResult.stdout + devResult.stderr);
+}
+
+async function runInstalledCliSmoke(options: {
+  appRoot: string;
+  coreTarball: string;
+  clientTarball: string;
+  nodeTarball: string;
+  cliTarball: string;
+  reactVersion: string;
+  reactDomVersion: string;
+  mdxReactVersion: string;
+}) {
+  await writeSmokeSlides(options.appRoot, {
+    title: "npm Install Smoke",
+    intro: "This deck boots from npm-installed tarballs.",
+  });
 
   const installProcess = spawnCommand(
     "npm",
     [
       "install",
-      `react@${reactVersion}`,
-      `react-dom@${reactDomVersion}`,
-      `@mdx-js/react@${mdxReactVersion}`,
-      coreTarball,
-      clientTarball,
-      nodeTarball,
-      cliTarball,
+      `react@${options.reactVersion}`,
+      `react-dom@${options.reactDomVersion}`,
+      `@mdx-js/react@${options.mdxReactVersion}`,
+      options.coreTarball,
+      options.clientTarball,
+      options.nodeTarball,
+      options.cliTarball,
     ],
     {
-      cwd: appRoot,
+      cwd: options.appRoot,
     },
   );
   const installResult = await installProcess.completed;
@@ -309,10 +396,10 @@ async function main() {
 
   assertNoKnownPackagingErrors(installResult.stdout + installResult.stderr);
 
-  const cliFile = path.join(appRoot, "node_modules", "@slidev-react", "cli", "dist", "bin", "slidev-react.mjs");
+  const cliFile = path.join(options.appRoot, "node_modules", "@slidev-react", "cli", "dist", "bin", "slidev-react.mjs");
 
   const helpProcess = spawnCommand("node", [cliFile, "--help"], {
-    cwd: appRoot,
+    cwd: options.appRoot,
   });
   const helpResult = await helpProcess.completed;
 
@@ -323,7 +410,7 @@ async function main() {
   assertNoKnownPackagingErrors(helpResult.stdout + helpResult.stderr);
 
   const buildProcess = spawnCommand("node", [cliFile, "build", "slides.mdx", "--outDir", "dist"], {
-    cwd: appRoot,
+    cwd: options.appRoot,
   });
   const buildResult = await buildProcess.completed;
 
@@ -333,7 +420,7 @@ async function main() {
 
   assertNoKnownPackagingErrors(buildResult.stdout + buildResult.stderr);
 
-  const builtHtml = await readFile(path.join(appRoot, "dist/index.html"), "utf8");
+  const builtHtml = await readFile(path.join(options.appRoot, "dist/index.html"), "utf8");
   if (!builtHtml.includes("npm Install Smoke")) {
     throw new Error("npm-installed build produced output, but dist/index.html is missing the deck title.");
   }
@@ -341,9 +428,8 @@ async function main() {
   const port = await findFreePort();
   const devUrl = `http://localhost:${port}/`;
   let devOutput = "";
-  let devExited = false;
   const devProcess = spawnCommand("node", [cliFile, "dev", "slides.mdx", "--port", String(port)], {
-    cwd: appRoot,
+    cwd: options.appRoot,
     onStdout: (output) => {
       devOutput += output;
     },
@@ -351,66 +437,168 @@ async function main() {
       devOutput += output;
     },
   });
-  void devProcess.completed.then(() => {
-    devExited = true;
-  });
 
   await waitForOutput(() => /Local:\s+http:\/\/localhost:/i.test(devOutput), 30_000);
   assertNoKnownPackagingErrors(devOutput);
 
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
-  const browserConsoleErrors: string[] = [];
-  const browserPageErrors: string[] = [];
-  const browserRequestFailures: string[] = [];
+  await assertDevServerInBrowser({
+    devUrl,
+    expectedTitle: "npm Install Smoke",
+    devProcess,
+    devOutput: () => devOutput,
+  });
+}
 
-  page.on("console", (message) => {
-    if (message.type() !== "error") return;
-    browserConsoleErrors.push(`[console.error] ${message.text()}`);
+async function runExecCliSmoke(options: {
+  appRoot: string;
+  coreTarball: string;
+  clientTarball: string;
+  nodeTarball: string;
+  cliTarball: string;
+}) {
+  await writeSmokeSlides(options.appRoot, {
+    title: "npm Exec Smoke",
+    intro: "This deck boots from npm exec with only the CLI tarball.",
   });
 
-  page.on("pageerror", (error) => {
-    browserPageErrors.push(`[pageerror] ${error.message}`);
-  });
+  const helpProcess = spawnCommand(
+    "npm",
+    [
+      "exec",
+      "--yes",
+      `--package=${options.coreTarball}`,
+      `--package=${options.clientTarball}`,
+      `--package=${options.nodeTarball}`,
+      `--package=${options.cliTarball}`,
+      "--",
+      "slidev-react",
+      "--help",
+    ],
+    {
+      cwd: options.appRoot,
+    },
+  );
+  const helpResult = await helpProcess.completed;
 
-  page.on("requestfailed", (request) => {
-    const resourceType = request.resourceType();
-    if (!["document", "script", "stylesheet", "fetch", "xhr"].includes(resourceType)) return;
-
-    const failure = request.failure()?.errorText ?? "unknown request failure";
-    if (resourceType === "script" && failure === "net::ERR_ABORTED") return;
-    browserRequestFailures.push(`[requestfailed] ${resourceType} ${request.url()} -> ${failure}`);
-  });
-
-  try {
-    await waitForPageReady(page, devUrl, "npm Install Smoke", 30_000);
-    await waitForPresentationMount(page, 10_000);
-    await waitForAddonRender(page, 10_000);
-    await page.waitForTimeout(1_500);
-
-    if (browserConsoleErrors.length > 0 || browserPageErrors.length > 0 || browserRequestFailures.length > 0) {
-      throw new Error(
-        `npm-installed dev server opened in Chromium, but browser errors were detected:\n${formatBrowserFailures({
-          consoleErrors: browserConsoleErrors,
-          pageErrors: browserPageErrors,
-          requestFailures: browserRequestFailures,
-        })}`,
-      );
-    }
-  } finally {
-    await page.close();
-    await browser.close();
-    if (!devExited) {
-      devProcess.child.kill("SIGINT");
-    }
+  if (helpResult.code !== 0) {
+    throw new Error(`npm exec CLI help failed:\n${helpResult.stderr || helpResult.stdout}`);
   }
 
-  const devResult = await waitForCompletion(
-    devProcess.completed,
-    10_000,
-    `Timed out waiting for npm-installed dev server to shut down:\n${devOutput}`,
+  assertNoKnownPackagingErrors(helpResult.stdout + helpResult.stderr);
+
+  const buildProcess = spawnCommand(
+    "npm",
+    [
+      "exec",
+      "--yes",
+      `--package=${options.coreTarball}`,
+      `--package=${options.clientTarball}`,
+      `--package=${options.nodeTarball}`,
+      `--package=${options.cliTarball}`,
+      "--",
+      "slidev-react",
+      "build",
+      "slides.mdx",
+      "--outDir",
+      "dist",
+    ],
+    {
+      cwd: options.appRoot,
+    },
   );
-  assertNoKnownPackagingErrors(devResult.stdout + devResult.stderr);
+  const buildResult = await buildProcess.completed;
+
+  if (buildResult.code !== 0) {
+    throw new Error(`npm exec CLI build failed:\n${buildResult.stderr || buildResult.stdout}`);
+  }
+
+  assertNoKnownPackagingErrors(buildResult.stdout + buildResult.stderr);
+
+  const builtHtml = await readFile(path.join(options.appRoot, "dist/index.html"), "utf8");
+  if (!builtHtml.includes("npm Exec Smoke")) {
+    throw new Error("npm exec build produced output, but dist/index.html is missing the deck title.");
+  }
+
+  const port = await findFreePort();
+  const devUrl = `http://localhost:${port}/`;
+  let devOutput = "";
+  const devProcess = spawnCommand(
+    "npm",
+    [
+      "exec",
+      "--yes",
+      `--package=${options.coreTarball}`,
+      `--package=${options.clientTarball}`,
+      `--package=${options.nodeTarball}`,
+      `--package=${options.cliTarball}`,
+      "--",
+      "slidev-react",
+      "dev",
+      "slides.mdx",
+      "--port",
+      String(port),
+    ],
+    {
+      cwd: options.appRoot,
+      onStdout: (output) => {
+        devOutput += output;
+      },
+      onStderr: (output) => {
+        devOutput += output;
+      },
+    },
+  );
+
+  await waitForOutput(() => /Local:\s+http:\/\/localhost:/i.test(devOutput), 30_000);
+  assertNoKnownPackagingErrors(devOutput);
+
+  await assertDevServerInBrowser({
+    devUrl,
+    expectedTitle: "npm Exec Smoke",
+    devProcess,
+    devOutput: () => devOutput,
+  });
+}
+
+async function main() {
+  const repoRoot = path.resolve(import.meta.dirname, "..");
+  const packDir = await mkdtemp(path.join(tmpdir(), "slidev-react-pack-"));
+  const npmInstallAppRoot = await mkdtemp(path.join(tmpdir(), "slidev-react-npm-install-"));
+  const npmExecAppRoot = await mkdtemp(path.join(tmpdir(), "slidev-react-npm-exec-"));
+  const rootPackageJson = readJson<PackageJson>(path.join(repoRoot, "package.json"));
+  const reactVersion = rootPackageJson.dependencies?.react;
+  const reactDomVersion = rootPackageJson.dependencies?.["react-dom"];
+  const mdxReactVersion = rootPackageJson.devDependencies?.["@mdx-js/react"];
+
+  if (!reactVersion || !reactDomVersion || !mdxReactVersion) {
+    throw new Error("Missing runtime peer versions needed for npm install smoke test.");
+  }
+
+  const [coreTarball, clientTarball, nodeTarball, cliTarball] = await Promise.all([
+    packPackage(path.join(repoRoot, "packages/core"), packDir),
+    packPackage(path.join(repoRoot, "packages/client"), packDir),
+    packPackage(path.join(repoRoot, "packages/node"), packDir),
+    packPackage(path.join(repoRoot, "packages/cli"), packDir),
+  ]);
+
+  await runInstalledCliSmoke({
+    appRoot: npmInstallAppRoot,
+    coreTarball,
+    clientTarball,
+    nodeTarball,
+    cliTarball,
+    reactVersion,
+    reactDomVersion,
+    mdxReactVersion,
+  });
+
+  await runExecCliSmoke({
+    appRoot: npmExecAppRoot,
+    coreTarball,
+    clientTarball,
+    nodeTarball,
+    cliTarball,
+  });
 }
 
 await main();

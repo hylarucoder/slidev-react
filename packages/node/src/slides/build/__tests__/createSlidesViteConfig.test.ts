@@ -1,6 +1,17 @@
 import { describe, expect, it } from "vite-plus/test";
 import { createSlidesViteConfig } from "../config/createSlidesViteConfig.ts";
 
+function getAliasFindList() {
+  const config = createSlidesViteConfig({
+    appRoot: process.cwd(),
+  });
+
+  return (config.resolve?.alias ?? []).map((entry) => {
+    if (typeof entry === "string") return entry;
+    return String(entry.find);
+  });
+}
+
 describe("createSlidesViteConfig", () => {
   it("prebundles browser-heavy addon runtimes for dev startup", () => {
     const config = createSlidesViteConfig({
@@ -16,18 +27,20 @@ describe("createSlidesViteConfig", () => {
   });
 
   it("aliases generated modules and self-contained runtime fallbacks", () => {
-    const config = createSlidesViteConfig({
-      appRoot: process.cwd(),
-    });
+    const aliasFindList = getAliasFindList();
 
-    expect(config.resolve?.alias).not.toHaveProperty("@");
-    expect(config.resolve?.alias).toHaveProperty("@generated/slides");
-    expect(config.resolve?.alias).toHaveProperty("@mdx-js/react");
-    expect(config.resolve?.alias).toHaveProperty("react");
-    expect(config.resolve?.alias).toHaveProperty("react-dom");
-    expect(config.resolve?.alias).toHaveProperty("react-dom/client");
-    expect(config.resolve?.alias).toHaveProperty("react/jsx-runtime");
-    expect(config.resolve?.alias).toHaveProperty("react/jsx-dev-runtime");
-    expect(Object.keys(config.resolve?.alias ?? {})).toHaveLength(7);
+    expect(aliasFindList).not.toContain("@");
+    expect(aliasFindList).toContain("@generated/slides");
+    expect(aliasFindList).toContain("@mdx-js/react");
+    expect(aliasFindList).toContain("react");
+    expect(aliasFindList).toContain("react-dom");
+    expect(aliasFindList).toContain("react-dom/client");
+    expect(aliasFindList).toContain("react/jsx-runtime");
+    expect(aliasFindList).toContain("react/jsx-dev-runtime");
+    expect(aliasFindList).toContain("/^@antv\\/g2\\/esm\\/lib\\/plot$/");
+    expect(aliasFindList).toContain("/^@antv\\/g2$/");
+    expect(aliasFindList).toContain("/^@antv\\/g-svg$/");
+    expect(aliasFindList).toContain("/^mermaid\\/dist\\/mermaid\\.esm\\.min\\.mjs$/");
+    expect(aliasFindList).toHaveLength(11);
   });
 });
