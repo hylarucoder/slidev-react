@@ -1,3 +1,5 @@
+import { existsSync, renameSync, rmSync } from "node:fs";
+import path from "node:path";
 import type { Plugin } from "vite";
 import { prepareBuildIndexHtml } from "./buildIndexHtml.ts";
 import { extractTitleFromSlidesFile, generateSlidesIndexHtml } from "./slidesHtmlShell.ts";
@@ -28,15 +30,33 @@ export function pluginVirtualEntry(options: {
     entryModuleId: VIRTUAL_ENTRY_ID,
   });
   let buildIndexCleanup: (() => void) | undefined;
+  let outputDir: string | undefined;
 
   function cleanupBuildIndex() {
     buildIndexCleanup?.();
     buildIndexCleanup = undefined;
   }
 
+  function finalizeBuiltIndex() {
+    if (!outputDir) return;
+
+    const nestedIndexPath = path.join(outputDir, ".slidev-react", "build", "index.html");
+    const outputIndexPath = path.join(outputDir, "index.html");
+    const nestedOutputDir = path.join(outputDir, ".slidev-react");
+
+    if (!existsSync(nestedIndexPath)) return;
+
+    renameSync(nestedIndexPath, outputIndexPath);
+    rmSync(nestedOutputDir, { force: true, recursive: true });
+  }
+
   return {
     name: "slidev-react:virtual-entry",
     enforce: "pre",
+
+    configResolved(config) {
+      outputDir = path.resolve(config.root, config.build.outDir);
+    },
 
     config(_config, env) {
       const virtualBuildIndex = env.command === "build"
@@ -58,7 +78,9 @@ export function pluginVirtualEntry(options: {
           ? {
               build: {
                 rollupOptions: {
-                  input: virtualBuildIndex.filePath,
+                  input: {
+                    index: virtualBuildIndex.filePath,
+                  },
                 },
               },
             }
@@ -71,6 +93,7 @@ export function pluginVirtualEntry(options: {
     },
 
     closeBundle() {
+      finalizeBuiltIndex();
       cleanupBuildIndex();
     },
 
