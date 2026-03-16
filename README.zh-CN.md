@@ -70,6 +70,7 @@ pnpm dev
 生成出来的 app 默认包含：
 
 - 一个最小可跑的 `slides.mdx`
+- 内置的 `moonlit` 主题
 - 内置 `g2 + mermaid` 示例
 - `pnpm dev`、`pnpm build`、`pnpm export`、`pnpm lint` scripts
 
@@ -231,11 +232,14 @@ notes: |
 ```mdx
 ---
 title: Client Review
-theme: paper
+theme: moonlit
 ---
 ```
 
-主题以 workspace 包的形式分发。当前内置的非默认主题是 **paper**（`packages/theme-paper`），包名为 `@slidev-react/theme-paper`。
+主题现在有两类来源：
+
+- 由 `@slidev-react/client` 内置提供的主题，例如 **moonlit**
+- 通过包分发的外部主题，例如 `@slidev-react/theme-paper` 和 `@slidev-react/theme-absolutely`
 
 主题包从入口文件导出 `SlideThemeDefinition`，支持以下能力：
 
@@ -245,7 +249,7 @@ theme: paper
 - `mdxComponents` — 覆盖 `Badge` 等 MDX helper
 - `provider` — 注入主题级 React context
 
-主题 CSS 文件（如 `style.css`）会自动加载。运行时会根据 `tokens` 派生 CSS custom properties，所以 CSS 是 token 的消费层，而不是主题真源。如果请求的主题不存在，运行时会安全回退到默认主题。
+内置主题和外部主题的 CSS 文件（如 `style.css`）都会自动加载。运行时会根据 `tokens` 派生 CSS custom properties，所以 CSS 是 token 的消费层，而不是主题真源。如果请求的主题不存在，运行时会安全回退到默认主题。
 
 ## Addons
 

@@ -3,7 +3,7 @@ import { render } from "vitest-browser-react";
 import { ThemeProvider } from "../ThemeProvider";
 
 test("applies theme root attributes and css vars on mount", async () => {
-  render(
+  await render(
     <ThemeProvider>
       <div>theme</div>
     </ThemeProvider>,

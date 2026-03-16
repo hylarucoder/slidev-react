@@ -51,4 +51,31 @@ describe("theme registry", () => {
     expect(theme.mdxComponents.KeyStat).toBe(absolutelyTheme.mdxComponents?.KeyStat);
     expect(theme.mdxComponents.PullQuote).toBe(absolutelyTheme.mdxComponents?.PullQuote);
   });
+
+  it("merges the built-in moonlit theme with default layouts and mdx components", async () => {
+    vi.resetModules();
+
+    const { default: moonlitTheme } = await import("../builtin/moonlit/index");
+    vi.doMock("virtual:slidev-react/active-theme", () => ({
+      default: moonlitTheme,
+    }));
+
+    const { resolveSlideTheme: resolveActiveSlideTheme } = await import("../registry");
+    const theme = resolveActiveSlideTheme();
+
+    expect(theme.definition.id).toBe("moonlit");
+    expect(theme.rootAttributes).toEqual({
+      "data-slide-theme": "moonlit",
+    });
+    expect(theme.tokens.ui.background).toBe("#1c1c1c");
+    expect(theme.layouts.default).toBeDefined();
+    expect(theme.layouts["two-cols"]).toBeDefined();
+    expect(theme.layouts.cover).toBe(moonlitTheme.layouts?.cover);
+    expect(theme.layouts.section).toBe(moonlitTheme.layouts?.section);
+    expect(theme.layouts.statement).toBe(moonlitTheme.layouts?.statement);
+    expect(theme.mdxComponents.Badge).toBe(moonlitTheme.mdxComponents?.Badge);
+    expect(theme.mdxComponents.Callout).toBe(moonlitTheme.mdxComponents?.Callout);
+    expect(theme.mdxComponents.KeyStat).toBe(moonlitTheme.mdxComponents?.KeyStat);
+    expect(theme.mdxComponents.PullQuote).toBe(moonlitTheme.mdxComponents?.PullQuote);
+  });
 });

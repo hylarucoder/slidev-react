@@ -1,7 +1,11 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { loadClientRuntimeManifest, type ClientRuntimeAddonManifestEntry } from "../runtime/runtimeManifest.ts";
+import {
+  loadClientRuntimeManifest,
+  type ClientRuntimeAddonManifestEntry,
+  type ClientRuntimeThemeManifestEntry,
+} from "../runtime/runtimeManifest.ts";
 import type { ResolvedAddonExtension, ResolvedThemeExtension } from "./types.ts";
 
 const LOCAL_DEFINITION_FILES = ["index.ts", "index.tsx", "index.js", "index.jsx"];
@@ -114,8 +118,20 @@ function resolveBuiltinAddon(id: string): ResolvedAddonExtension | null {
   };
 }
 
+function resolveBuiltinTheme(id: string): ResolvedThemeExtension | null {
+  const theme = loadClientRuntimeManifest().themes.find((entry) => entry.id === id);
+  if (!theme) return null;
+
+  return {
+    id: theme.id,
+    importPath: theme.module,
+    styleImportPath: theme.style,
+    source: "builtin",
+  };
+}
+
 export function resolveThemeExtension(appRoot: string, id: string) {
-  return resolveLocalTheme(appRoot, id) ?? resolveThemePackage(id);
+  return resolveBuiltinTheme(id) ?? resolveLocalTheme(appRoot, id) ?? resolveThemePackage(id);
 }
 
 export function resolveAddonExtension(appRoot: string, id: string) {
@@ -128,4 +144,8 @@ export function listBuiltinAddonIds() {
 
 export function listBuiltinAddons() {
   return loadClientRuntimeManifest().addons.slice() as ClientRuntimeAddonManifestEntry[];
+}
+
+export function listBuiltinThemes() {
+  return loadClientRuntimeManifest().themes.slice() as ClientRuntimeThemeManifestEntry[];
 }

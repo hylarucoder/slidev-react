@@ -44,6 +44,12 @@
       "default": "./dist/addons/insight.js"
     },
     "./addons/insight/style.css": "./dist/addons/insight/style.css",
+    "./themes/moonlit": {
+      "types": "./dist/src/theme/builtin/moonlit/index.d.ts",
+      "import": "./dist/themes/moonlit.js",
+      "default": "./dist/themes/moonlit.js"
+    },
+    "./themes/moonlit/style.css": "./dist/themes/moonlit/style.css",
     "./package.json": "./package.json"
   },
   "publishConfig": {

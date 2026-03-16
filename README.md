@@ -76,6 +76,7 @@ Open the viewer at `http://localhost:5173/1` or the presenter at `http://localho
 The generated app includes:
 
 - `slides.mdx` with a minimal starter deck
+- built-in `moonlit` theme
 - built-in `g2 + mermaid` examples
 - `pnpm dev`, `pnpm build`, `pnpm export`, and `pnpm lint` scripts
 
@@ -237,11 +238,14 @@ Set the theme in slides-level frontmatter:
 ```mdx
 ---
 title: Client Review
-theme: paper
+theme: moonlit
 ---
 ```
 
-Themes are distributed as workspace packages. The built-in non-default theme is **paper** (`packages/theme-paper`), published as `@slidev-react/theme-paper`.
+Themes can come from two places:
+
+- built-in themes shipped by `@slidev-react/client`, such as **moonlit**
+- external theme packages such as `@slidev-react/theme-paper` and `@slidev-react/theme-absolutely`
 
 A theme package exports a `SlideThemeDefinition` from its entry point, with support for:
 
@@ -251,7 +255,7 @@ A theme package exports a `SlideThemeDefinition` from its entry point, with supp
 - `mdxComponents` — override MDX helpers such as `Badge`
 - `provider` — theme-scoped React context when needed
 
-Theme CSS files (e.g. `style.css`) are auto-loaded. CSS custom properties are derived from `tokens` at runtime, so CSS is a consumer of theme tokens rather than the source of truth. If a requested theme is missing, the runtime falls back to the default theme.
+Built-in theme CSS files are auto-loaded in the same way as external theme CSS. CSS custom properties are derived from `tokens` at runtime, so CSS is a consumer of theme tokens rather than the source of truth. If a requested theme is missing, the runtime falls back to the default theme.
 
 ## Addons
 

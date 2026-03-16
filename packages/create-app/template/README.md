@@ -2,6 +2,8 @@
 
 这是一个由 `create-slidev-react` 创建的最小演示项目。
 
+默认 starter 使用内置的 `moonlit` 主题，并且开箱即用包含 `g2 + mermaid` 示例，不需要额外安装主题包。
+
 ## Commands
 
 ```bash

@@ -121,7 +121,6 @@ function createTemplatePackageJson(packageName: string) {
       '@mdx-js/react': templateVersions['@mdx-js/react'] ?? '3.1.1',
       '@slidev-react/cli': ownPackageJson.version,
       '@slidev-react/node': ownPackageJson.version,
-      '@slidev-react/theme-absolutely': ownPackageJson.version,
       react: templateVersions.react ?? '19.2.3',
       'react-dom': templateVersions['react-dom'] ?? '19.2.3',
     },

@@ -19,7 +19,7 @@ function generateThemeModuleCode(options: {
   const resolvedTheme = resolveThemeExtension(appRoot, themeId);
   if (!resolvedTheme) {
     throw new Error(
-      `[slidev-react] Theme "${themeId}" was declared but could not be resolved. Add packages/theme-${themeId}/index.ts or install @slidev-react/theme-${themeId}.`,
+      `[slidev-react] Theme "${themeId}" was declared but could not be resolved. Use a built-in theme, add packages/theme-${themeId}/index.ts, or install @slidev-react/theme-${themeId}.`,
     );
   }
 

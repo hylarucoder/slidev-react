@@ -118,8 +118,8 @@ importers:
         specifier: ^14.0.0
         version: 14.0.0(commander@14.0.3)
       '@slidev-react/node':
-        specifier: 0.4.9
-        version: 0.4.9(@playwright/test@1.58.2)(@types/node@25.3.5)(@types/react@19.2.7)(esbuild@0.27.3)(jiti@2.6.1)(react-dom@19.2.3(react@19.2.3))(tsx@4.21.0)(typescript@5.9.3)
+        specifier: 0.4.14
+        version: 0.4.14(@playwright/test@1.58.2)(@types/node@25.3.5)(@types/react@19.2.7)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(typescript@5.9.3)
       commander:
         specifier: ^14.0.3
         version: 14.0.3
@@ -136,8 +136,8 @@ importers:
         specifier: '>=3.0.0'
         version: 3.1.1(@types/react@19.2.7)(react@19.2.3)
       '@slidev-react/core':
-        specifier: 0.4.9
-        version: 0.4.9
+        specifier: 0.4.14
+        version: 0.4.14
       katex:
         specifier: 0.16.33
         version: 0.16.33
@@ -175,6 +175,8 @@ importers:
         specifier: 4.3.6
         version: 4.3.6
 
+  packages/create-app: {}
+
   packages/node:
     dependencies:
       '@mdx-js/mdx':
@@ -187,11 +189,11 @@ importers:
         specifier: ^1.58.2
         version: 1.58.2
       '@slidev-react/client':
-        specifier: 0.4.9
-        version: 0.4.9(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: 0.4.14
+        version: 0.4.14(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@slidev-react/core':
-        specifier: 0.4.9
-        version: 0.4.9
+        specifier: 0.4.14
+        version: 0.4.14
       '@tailwindcss/postcss':
         specifier: ^4.1.18
         version: 4.2.1
@@ -235,8 +237,8 @@ importers:
   packages/theme-absolutely:
     dependencies:
       '@slidev-react/core':
-        specifier: ^0.4.9
-        version: 0.4.9
+        specifier: ^0.4.14
+        version: 0.4.14
       react:
         specifier: ^19.0.0
         version: 19.2.3
@@ -244,8 +246,8 @@ importers:
   packages/theme-paper:
     dependencies:
       '@slidev-react/core':
-        specifier: ^0.4.9
-        version: 0.4.9
+        specifier: ^0.4.14
+        version: 0.4.14
       react:
         specifier: ^19.0.0
         version: 19.2.3
@@ -1041,20 +1043,20 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
-  '@slidev-react/client@0.4.9':
-    resolution: {integrity: sha512-XYfK6VI3lu7VLPBFXRyy2iJzZik8mnzZwkA82Wlkz4HbbXGIwb1mwB6GFkxeVbApCKKfUvwNTZ9RI4N/APGHsg==}
+  '@slidev-react/client@0.4.14':
+    resolution: {integrity: sha512-EiAZaZKBgI/7z4oVIE15yX2LwxDeyGpKAKBBX8j+RddB8W1FbE0cD2AkfMtRurocrCQtWz7/Ue7N78dZ/ypPiQ==}
     engines: {node: '>=22'}
     peerDependencies:
       '@mdx-js/react': '>=3.0.0'
       react: '>=19.0.0'
       react-dom: '>=19.0.0'
 
-  '@slidev-react/core@0.4.9':
-    resolution: {integrity: sha512-7tFNsfOmBC2eDVnXKPnCJAc7nYySDRAa7BOW+DjC9t8q8nLrbkOILk+t+sadV0CM7qnhbUytmuhajqCbB8gegQ==}
+  '@slidev-react/core@0.4.14':
+    resolution: {integrity: sha512-DkC/6j2pjddCfpyhDbGeZcDstsF8YRogrKd2RMVuzIfNvnyRvRgkbh8t6c2v5TnP3AWnByE2EwjVTBIXmxo63w==}
     engines: {node: '>=22'}
 
-  '@slidev-react/node@0.4.9':
-    resolution: {integrity: sha512-P1XkUFRtKOk0kqpAcj0RAMYpGq5SNSusNfSYtfKjabZecS0JNs6AT1cO/Tii2BlhPhmv3mz17gQFP5Goa4J1Uw==}
+  '@slidev-react/node@0.4.14':
+    resolution: {integrity: sha512-wi6lRUybp3B1WrJTa0IGraHbNE3mgJPRLYYejIMgvR3aOdjysUX7MNPT3f1+nTfiEgCOYB9W4ImCSTCESZ9jwQ==}
     engines: {node: '>=22'}
     peerDependencies:
       '@playwright/test': ^1.58.2
@@ -3857,12 +3859,12 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@slidev-react/client@0.4.9(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@slidev-react/client@0.4.14(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@antv/g-svg': 2.1.1
       '@antv/g2': 5.4.8
       '@mdx-js/react': 3.1.1(@types/react@19.2.7)(react@19.2.3)
-      '@slidev-react/core': 0.4.9
+      '@slidev-react/core': 0.4.14
       katex: 0.16.33
       lucide-react: 0.568.0(react@19.2.3)
       mermaid: 11.12.3
@@ -3877,20 +3879,21 @@ snapshots:
       - svelte
       - vue
 
-  '@slidev-react/core@0.4.9':
+  '@slidev-react/core@0.4.14':
     dependencies:
       react: 19.2.3
       zod: 4.3.6
 
-  '@slidev-react/node@0.4.9(@playwright/test@1.58.2)(@types/node@25.3.5)(@types/react@19.2.7)(esbuild@0.27.3)(jiti@2.6.1)(react-dom@19.2.3(react@19.2.3))(tsx@4.21.0)(typescript@5.9.3)':
+  '@slidev-react/node@0.4.14(@playwright/test@1.58.2)(@types/node@25.3.5)(@types/react@19.2.7)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(typescript@5.9.3)':
     dependencies:
       '@mdx-js/mdx': 3.1.1
       '@mdx-js/react': 3.1.1(@types/react@19.2.7)(react@19.2.3)
-      '@slidev-react/client': 0.4.9(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@slidev-react/core': 0.4.9
+      '@slidev-react/client': 0.4.14(@mdx-js/react@3.1.1(@types/react@19.2.7)(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@slidev-react/core': 0.4.14
       '@tailwindcss/postcss': 4.2.1
       '@vitejs/plugin-react': 6.0.0(@voidzero-dev/vite-plus-core@0.1.11(@types/node@25.3.5)(esbuild@0.27.3)(jiti@2.6.1)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2))
       react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
       rehype-katex: 7.0.1
       remark-gfm: 4.0.1
       remark-math: 6.0.0
@@ -3921,7 +3924,6 @@ snapshots:
       - jsdom
       - less
       - publint
-      - react-dom
       - sass
       - sass-embedded
       - solid-js
