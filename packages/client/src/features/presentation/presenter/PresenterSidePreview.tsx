@@ -49,6 +49,7 @@ export function PresenterSidePreview({
       </div>
       <SlidePreviewSurface
         Slide={slide.component}
+        slideId={slide.id}
         meta={slide.meta}
         slidesConfig={slidesConfig}
         alignment="top-left"

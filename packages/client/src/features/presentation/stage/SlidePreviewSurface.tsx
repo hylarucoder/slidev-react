@@ -4,6 +4,7 @@ import type { SlidesConfig } from "../presenter/model/types";
 import { useResolvedLayout } from "../../../theme/useResolvedLayout";
 import { resolveSlideSurface, resolveSlideSurfaceClassName } from "./slideSurface";
 import { useSlideScale } from "./slideViewport";
+import { SlideErrorBoundary } from "./SlideErrorBoundary";
 
 function joinClassNames(...classNames: Array<string | undefined>) {
   return classNames.filter(Boolean).join(" ");
@@ -13,45 +14,25 @@ type SlideArticleProps = HTMLAttributes<HTMLElement> & {
   "data-export-surface"?: string;
 };
 
-export function SlidePreviewSurface({
+function SlidePreviewFrame({
   Slide,
   meta,
   slidesConfig,
   content,
-  viewportClassName,
-  viewportStyle,
-  stageClassName,
   shadowClass,
-  overflowHidden = false,
-  scaleMultiplier = 1,
-  alignment = "center",
+  overflowHidden,
   articleProps,
 }: {
   Slide: SlideComponent;
   meta: SlideMeta;
   slidesConfig: Pick<SlidesConfig, "slidesViewport" | "slidesLayout" | "slidesBackground">;
   content?: ReactNode;
-  viewportClassName?: string;
-  viewportStyle?: CSSProperties;
-  stageClassName?: string;
   shadowClass?: string;
-  overflowHidden?: boolean;
-  scaleMultiplier?: number;
-  alignment?: "center" | "top-left";
+  overflowHidden: boolean;
   articleProps?: SlideArticleProps;
 }) {
   const { slidesViewport, slidesLayout, slidesBackground } = slidesConfig;
   const Layout = useResolvedLayout(meta.layout ?? slidesLayout);
-  const { viewportRef, scale, offset } = useSlideScale(scaleMultiplier, alignment, slidesViewport);
-  const viewportStageStyle = useMemo(
-    () => ({
-      width: `${slidesViewport.width}px`,
-      height: `${slidesViewport.height}px`,
-      transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
-      transformOrigin: "top left",
-    }),
-    [slidesViewport.height, slidesViewport.width, offset.x, offset.y, scale],
-  );
   const {
     className: articleClassName,
     style: articleStyle,
@@ -68,24 +49,85 @@ export function SlidePreviewSurface({
   });
 
   return (
+    <article
+      {...restArticleProps}
+      className={joinClassNames(surface.className, articleClassName)}
+      style={{
+        ...surface.style,
+        ...articleStyle,
+        width: `${slidesViewport.width}px`,
+        height: `${slidesViewport.height}px`,
+      }}
+    >
+      {content ?? (
+        <Layout>
+          <Slide />
+        </Layout>
+      )}
+    </article>
+  );
+}
+
+export function SlidePreviewSurface({
+  Slide,
+  slideId,
+  meta,
+  slidesConfig,
+  content,
+  viewportClassName,
+  viewportStyle,
+  stageClassName,
+  shadowClass,
+  overflowHidden = false,
+  scaleMultiplier = 1,
+  alignment = "center",
+  articleProps,
+}: {
+  Slide: SlideComponent;
+  slideId: string;
+  meta: SlideMeta;
+  slidesConfig: Pick<SlidesConfig, "slidesViewport" | "slidesLayout" | "slidesBackground">;
+  content?: ReactNode;
+  viewportClassName?: string;
+  viewportStyle?: CSSProperties;
+  stageClassName?: string;
+  shadowClass?: string;
+  overflowHidden?: boolean;
+  scaleMultiplier?: number;
+  alignment?: "center" | "top-left";
+  articleProps?: SlideArticleProps;
+}) {
+  const { slidesViewport } = slidesConfig;
+  const { viewportRef, scale, offset } = useSlideScale(scaleMultiplier, alignment, slidesViewport);
+  const viewportStageStyle = useMemo(
+    () => ({
+      width: `${slidesViewport.width}px`,
+      height: `${slidesViewport.height}px`,
+      transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
+      transformOrigin: "top left",
+    }),
+    [slidesViewport.height, slidesViewport.width, offset.x, offset.y, scale],
+  );
+
+  return (
     <div ref={viewportRef} className={viewportClassName} style={viewportStyle}>
       <div className={stageClassName} style={viewportStageStyle}>
-        <article
-          {...restArticleProps}
-          className={joinClassNames(surface.className, articleClassName)}
-          style={{
-            ...surface.style,
-            ...articleStyle,
-            width: `${slidesViewport.width}px`,
-            height: `${slidesViewport.height}px`,
-          }}
+        <SlideErrorBoundary
+          resetKey={slideId}
+          slideId={slideId}
+          title={meta.title}
+          compact
         >
-          {content ?? (
-            <Layout>
-              <Slide />
-            </Layout>
-          )}
-        </article>
+          <SlidePreviewFrame
+            Slide={Slide}
+            meta={meta}
+            slidesConfig={slidesConfig}
+            content={content}
+            shadowClass={shadowClass}
+            overflowHidden={overflowHidden}
+            articleProps={articleProps}
+          />
+        </SlideErrorBoundary>
       </div>
     </div>
   );

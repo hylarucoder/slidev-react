@@ -39,6 +39,7 @@ function OverviewSlidePreview({
       {ready ? (
         <SlidePreviewSurface
           Slide={slide.component}
+          slideId={slide.id}
           meta={slide.meta}
           slidesConfig={slidesConfig}
           viewportClassName="size-full"

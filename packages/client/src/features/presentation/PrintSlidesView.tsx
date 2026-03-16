@@ -190,10 +190,13 @@ function PrintSlideGroup({
                 {withClicks && typeof clickStep === "number" ? (
                   <SlidePreviewSurface
                     Slide={Slide}
+                    slideId={slide.id}
                     meta={slide.meta}
-                    slidesViewport={slidesViewport}
-                    slidesLayout={slidesLayout}
-                    slidesBackground={slidesBackground}
+                    slidesConfig={{
+                      slidesViewport,
+                      slidesLayout,
+                      slidesBackground,
+                    }}
                     content={
                       <PrintSlideSnapshot
                         Slide={Slide}
@@ -216,10 +219,13 @@ function PrintSlideGroup({
                 ) : (
                   <SlidePreviewSurface
                     Slide={Slide}
+                    slideId={slide.id}
                     meta={slide.meta}
-                    slidesViewport={slidesViewport}
-                    slidesLayout={slidesLayout}
-                    slidesBackground={slidesBackground}
+                    slidesConfig={{
+                      slidesViewport,
+                      slidesLayout,
+                      slidesBackground,
+                    }}
                     content={
                       <Layout>
                         <Slide />
