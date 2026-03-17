@@ -73,14 +73,15 @@ test("resolves diagram tokens from theme tokens", () => {
   const mutedSurfaceStyle = resolveMermaidMutedSurfaceStyle(tokens);
 
   expect(themeVariables.fontFamily).toBe("Avenir Next");
-  expect(themeVariables.primaryColor).toBe("#ebd4cb");
+  expect(themeVariables.primaryColor).toBe("rgba(217, 119, 87, 0.16)");
   expect(themeVariables.primaryBorderColor).toBe("#d97757");
   expect(themeVariables.lineColor).toBe("#7a746a");
   expect(themeVariables.mainBkg).toBe("#f5f0e8");
   expect(themeVariables.noteBkgColor).toBe("#f3e6c8");
   expect(themeVariables.git0).toBe("#d97757");
-  expect(themeVariables.git5).toBe("#b8b2a6");
-  expect(themeVariables.fillType6).toBe("#d97757");
+  expect(themeVariables.git5).toBe("#a9a59c");
+  expect(themeVariables.cScale1).toBe("rgba(106, 155, 204, 0.16)");
+  expect(themeVariables.fillType6).toBe("#efe9df");
   expect(surfaceStyle).toEqual({
     color: "#141413",
     fontFamily: "Avenir Next",

@@ -21,73 +21,211 @@ let renderQueue = Promise.resolve();
 
 type MermaidRenderVariant = "preview" | "zoom";
 
+function clampAlpha(value: number) {
+  return Math.max(0, Math.min(1, Number(value.toFixed(3))));
+}
+
+function parseRgbChannels(color: string) {
+  const hex = color.trim().match(/^#([\da-f]{3}|[\da-f]{6})$/i);
+  if (hex) {
+    const normalized =
+      hex[1].length === 3
+        ? hex[1]
+            .split("")
+            .map((channel) => channel + channel)
+            .join("")
+        : hex[1];
+
+    return {
+      r: Number.parseInt(normalized.slice(0, 2), 16),
+      g: Number.parseInt(normalized.slice(2, 4), 16),
+      b: Number.parseInt(normalized.slice(4, 6), 16),
+    };
+  }
+
+  const rgb = color
+    .trim()
+    .match(/^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*[\d.]+\s*)?\)$/i);
+
+  if (!rgb) return null;
+
+  return {
+    r: Number.parseFloat(rgb[1]),
+    g: Number.parseFloat(rgb[2]),
+    b: Number.parseFloat(rgb[3]),
+  };
+}
+
+function withAlpha(color: string, alpha: number) {
+  const channels = parseRgbChannels(color);
+  if (!channels) return color;
+
+  return `rgba(${channels.r}, ${channels.g}, ${channels.b}, ${clampAlpha(alpha)})`;
+}
+
+function repeatPalette(colors: string[], size: number) {
+  return Array.from({ length: size }, (_, index) => colors[index % colors.length]);
+}
+
 export function resolveMermaidThemeVariables(tokens: SlideThemeTokens): Record<string, string> {
+  const accentStroke = tokens.diagram.primaryBorder;
+  const neutralStroke = tokens.diagram.line;
+  const accentFill = withAlpha(tokens.diagram.accent, 0.16);
+  const neutralFill = tokens.diagram.surfaceAlt;
+  const neutralFillStrong = tokens.diagram.surface;
+  const semanticStrokes = [
+    accentStroke,
+    tokens.feedback.info,
+    tokens.feedback.positive,
+    tokens.feedback.warning,
+    tokens.feedback.negative,
+    tokens.feedback.neutral,
+  ];
+  const semanticFills = semanticStrokes.map((color, index) =>
+    withAlpha(color, index === 3 ? 0.18 : 0.16),
+  );
+  const extendedSemanticFills = repeatPalette(semanticFills, 12);
+  const extendedSemanticStrokes = repeatPalette(semanticStrokes, 12);
+  const gitStrokes = repeatPalette([...semanticStrokes, neutralStroke, accentStroke], 8);
+  const gitFills = repeatPalette([neutralFillStrong, neutralFill], 8);
+
   return {
     fontFamily: tokens.fonts.sans,
     fontSize: "19px",
-    primaryColor: tokens.diagram.primary,
+    primaryColor: accentFill,
     primaryTextColor: tokens.diagram.text,
-    primaryBorderColor: tokens.diagram.primaryBorder,
-    lineColor: tokens.diagram.line,
-    background: tokens.diagram.surface,
-    mainBkg: tokens.diagram.surface,
-    secondBkg: tokens.diagram.surfaceAlt,
-    tertiaryColor: tokens.diagram.surfaceAlt,
+    primaryBorderColor: accentStroke,
+    secondaryColor: neutralFill,
+    secondaryBorderColor: neutralStroke,
+    secondaryTextColor: tokens.diagram.text,
+    tertiaryColor: neutralFillStrong,
+    tertiaryBorderColor: neutralStroke,
+    lineColor: neutralStroke,
+    background: neutralFillStrong,
+    mainBkg: neutralFillStrong,
+    secondBkg: neutralFill,
     textColor: tokens.diagram.text,
-    secondaryColor: tokens.diagram.line,
     tertiaryTextColor: tokens.diagram.text,
-    border1: tokens.diagram.primaryBorder,
-    border2: tokens.diagram.line,
-    nodeBkg: tokens.diagram.surfaceAlt,
-    nodeBorder: tokens.diagram.line,
+    border1: accentStroke,
+    border2: neutralStroke,
+    nodeBkg: neutralFill,
+    nodeBorder: neutralStroke,
     nodeTextColor: tokens.diagram.text,
-    clusterBkg: tokens.diagram.surfaceAlt,
-    clusterBorder: tokens.diagram.primaryBorder,
-    edgeLabelBackground: tokens.diagram.surface,
+    clusterBkg: neutralFillStrong,
+    clusterBorder: accentStroke,
+    edgeLabelBackground: neutralFillStrong,
+    labelBackground: neutralFillStrong,
     arrowheadColor: tokens.diagram.line,
-    actorBkg: tokens.diagram.surface,
-    actorBorder: tokens.diagram.primaryBorder,
+    actorBkg: neutralFillStrong,
+    actorBorder: accentStroke,
     actorTextColor: tokens.diagram.text,
     actorLineColor: tokens.diagram.line,
     signalColor: tokens.diagram.line,
     signalTextColor: tokens.diagram.text,
-    labelBoxBkgColor: tokens.diagram.surfaceAlt,
-    labelBoxBorderColor: tokens.diagram.primaryBorder,
+    labelBoxBkgColor: neutralFill,
+    labelBoxBorderColor: accentStroke,
     labelTextColor: tokens.diagram.text,
     loopTextColor: tokens.diagram.text,
     noteBkgColor: tokens.diagram.note,
     noteTextColor: tokens.diagram.text,
-    noteBorderColor: tokens.diagram.primaryBorder,
-    activationBkgColor: tokens.diagram.primary,
-    activationBorderColor: tokens.diagram.primaryBorder,
+    noteBorderColor: accentStroke,
+    activationBkgColor: accentFill,
+    activationBorderColor: accentStroke,
+    sequenceNumberColor: tokens.diagram.text,
+    sectionBkgColor: neutralFillStrong,
+    altSectionBkgColor: neutralFill,
+    sectionBkgColor2: accentFill,
+    excludeBkgColor: withAlpha(tokens.feedback.negative, 0.16),
+    taskBorderColor: neutralStroke,
+    taskBkgColor: neutralFill,
+    taskTextLightColor: tokens.diagram.text,
+    taskTextColor: tokens.diagram.text,
+    taskTextDarkColor: tokens.diagram.text,
+    taskTextOutsideColor: tokens.diagram.text,
+    taskTextClickableColor: tokens.ui.accentStrong,
+    activeTaskBorderColor: accentStroke,
+    activeTaskBkgColor: accentFill,
+    gridColor: tokens.ui.border,
+    doneTaskBkgColor: withAlpha(tokens.feedback.positive, 0.16),
+    doneTaskBorderColor: tokens.feedback.positive,
+    critBorderColor: tokens.feedback.negative,
+    critBkgColor: withAlpha(tokens.feedback.negative, 0.18),
+    todayLineColor: tokens.feedback.warning,
+    vertLineColor: tokens.ui.border,
+    personBorder: accentStroke,
+    personBkg: accentFill,
+    archEdgeColor: neutralStroke,
+    archEdgeArrowColor: neutralStroke,
+    archGroupBorderColor: accentStroke,
+    archGroupBorderWidth: "1",
+    rowOdd: neutralFillStrong,
+    rowEven: neutralFill,
     labelColor: tokens.diagram.text,
     classText: tokens.diagram.text,
-    git0: tokens.diagram.categorical[0],
-    git1: tokens.diagram.categorical[1],
-    git2: tokens.diagram.categorical[2],
-    git3: tokens.diagram.categorical[3],
-    git4: tokens.diagram.categorical[4],
-    git5: tokens.diagram.categorical[5],
-    git6: tokens.diagram.accent,
-    git7: tokens.diagram.line,
-    gitInv0: tokens.diagram.surface,
-    gitInv1: tokens.diagram.surface,
-    gitInv2: tokens.diagram.surface,
-    gitInv3: tokens.diagram.surface,
-    gitInv4: tokens.diagram.surface,
-    gitInv5: tokens.diagram.surface,
-    gitInv6: tokens.diagram.surface,
-    gitInv7: tokens.diagram.surface,
+    errorBkgColor: withAlpha(tokens.feedback.negative, 0.16),
+    errorTextColor: tokens.feedback.negative,
+    cScale0: extendedSemanticFills[0],
+    cScale1: extendedSemanticFills[1],
+    cScale2: extendedSemanticFills[2],
+    cScale3: extendedSemanticFills[3],
+    cScale4: extendedSemanticFills[4],
+    cScale5: extendedSemanticFills[5],
+    cScale6: extendedSemanticFills[6],
+    cScale7: extendedSemanticFills[7],
+    cScale8: extendedSemanticFills[8],
+    cScale9: extendedSemanticFills[9],
+    cScale10: extendedSemanticFills[10],
+    cScale11: extendedSemanticFills[11],
+    cScalePeer0: extendedSemanticStrokes[0],
+    cScalePeer1: extendedSemanticStrokes[1],
+    cScalePeer2: extendedSemanticStrokes[2],
+    cScalePeer3: extendedSemanticStrokes[3],
+    cScalePeer4: extendedSemanticStrokes[4],
+    cScalePeer5: extendedSemanticStrokes[5],
+    cScalePeer6: extendedSemanticStrokes[6],
+    cScalePeer7: extendedSemanticStrokes[7],
+    cScalePeer8: extendedSemanticStrokes[8],
+    cScalePeer9: extendedSemanticStrokes[9],
+    cScalePeer10: extendedSemanticStrokes[10],
+    cScalePeer11: extendedSemanticStrokes[11],
+    git0: gitStrokes[0],
+    git1: gitStrokes[1],
+    git2: gitStrokes[2],
+    git3: gitStrokes[3],
+    git4: gitStrokes[4],
+    git5: gitStrokes[5],
+    git6: gitStrokes[6],
+    git7: gitStrokes[7],
+    gitInv0: gitFills[0],
+    gitInv1: gitFills[1],
+    gitInv2: gitFills[2],
+    gitInv3: gitFills[3],
+    gitInv4: gitFills[4],
+    gitInv5: gitFills[5],
+    gitInv6: gitFills[6],
+    gitInv7: gitFills[7],
     commitLabelColor: tokens.diagram.text,
-    commitLabelBackground: tokens.diagram.surfaceAlt,
-    fillType0: tokens.diagram.accent,
-    fillType1: tokens.diagram.categorical[1],
-    fillType2: tokens.diagram.categorical[2],
-    fillType3: tokens.diagram.categorical[3],
-    fillType4: tokens.diagram.categorical[4],
-    fillType5: tokens.diagram.categorical[5],
-    fillType6: tokens.diagram.primaryBorder,
-    fillType7: tokens.diagram.line,
+    commitLabelBackground: neutralFill,
+    fillType0: extendedSemanticFills[0],
+    fillType1: extendedSemanticFills[1],
+    fillType2: extendedSemanticFills[2],
+    fillType3: extendedSemanticFills[3],
+    fillType4: extendedSemanticFills[4],
+    fillType5: extendedSemanticFills[5],
+    fillType6: neutralFill,
+    fillType7: neutralFillStrong,
+    pie1: extendedSemanticFills[0],
+    pie2: extendedSemanticFills[1],
+    pie3: extendedSemanticFills[2],
+    pie4: extendedSemanticFills[3],
+    pie5: extendedSemanticFills[4],
+    pie6: extendedSemanticFills[5],
+    pie7: extendedSemanticFills[6],
+    pie8: extendedSemanticFills[7],
+    pie9: extendedSemanticFills[8],
+    pie10: extendedSemanticFills[9],
+    pie11: extendedSemanticFills[10],
+    pie12: extendedSemanticFills[11],
   };
 }
 
