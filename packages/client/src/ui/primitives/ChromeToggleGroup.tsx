@@ -59,7 +59,7 @@ export function ChromeToggleGroup<T extends string | number>({
               sizeClassNames[size],
               selected
                 ? 'bg-emerald-50 text-emerald-700 shadow-[inset_0_0_0_1px_rgba(16,185,129,0.28)]'
-                : 'chrome-fg-muted hover:[color:var(--chrome-fg)]',
+                : 'chrome-fg-muted chrome-fg-hover',
               option.disabled && 'cursor-not-allowed opacity-60',
             )}
           >

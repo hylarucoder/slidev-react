@@ -44,6 +44,12 @@
 .chrome-fg-subtle {
   color: var(--chrome-fg-subtle);
 }
+.chrome-fg-hover:hover {
+  color: var(--chrome-fg);
+}
+.chrome-border-strong {
+  border-color: var(--chrome-fg);
+}
 .chrome-scrim-soft {
   background-color: var(--chrome-scrim-soft);
 }

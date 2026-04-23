@@ -20,10 +20,7 @@ export function PresenterMode() {
 
   return (
     <>
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{ background: 'var(--chrome-backdrop)' }}
-      />
+      <div className="pointer-events-none absolute inset-0 chrome-backdrop" />
       <TopProgress total={ctx.navigation.total} progressPercent={progressPercent} />
 
       <StatusBar

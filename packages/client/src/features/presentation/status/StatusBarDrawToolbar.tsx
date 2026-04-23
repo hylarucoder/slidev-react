@@ -63,7 +63,7 @@ export function StatusBarDrawToolbar({ slideId }: { slideId: string }) {
               }}
               title={`Set draw color ${color}`}
               aria-label={`Set draw color ${color}`}
-              className={`inline-flex size-5 items-center justify-center rounded-full border shadow-sm transition ${draw.color === color ? 'ring-2 ring-emerald-300 [border-color:var(--chrome-fg)]' : 'opacity-90 hover:opacity-100 chrome-border'}`}
+              className={`inline-flex size-5 items-center justify-center rounded-full border shadow-sm transition ${draw.color === color ? 'ring-2 ring-emerald-300 chrome-border-strong' : 'opacity-90 hover:opacity-100 chrome-border'}`}
               style={{ backgroundColor: color }}
             />
           ))}
