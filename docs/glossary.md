@@ -28,7 +28,7 @@ Slides 的宽高比，格式为 `"width/height"`（如 `"16/9"`、`"3/4"`）。�
 
 ### BroadcastChannel
 
-浏览器原生 API。用于同一设备多 tab 之间的 Presenter ↔ Viewer 状态同步（页码、clicks、光标、画笔）。
+浏览器原生 API。用于同一设备多 tab 之间的 Presenter ↔ Viewer 状态同步（页码、step、光标、画笔）。
 
 ### Build Artifacts
 
@@ -50,7 +50,7 @@ Slides 的宽高比，格式为 `"width/height"`（如 `"16/9"`、`"3/4"`）。�
 
 ### Clicks
 
-单张 slide 内的 **reveal 步骤计数**。对应 frontmatter `clicks` 字段。运行时以 `cueIndex` / `cueTotal` 追踪。
+作者 API。slide frontmatter 里的 `clicks` 字段，用于**显式指定**该 slide 的 reveal 步骤数。保留此名以和 Slidev 生态约定一致。运行时一侧统一叫 **Step**。
 
 ### Compiled Slides
 
@@ -62,11 +62,7 @@ Slides 的宽高比，格式为 `"width/height"`（如 `"16/9"`、`"3/4"`）。�
 
 ### Cue
 
-Reveal flow 中的一个 **触发步骤**。一张 slide 可以有 0 到多个 cue。Cue 的总数由 frontmatter `clicks` 和实际检测到的 `<Step>` 数量取较大值决定。
-
-- `cueIndex`：当前 cue 位置（0 = 初始态，无内容被展示）
-- `cueTotal`：该 slide 的 cue 上限
-- cue 负责导航语义；具体的 reveal/transition 动画由客户端 scene driver 解释
+~~（旧术语，已废弃 2026-04-24）统一到 **Step**。~~ 见下方 Step 条目。
 
 ---
 
@@ -111,7 +107,7 @@ Session sync 协议中的 **消息信封**。每条消息都封装在 `Presentat
 
 ### Flow (Reveal Flow)
 
-slides 的播放流程模型。Flow 控制页面间的 advance/retreat 导航和页面内 cue 步骤的推进/回退。
+slides 的播放流程模型。Flow 控制页面间的 advance/retreat 导航和页面内 step 的推进/回退。
 
 - `resolveAdvanceFlow()`：前进逻辑
 - `resolveRetreatFlow()`：后退逻辑
@@ -198,8 +194,8 @@ pnpm workspace 管理的多包仓库结构。
 
 Slide 间的导航逻辑。核心函数：
 
-- `resolveAdvanceFlow()`：计算「下一步」的目标（下一个 cue 或下一页）
-- `resolveRetreatFlow()`：计算「上一步」的目标（上一个 cue 或上一页）
+- `resolveAdvanceFlow()`：计算「下一步」的目标（下一个 step 或下一页）
+- `resolveRetreatFlow()`：计算「上一步」的目标（上一个 step 或上一页）
 - `canAdvanceFlow()` / `canRetreatFlow()`：边界判断
 
 ### Notes
@@ -238,7 +234,12 @@ WebSocket 中继服务器，用于 **跨设备** 的 Presenter ↔ Viewer 同步
 
 ### Step
 
-点击触发的内容显隐机制。使用 `<Step step={n}>` 标签包裹需要按步骤显示的内容。`step` 对应 cueIndex。
+Reveal flow 中的一个**触发步骤**。一张 slide 可以有 0 到多个 step。Step 总数由 frontmatter `clicks` 字段和实际检测到的 `<Step>` 数量取较大值决定。
+
+- `stepIndex` / `currentStep`：当前 step 位置（0 = 初始态，无内容被展示）
+- `stepTotal` / `currentStepTotal`：该 slide 的 step 上限
+- 使用 `<Step step={n}>` 标签包裹需要按顺序显示的内容，`n` 对应 stepIndex
+- step 负责导航语义；具体的 reveal/transition 动画由客户端 scene driver 解释
 
 ### Steps
 
@@ -266,14 +267,14 @@ WebSocket 中继服务器，用于 **跨设备** 的 Presenter ↔ Viewer 同步
 
 会话中同步的共享状态（`PresentationSharedState`）：
 
-| 字段          | 说明                   |
-| ------------- | ---------------------- |
-| `page`        | 当前页码               |
-| `clicks`      | 当前 cue 位置          |
-| `clicksTotal` | 当前 slide 的 cue 总数 |
-| `timer`       | 计时器                 |
-| `cursor`      | 光标位置               |
-| `drawings`    | 画笔数据               |
+| 字段        | 说明                    |
+| ----------- | ----------------------- |
+| `page`      | 当前页码                |
+| `step`      | 当前 step 位置          |
+| `stepTotal` | 当前 slide 的 step 总数 |
+| `timer`     | 计时器                  |
+| `cursor`    | 光标位置                |
+| `drawings`  | 画笔数据                |
 
 ### Slide
 

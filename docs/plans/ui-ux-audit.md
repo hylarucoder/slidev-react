@@ -281,6 +281,6 @@ $ grep -rn ' title="' packages/client/src/features packages/client/src/ui | wc -
 - 拖拽 / 键盘调整仍保留（`useSidebarWidth`）。
 
 **Phase 3 PR#2 · revealEngine**
-- 事实上已满足：cue 纯函数（`resolveAdvanceFlow` / `resolveRetreatFlow` / `canAdvanceFlow` / `canRetreatFlow` / `clampCueIndex`）存在于 `@slidev-react/core/presentation/flow/navigation`；motion helper 在 `reveal/revealMotion.ts`。`Reveal.tsx` 本身无额外 cue 调度逻辑可抽。
+- 事实上已满足：step 纯函数（`resolveAdvanceFlow` / `resolveRetreatFlow` / `canAdvanceFlow` / `canRetreatFlow` / `clampStepIndex`）存在于 `@slidev-react/core/presentation/flow/navigation`；motion helper 在 `reveal/revealMotion.ts`。`Reveal.tsx` 本身无额外 step 调度逻辑可抽。（2026-04-24：内部 `cue` 术语已统一为 `step`。）
 
 > 每个 Phase 完工后跑相同 grep，把数字更新到本文档，作为可度量的进展指标。
