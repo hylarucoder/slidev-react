@@ -11,18 +11,16 @@ import { normalizeCueStep } from '@slidev-react/core/presentation/flow/step'
 import { useRevealStep } from './useRevealStep'
 import {
   DEFAULT_REVEAL_VARIANT,
-  resolveRevealVariants,
-  resolveSceneTransition,
   resolveSceneVariantName,
   type SceneTiming,
   type SceneVariantName,
 } from '../motion/scene'
+import { resolveRevealMotionState, resolveStepTimingForAnimation } from './revealMotion'
 
 export type RevealPreset = 'fade' | 'fade-up' | 'scale-in'
 export type RevealVariant = SceneVariantName
 export type RevealTiming = SceneTiming
 
-const DEFAULT_REVEAL_DURATION = 0.22
 const motionComponentCache = new Map<ElementType, ComponentType<Record<string, unknown>>>()
 
 function joinClassNames(...names: Array<string | undefined>) {
@@ -41,32 +39,6 @@ function resolveMotionComponent(type: ElementType) {
 
   motionComponentCache.set(type, MotionComponent)
   return MotionComponent
-}
-
-function resolveRevealMotionState({
-  variant,
-  timing,
-  reserveSpace,
-  reducedMotion,
-}: {
-  variant: RevealVariant
-  timing?: RevealTiming
-  reserveSpace: boolean
-  reducedMotion: boolean
-}) {
-  return {
-    variants: resolveRevealVariants({
-      variant,
-      reserveSpace,
-      reducedMotion,
-    }),
-    transition: resolveSceneTransition({
-      timing,
-      defaultDuration: DEFAULT_REVEAL_DURATION,
-      reducedMotion,
-    }),
-    initial: typeof window === 'undefined' || reducedMotion || variant === 'none' ? false : 'hidden',
-  } as const
 }
 
 function StepBody({
@@ -95,6 +67,7 @@ function StepBody({
     timing,
     reserveSpace,
     reducedMotion,
+    ssr: typeof window === 'undefined',
   })
 
   if (asChild && Children.count(children) === 1 && isValidElement(children)) {
@@ -164,13 +137,7 @@ export function Step({
 
   const resolvedVariant = resolveSceneVariantName(variant, preset, DEFAULT_REVEAL_VARIANT)
   const disableAnimation = reveal.disableAnimation ?? false
-  const resolvedTiming = disableAnimation
-    ? {
-        duration: 0,
-        delay: 0,
-        ease: 'linear' as const,
-      }
-    : timing
+  const resolvedTiming = resolveStepTimingForAnimation({ disableAnimation, timing })
 
   if (!isVisible && !reserveSpace) {
     return (
