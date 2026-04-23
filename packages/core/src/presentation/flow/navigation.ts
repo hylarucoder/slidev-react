@@ -1,54 +1,54 @@
 export interface AdvanceFlowInput {
-  currentCueIndex: number;
-  currentCueTotal: number;
+  currentStepIndex: number;
+  currentStepTotal: number;
   currentPageIndex: number;
   totalPages: number;
 }
 
 export interface RetreatFlowInput {
-  currentCueIndex: number;
+  currentStepIndex: number;
   currentPageIndex: number;
-  previousCueIndex?: number;
-  previousCueTotal?: number;
+  previousStepIndex?: number;
+  previousStepTotal?: number;
 }
 
 export interface FlowNavigationResult {
   pageIndex: number;
-  cueIndex: number;
+  stepIndex: number;
 }
 
-export function clampCueIndex(next: number, total?: number) {
+export function clampStepIndex(next: number, total?: number) {
   if (total === undefined) return Math.max(next, 0);
 
   return Math.min(Math.max(next, 0), Math.max(total, 0));
 }
 
 export function canAdvanceFlow({
-  currentCueIndex,
-  currentCueTotal,
+  currentStepIndex,
+  currentStepTotal,
   currentPageIndex,
   totalPages,
 }: AdvanceFlowInput) {
-  return currentCueIndex < currentCueTotal || currentPageIndex < totalPages - 1;
+  return currentStepIndex < currentStepTotal || currentPageIndex < totalPages - 1;
 }
 
 export function canRetreatFlow({
-  currentCueIndex,
+  currentStepIndex,
   currentPageIndex,
-}: Pick<RetreatFlowInput, "currentCueIndex" | "currentPageIndex">) {
-  return currentCueIndex > 0 || currentPageIndex > 0;
+}: Pick<RetreatFlowInput, "currentStepIndex" | "currentPageIndex">) {
+  return currentStepIndex > 0 || currentPageIndex > 0;
 }
 
 export function resolveAdvanceFlow({
-  currentCueIndex,
-  currentCueTotal,
+  currentStepIndex,
+  currentStepTotal,
   currentPageIndex,
   totalPages,
 }: AdvanceFlowInput): FlowNavigationResult | null {
-  if (currentCueIndex < currentCueTotal) {
+  if (currentStepIndex < currentStepTotal) {
     return {
       pageIndex: currentPageIndex,
-      cueIndex: currentCueIndex + 1,
+      stepIndex: currentStepIndex + 1,
     };
   }
 
@@ -56,20 +56,20 @@ export function resolveAdvanceFlow({
 
   return {
     pageIndex: currentPageIndex + 1,
-    cueIndex: 0,
+    stepIndex: 0,
   };
 }
 
 export function resolveRetreatFlow({
-  currentCueIndex,
+  currentStepIndex,
   currentPageIndex,
-  previousCueIndex,
-  previousCueTotal,
+  previousStepIndex,
+  previousStepTotal,
 }: RetreatFlowInput): FlowNavigationResult | null {
-  if (currentCueIndex > 0) {
+  if (currentStepIndex > 0) {
     return {
       pageIndex: currentPageIndex,
-      cueIndex: currentCueIndex - 1,
+      stepIndex: currentStepIndex - 1,
     };
   }
 
@@ -77,6 +77,6 @@ export function resolveRetreatFlow({
 
   return {
     pageIndex: currentPageIndex - 1,
-    cueIndex: previousCueIndex ?? previousCueTotal ?? 0,
+    stepIndex: previousStepIndex ?? previousStepTotal ?? 0,
   };
 }

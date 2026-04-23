@@ -106,8 +106,8 @@ export function PresenterMode() {
                 slidesConfig={ctx.slidesConfig}
               />
               <SpeakerNotes
-                currentClicks={ctx.flow.currentClicks}
-                currentClicksTotal={ctx.flow.currentClicksTotal}
+                currentStep={ctx.flow.currentStep}
+                currentStepTotal={ctx.flow.currentStepTotal}
                 notes={currentSlide.meta.notes}
               />
             </div>
@@ -120,8 +120,8 @@ export function PresenterMode() {
               <span className="font-medium">Timeline</span>
               <span className="inline-flex items-center gap-1.5">
                 <span className="tabular-nums">
-                  {ctx.flow.currentClicks}
-                  <span className="opacity-60"> / {Math.max(ctx.flow.currentClicksTotal, 0)}</span>
+                  {ctx.flow.currentStep}
+                  <span className="opacity-60"> / {Math.max(ctx.flow.currentStepTotal, 0)}</span>
                 </span>
                 <ChevronUp
                   size={14}
@@ -140,10 +140,10 @@ export function PresenterMode() {
         >
           <FlowTimeline
             slide={currentSlide}
-            currentClicks={ctx.flow.currentClicks}
-            currentClicksTotal={ctx.flow.currentClicksTotal}
+            currentStep={ctx.flow.currentStep}
+            currentStepTotal={ctx.flow.currentStepTotal}
             slidesConfig={ctx.slidesConfig}
-            onJumpToCue={(cueIndex) => ctx.flow.setSlideClicks(currentSlide.id, cueIndex)}
+            onJumpToStep={(stepIndex) => ctx.flow.setSlideStep(currentSlide.id, stepIndex)}
             onClose={ctx.chrome.closeOverlay}
             className="w-full max-w-[min(920px,calc(100vw-2rem))] max-h-[min(60vh,700px)]"
           />

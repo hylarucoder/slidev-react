@@ -15,12 +15,12 @@ function renderNotes(notes: string) {
 }
 
 export function SpeakerNotes({
-  currentClicks,
-  currentClicksTotal,
+  currentStep,
+  currentStepTotal,
   notes,
 }: {
-  currentClicks: number;
-  currentClicksTotal: number;
+  currentStep: number;
+  currentStepTotal: number;
   notes?: string;
 }) {
   return (
@@ -29,8 +29,8 @@ export function SpeakerNotes({
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] chrome-fg-subtle">
           Notes
         </p>
-        {currentClicksTotal > 0 && (
-          <ChromeTag>{`Clicks ${currentClicks}/${currentClicksTotal}`}</ChromeTag>
+        {currentStepTotal > 0 && (
+          <ChromeTag>{`Step ${currentStep}/${currentStepTotal}`}</ChromeTag>
         )}
       </div>
       <ChromePanel tone="inset" radius="frame" className="flex-1 p-4 text-sm leading-7">

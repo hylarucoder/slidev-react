@@ -15,7 +15,7 @@ import {
   isPortraitViewport,
   resolvePrintPageSize,
 } from "@slidev-react/core/slides/viewport";
-import { resolveCueTotal } from "@slidev-react/core/presentation/flow/cue";
+import { resolveStepTotal } from "@slidev-react/core/presentation/flow/step";
 import { SlidePreviewSurface } from "../stage/SlidePreviewSurface";
 import type { CompiledSlide } from "../presenter/model/types";
 import { RevealProvider, type RevealContextValue } from "../reveal/RevealContext";
@@ -29,23 +29,23 @@ function noopRegisterStep() {
 
 function createRevealContextValue({
   slideId,
-  clicks,
-  clicksTotal,
+  step,
+  stepTotal,
   registerStep,
   disableAnimation,
 }: {
   slideId: string;
-  clicks: number;
-  clicksTotal: number;
+  step: number;
+  stepTotal: number;
   registerStep: RevealContextValue["registerStep"];
   disableAnimation?: boolean;
 }): RevealContextValue {
   return {
     slideId,
-    clicks,
-    clicksTotal,
+    step,
+    stepTotal,
     disableAnimation,
-    setClicks: () => { },
+    setStep: () => { },
     registerStep,
     advance: () => { },
     retreat: () => { },
@@ -57,15 +57,15 @@ function createRevealContextValue({
 function PrintSlideSnapshot({
   Slide,
   slideId,
-  clicks,
-  clicksTotal,
+  step,
+  stepTotal,
   registerStep,
   children,
 }: {
   Slide: CompiledSlide["component"];
   slideId: string;
-  clicks: number;
-  clicksTotal: number;
+  step: number;
+  stepTotal: number;
   registerStep: RevealContextValue["registerStep"];
   children: (content: ReactNode) => ReactNode;
 }) {
@@ -73,12 +73,12 @@ function PrintSlideSnapshot({
     () =>
       createRevealContextValue({
         slideId,
-        clicks,
-        clicksTotal,
+        step,
+        stepTotal,
         registerStep,
         disableAnimation: true,
       }),
-    [clicks, clicksTotal, registerStep, slideId],
+    [step, stepTotal, registerStep, slideId],
   );
 
   return <RevealProvider value={revealContextValue}>{children(<Slide />)}</RevealProvider>;
@@ -104,22 +104,22 @@ function PrintSlideGroup({
   const Slide = slide.component;
   const Layout = useResolvedLayout(slide.meta.layout ?? slidesLayout);
   const probeStepsRef = useRef(new Map<number, number>());
-  const [detectedClicks, setDetectedClicks] = useState(0);
+  const [detectedSteps, setDetectedSteps] = useState(0);
   const [measurementReady, setMeasurementReady] = useState(!withClicks);
-  const clicksTotal = resolveCueTotal({
-    configuredCues: slide.meta.clicks,
-    detectedCues: detectedClicks,
+  const stepTotal = resolveStepTotal({
+    configuredSteps: slide.meta.clicks,
+    detectedSteps,
   });
-  const clickSteps = useMemo(() => {
+  const stepIndices = useMemo(() => {
     if (!withClicks) return [null];
 
-    return Array.from({ length: clicksTotal + 1 }, (_, index) => index);
-  }, [clicksTotal, withClicks]);
+    return Array.from({ length: stepTotal + 1 }, (_, index) => index);
+  }, [stepTotal, withClicks]);
   const registerProbeStep = useCallback<RevealContextValue["registerStep"]>((step) => {
     const normalizedStep = Math.max(Math.floor(step), 1);
     const next = probeStepsRef.current.get(normalizedStep) ?? 0;
     probeStepsRef.current.set(normalizedStep, next + 1);
-    setDetectedClicks((value) => Math.max(value, normalizedStep));
+    setDetectedSteps((value) => Math.max(value, normalizedStep));
 
     return () => {
       const current = probeStepsRef.current.get(normalizedStep) ?? 1;
@@ -146,7 +146,7 @@ function PrintSlideGroup({
       window.cancelAnimationFrame(firstFrame);
       if (secondFrame) window.cancelAnimationFrame(secondFrame);
     };
-  }, [clicksTotal, withClicks]);
+  }, [stepTotal, withClicks]);
 
   return (
     <>
@@ -155,29 +155,29 @@ function PrintSlideGroup({
           <PrintSlideSnapshot
             Slide={Slide}
             slideId={`${slide.id}:probe`}
-            clicks={0}
-            clicksTotal={clicksTotal}
+            step={0}
+            stepTotal={stepTotal}
             registerStep={registerProbeStep}
           >
             {(content) => <Layout>{content}</Layout>}
           </PrintSlideSnapshot>
         </div>
       )}
-      {clickSteps.map((clickStep) => {
-        const clickValue = typeof clickStep === "number" ? clickStep : "all";
-        const clickLabel =
-          typeof clickStep === "number"
-            ? `Click ${clickStep}/${clicksTotal}`
+      {stepIndices.map((stepIndex) => {
+        const stepValue = typeof stepIndex === "number" ? stepIndex : "all";
+        const stepLabel =
+          typeof stepIndex === "number"
+            ? `Step ${stepIndex}/${stepTotal}`
             : `Slide ${slideNumber}`;
 
         return (
           <section
-            key={`${slide.id}:${clickValue}`}
+            key={`${slide.id}:${stepValue}`}
             data-export-snapshot="slide"
             data-export-slide={String(slideNumber)}
             data-export-slide-title={slide.meta.title ?? ""}
-            data-export-click={String(clickValue)}
-            data-export-clicks-total={String(clicksTotal)}
+            data-export-step={String(stepValue)}
+            data-export-step-total={String(stepTotal)}
             data-export-slide-ready={measurementReady ? "true" : "false"}
             className="print-slide-shell"
           >
@@ -185,13 +185,13 @@ function PrintSlideGroup({
               <span>{slide.meta.title ?? `Slide ${slideNumber}`}</span>
               <span>
                 {withClicks
-                  ? `${slideNumber}/${totalSlides} • ${clickLabel}`
+                  ? `${slideNumber}/${totalSlides} • ${stepLabel}`
                   : `${slideNumber} / ${totalSlides}`}
               </span>
             </div>
             <div className="print-slide-sheet rounded-[24px] border border-slate-200/80 bg-white ">
               <div className="print-slide-frame p-3">
-                {withClicks && typeof clickStep === "number" ? (
+                {withClicks && typeof stepIndex === "number" ? (
                   <SlidePreviewSurface
                     Slide={Slide}
                     slideId={slide.id}
@@ -204,9 +204,9 @@ function PrintSlideGroup({
                     content={
                       <PrintSlideSnapshot
                         Slide={Slide}
-                        slideId={`${slide.id}:${clickStep}`}
-                        clicks={clickStep}
-                        clicksTotal={clicksTotal}
+                        slideId={`${slide.id}:${stepIndex}`}
+                        step={stepIndex}
+                        stepTotal={stepTotal}
                         registerStep={noopRegisterStep}
                       >
                         {(content) => <Layout>{content}</Layout>}

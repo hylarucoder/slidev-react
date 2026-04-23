@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { resolveCueTotal } from "@slidev-react/core/presentation/flow/cue";
+import { resolveStepTotal } from "@slidev-react/core/presentation/flow/step";
 import {
   canAdvanceFlow,
   canRetreatFlow,
-  clampCueIndex,
+  clampStepIndex,
   resolveAdvanceFlow,
   resolveRetreatFlow,
 } from "@slidev-react/core/presentation/flow/navigation";
@@ -16,7 +16,7 @@ interface SlidesNavigationLike {
   goTo: (index: number) => void;
 }
 
-function resolveMaxCueStep(stepCounts: Map<number, number> | undefined) {
+function resolveMaxRegisteredStep(stepCounts: Map<number, number> | undefined) {
   if (!stepCounts || stepCounts.size === 0) return 0;
 
   let max = 0;
@@ -36,11 +36,11 @@ export function usePresenterFlowRuntime({
 }) {
   const currentSlide = slides[navigation.currentIndex];
   const revealStepCountsRef = useRef<Record<string, Map<number, number>>>({});
-  const [clicksBySlideId, setClicksBySlideId] = useState<Record<string, number>>({});
-  const [clicksTotalBySlideId, setClicksTotalBySlideId] = useState<Record<string, number>>({});
-  const clicksBySlideIdRef = useRef(clicksBySlideId);
-  const clicksTotalBySlideIdRef = useRef(clicksTotalBySlideId);
-  const slideClicksConfig = useMemo(
+  const [stepBySlideId, setStepBySlideId] = useState<Record<string, number>>({});
+  const [stepTotalBySlideId, setStepTotalBySlideId] = useState<Record<string, number>>({});
+  const stepBySlideIdRef = useRef(stepBySlideId);
+  const stepTotalBySlideIdRef = useRef(stepTotalBySlideId);
+  const configuredStepsBySlideId = useMemo(
     () =>
       Object.fromEntries(
         slides.map((slide) => [slide.id, slide.meta.clicks ?? 0] as const),
@@ -49,65 +49,65 @@ export function usePresenterFlowRuntime({
   );
 
   useEffect(() => {
-    clicksBySlideIdRef.current = clicksBySlideId;
-  }, [clicksBySlideId]);
+    stepBySlideIdRef.current = stepBySlideId;
+  }, [stepBySlideId]);
 
   useEffect(() => {
-    clicksTotalBySlideIdRef.current = clicksTotalBySlideId;
-  }, [clicksTotalBySlideId]);
+    stepTotalBySlideIdRef.current = stepTotalBySlideId;
+  }, [stepTotalBySlideId]);
 
-  const setSlideClicks = useCallback(
+  const setSlideStep = useCallback(
     (slideId: string, next: number) => {
-      setClicksBySlideId((prev) => {
-        const total = resolveCueTotal({
-          configuredCues: slideClicksConfig[slideId],
-          detectedCues: clicksTotalBySlideIdRef.current[slideId],
+      setStepBySlideId((prev) => {
+        const total = resolveStepTotal({
+          configuredSteps: configuredStepsBySlideId[slideId],
+          detectedSteps: stepTotalBySlideIdRef.current[slideId],
         });
-        const clamped = clampCueIndex(next, total);
+        const clamped = clampStepIndex(next, total);
         if ((prev[slideId] ?? 0) === clamped) return prev;
 
         const updated = {
           ...prev,
           [slideId]: clamped,
         };
-        clicksBySlideIdRef.current = updated;
+        stepBySlideIdRef.current = updated;
         return updated;
       });
     },
-    [slideClicksConfig],
+    [configuredStepsBySlideId],
   );
 
-  const setSlideClicksTotal = useCallback(
+  const setSlideStepTotal = useCallback(
     (slideId: string, nextTotal: number) => {
-      const safeTotal = resolveCueTotal({
-        configuredCues: slideClicksConfig[slideId],
-        detectedCues: nextTotal,
+      const safeTotal = resolveStepTotal({
+        configuredSteps: configuredStepsBySlideId[slideId],
+        detectedSteps: nextTotal,
       });
 
-      setClicksTotalBySlideId((prev) => {
+      setStepTotalBySlideId((prev) => {
         if (prev[slideId] === safeTotal) return prev;
 
         const updated = {
           ...prev,
           [slideId]: safeTotal,
         };
-        clicksTotalBySlideIdRef.current = updated;
+        stepTotalBySlideIdRef.current = updated;
         return updated;
       });
 
-      setClicksBySlideId((prev) => {
-        const clamped = clampCueIndex(prev[slideId] ?? 0, safeTotal);
+      setStepBySlideId((prev) => {
+        const clamped = clampStepIndex(prev[slideId] ?? 0, safeTotal);
         if ((prev[slideId] ?? 0) === clamped) return prev;
 
         const updated = {
           ...prev,
           [slideId]: clamped,
         };
-        clicksBySlideIdRef.current = updated;
+        stepBySlideIdRef.current = updated;
         return updated;
       });
     },
-    [slideClicksConfig],
+    [configuredStepsBySlideId],
   );
 
   const registerRevealStep = useCallback(
@@ -117,7 +117,7 @@ export function usePresenterFlowRuntime({
       const slideSteps = revealStepCountsRef.current[slideId] ?? new Map<number, number>();
       revealStepCountsRef.current[slideId] = slideSteps;
       slideSteps.set(normalizedStep, (slideSteps.get(normalizedStep) ?? 0) + 1);
-      setSlideClicksTotal(slideId, resolveMaxCueStep(slideSteps));
+      setSlideStepTotal(slideId, resolveMaxRegisteredStep(slideSteps));
 
       return () => {
         const steps = revealStepCountsRef.current[slideId];
@@ -129,16 +129,16 @@ export function usePresenterFlowRuntime({
 
         if (steps.size === 0) delete revealStepCountsRef.current[slideId];
 
-        setSlideClicksTotal(slideId, resolveMaxCueStep(steps));
+        setSlideStepTotal(slideId, resolveMaxRegisteredStep(steps));
       };
     },
-    [currentSlide.id, setSlideClicksTotal],
+    [currentSlide.id, setSlideStepTotal],
   );
 
-  const currentClicks = clicksBySlideId[currentSlide.id] ?? 0;
-  const currentClicksTotal = resolveCueTotal({
-    configuredCues: currentSlide.meta.clicks,
-    detectedCues: clicksTotalBySlideId[currentSlide.id],
+  const currentStep = stepBySlideId[currentSlide.id] ?? 0;
+  const currentStepTotal = resolveStepTotal({
+    configuredSteps: currentSlide.meta.clicks,
+    detectedSteps: stepTotalBySlideId[currentSlide.id],
   });
 
   const goToSlideAtStart = useCallback(
@@ -146,16 +146,16 @@ export function usePresenterFlowRuntime({
       const targetSlide = slides[index];
       if (!targetSlide) return;
 
-      setSlideClicks(targetSlide.id, 0);
+      setSlideStep(targetSlide.id, 0);
       navigation.goTo(index);
     },
-    [navigation, setSlideClicks, slides],
+    [navigation, setSlideStep, slides],
   );
 
   const advanceReveal = useCallback(() => {
     const nextState = resolveAdvanceFlow({
-      currentCueIndex: currentClicks,
-      currentCueTotal: currentClicksTotal,
+      currentStepIndex: currentStep,
+      currentStepTotal: currentStepTotal,
       currentPageIndex: navigation.currentIndex,
       totalPages: navigation.total,
     });
@@ -164,19 +164,19 @@ export function usePresenterFlowRuntime({
     const targetSlide = slides[nextState.pageIndex];
     if (!targetSlide) return;
 
-    setSlideClicks(targetSlide.id, nextState.cueIndex);
+    setSlideStep(targetSlide.id, nextState.stepIndex);
     if (nextState.pageIndex !== navigation.currentIndex) navigation.goTo(nextState.pageIndex);
-  }, [currentClicks, currentClicksTotal, navigation, setSlideClicks, slides]);
+  }, [currentStep, currentStepTotal, navigation, setSlideStep, slides]);
 
   const retreatReveal = useCallback(() => {
     const previousSlideId = slides[navigation.currentIndex - 1]?.id ?? "";
     const nextState = resolveRetreatFlow({
-      currentCueIndex: currentClicks,
+      currentStepIndex: currentStep,
       currentPageIndex: navigation.currentIndex,
-      previousCueIndex: clicksBySlideIdRef.current[previousSlideId],
-      previousCueTotal: resolveCueTotal({
-        configuredCues: slideClicksConfig[previousSlideId],
-        detectedCues: clicksTotalBySlideIdRef.current[previousSlideId],
+      previousStepIndex: stepBySlideIdRef.current[previousSlideId],
+      previousStepTotal: resolveStepTotal({
+        configuredSteps: configuredStepsBySlideId[previousSlideId],
+        detectedSteps: stepTotalBySlideIdRef.current[previousSlideId],
       }),
     });
     if (!nextState) return;
@@ -184,51 +184,51 @@ export function usePresenterFlowRuntime({
     const targetSlide = slides[nextState.pageIndex];
     if (!targetSlide) return;
 
-    setSlideClicks(targetSlide.id, nextState.cueIndex);
+    setSlideStep(targetSlide.id, nextState.stepIndex);
     if (nextState.pageIndex !== navigation.currentIndex) navigation.goTo(nextState.pageIndex);
-  }, [currentClicks, navigation, setSlideClicks, slideClicksConfig, slides]);
+  }, [currentStep, navigation, setSlideStep, configuredStepsBySlideId, slides]);
 
   const revealContextValue = useMemo<RevealContextValue>(
     () => ({
       slideId: currentSlide.id,
-      clicks: currentClicks,
-      clicksTotal: currentClicksTotal,
-      setClicks: (next) => setSlideClicks(currentSlide.id, next),
+      step: currentStep,
+      stepTotal: currentStepTotal,
+      setStep: (next) => setSlideStep(currentSlide.id, next),
       registerStep: registerRevealStep,
       advance: advanceReveal,
       retreat: retreatReveal,
       canAdvance: canAdvanceFlow({
-        currentCueIndex: currentClicks,
-        currentCueTotal: currentClicksTotal,
+        currentStepIndex: currentStep,
+        currentStepTotal: currentStepTotal,
         currentPageIndex: navigation.currentIndex,
         totalPages: navigation.total,
       }),
       canRetreat: canRetreatFlow({
-        currentCueIndex: currentClicks,
+        currentStepIndex: currentStep,
         currentPageIndex: navigation.currentIndex,
       }),
     }),
     [
       advanceReveal,
-      currentClicks,
-      currentClicksTotal,
+      currentStep,
+      currentStepTotal,
       currentSlide.id,
       navigation.currentIndex,
       navigation.total,
       registerRevealStep,
       retreatReveal,
-      setSlideClicks,
+      setSlideStep,
     ],
   );
 
   return {
-    currentClicks,
-    currentClicksTotal,
+    currentStep,
+    currentStepTotal,
     canPrev: revealContextValue.canRetreat,
     canNext: revealContextValue.canAdvance,
     revealContextValue,
-    setSlideClicks,
-    setSlideClicksTotal,
+    setSlideStep,
+    setSlideStepTotal,
     goToSlideAtStart,
     advanceReveal,
     retreatReveal,

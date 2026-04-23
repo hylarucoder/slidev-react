@@ -3,22 +3,22 @@ import { render } from 'vitest-browser-react'
 import { RevealProvider, type RevealContextValue } from '../RevealContext'
 import { Step } from '../Reveal'
 
-function createRevealValue(clicks: number, disableAnimation = true): RevealContextValue {
+function createRevealValue(step: number, disableAnimation = true): RevealContextValue {
   return {
     slideId: 'reveal-browser',
-    clicks,
-    clicksTotal: 2,
+    step,
+    stepTotal: 2,
     disableAnimation,
-    setClicks: vi.fn(),
+    setStep: vi.fn(),
     registerStep: vi.fn(() => () => {}),
     advance: vi.fn(),
     retreat: vi.fn(),
-    canAdvance: clicks < 2,
-    canRetreat: clicks > 0,
+    canAdvance: step < 2,
+    canRetreat: step > 0,
   }
 }
 
-test('mounts and unmounts step content as cues advance and retreat', async () => {
+test('mounts and unmounts step content as steps advance and retreat', async () => {
   const result = await render(
     <RevealProvider value={createRevealValue(0)}>
       <Step step={1} variant="slide-up" asChild>
@@ -55,7 +55,7 @@ test('mounts and unmounts step content as cues advance and retreat', async () =>
   await expect.poll(() => document.querySelector('[data-testid="step-node"]')).toBeNull()
 })
 
-test('keeps reserve-space content mounted before its cue and maps preset to the new variant model', async () => {
+test('keeps reserve-space content mounted before its step and maps preset to the new variant model', async () => {
   await render(
     <RevealProvider value={createRevealValue(0)}>
       <Step step={1} preset="scale-in" reserveSpace asChild>

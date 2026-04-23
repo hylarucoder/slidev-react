@@ -24,7 +24,7 @@ interface ExportSnapshotInfo {
   page: number;
   slideNumber: number;
   title: string;
-  click: string;
+  step: string;
 }
 
 interface ExportViewport {
@@ -53,7 +53,7 @@ async function readSnapshotInfos(page: Page): Promise<ExportSnapshotInfo[]> {
       page: index + 1,
       slideNumber: Number.parseInt(node.getAttribute("data-export-slide") ?? "0", 10),
       title: node.getAttribute("data-export-slide-title") ?? "",
-      click: node.getAttribute("data-export-click") ?? "all",
+      step: node.getAttribute("data-export-step") ?? "all",
     })),
   );
 }
@@ -162,13 +162,13 @@ async function exportPngArtifacts(
   for (const snapshot of selectedSnapshots) {
     const shell = page
       .locator(
-        `[data-export-snapshot="slide"][data-export-slide="${snapshot.slideNumber}"][data-export-click="${snapshot.click}"]`,
+        `[data-export-snapshot="slide"][data-export-slide="${snapshot.slideNumber}"][data-export-step="${snapshot.step}"]`,
       )
       .first();
     const fileName = createSlideSnapshotFileName({
       index: snapshot.slideNumber,
       title: snapshot.title,
-      clickStep: withClicks && snapshot.click !== "all" ? Number.parseInt(snapshot.click, 10) : null,
+      clickStep: withClicks && snapshot.step !== "all" ? Number.parseInt(snapshot.step, 10) : null,
     });
     const targetPath = path.join(pngOutputDir, fileName);
 

@@ -1,12 +1,12 @@
 import { useLayoutEffect } from "react";
 import { useReveal } from "./RevealContext";
-import { normalizeCueStep } from "@slidev-react/core/presentation/flow/step";
+import { normalizeStep } from "@slidev-react/core/presentation/flow/step";
 
 export function useRevealStep(step: number | undefined) {
   const reveal = useReveal();
   const registerStep = reveal?.registerStep;
   const slideId = reveal?.slideId;
-  const normalizedStep = normalizeCueStep(step);
+  const normalizedStep = normalizeStep(step);
 
   useLayoutEffect(() => {
     if (!registerStep || normalizedStep === undefined) return;
@@ -14,7 +14,7 @@ export function useRevealStep(step: number | undefined) {
     return registerStep(normalizedStep);
   }, [normalizedStep, registerStep, slideId]);
 
-  const isVisible = normalizedStep === undefined || !reveal || reveal.clicks >= normalizedStep;
+  const isVisible = normalizedStep === undefined || !reveal || reveal.step >= normalizedStep;
 
   return {
     reveal,
@@ -29,7 +29,7 @@ export function useRevealProgress(maxStep: number) {
 
   return {
     reveal,
-    step: Math.min(reveal?.clicks ?? 0, normalizedMaxStep),
+    step: Math.min(reveal?.step ?? 0, normalizedMaxStep),
     maxStep: normalizedMaxStep,
   };
 }

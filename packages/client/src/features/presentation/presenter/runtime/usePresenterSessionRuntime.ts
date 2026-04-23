@@ -99,16 +99,16 @@ export function usePresenterSessionRuntime({
     () =>
       buildPresentationSharedState({
         page: navigation.currentIndex,
-        cue: flow.currentClicks,
-        cueTotal: flow.currentClicksTotal,
+        step: flow.currentStep,
+        stepTotal: flow.currentStepTotal,
         timer: localTimer,
         cursor: localCursor,
         drawings,
         drawingsRevision,
       }),
     [
-      flow.currentClicks,
-      flow.currentClicksTotal,
+      flow.currentStep,
+      flow.currentStepTotal,
       drawings,
       drawingsRevision,
       localCursor,
@@ -137,14 +137,14 @@ export function usePresenterSessionRuntime({
 
       if ("remoteCursor" in effects) setRemoteCursor(effects.remoteCursor ?? null)
 
-      if (effects.slideClicksTotal)
-        flow.setSlideClicksTotal(
-          effects.slideClicksTotal.slideId,
-          effects.slideClicksTotal.clicksTotal,
+      if (effects.slideStepTotal)
+        flow.setSlideStepTotal(
+          effects.slideStepTotal.slideId,
+          effects.slideStepTotal.stepTotal,
         )
 
-      if (effects.slideClicks)
-        flow.setSlideClicks(effects.slideClicks.slideId, effects.slideClicks.clicks)
+      if (effects.slideStep)
+        flow.setSlideStep(effects.slideStep.slideId, effects.slideStep.step)
 
       if (effects.remoteDrawings) setRemoteDrawings(effects.remoteDrawings)
     },

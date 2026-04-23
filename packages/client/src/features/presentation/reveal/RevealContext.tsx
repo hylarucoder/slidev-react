@@ -2,10 +2,10 @@ import { createContext, useContext, type ReactNode } from "react";
 
 export interface RevealContextValue {
   slideId: string;
-  clicks: number;
-  clicksTotal: number;
+  step: number;
+  stepTotal: number;
   disableAnimation?: boolean;
-  setClicks: (next: number) => void;
+  setStep: (next: number) => void;
   registerStep: (step: number) => () => void;
   advance: () => void;
   retreat: () => void;

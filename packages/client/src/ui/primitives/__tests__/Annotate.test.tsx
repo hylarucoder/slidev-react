@@ -6,17 +6,17 @@ import {
 } from "../../../features/presentation/reveal/RevealContext";
 import { Annotate } from "../Annotate";
 
-function createRevealValue(clicks: number): RevealContextValue {
+function createRevealValue(step: number): RevealContextValue {
   return {
     slideId: "slide-annotation",
-    clicks,
-    clicksTotal: 2,
-    setClicks: vi.fn(),
+    step,
+    stepTotal: 2,
+    setStep: vi.fn(),
     registerStep: vi.fn(() => () => {}),
     advance: vi.fn(),
     retreat: vi.fn(),
     canAdvance: true,
-    canRetreat: clicks > 0,
+    canRetreat: step > 0,
   };
 }
 

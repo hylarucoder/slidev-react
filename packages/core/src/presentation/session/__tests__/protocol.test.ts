@@ -18,8 +18,8 @@ describe("presentation protocol parsing", () => {
         payload: {
           state: {
             page: 2,
-            cue: 1,
-            cueTotal: 4,
+            step: 1,
+            stepTotal: 4,
             timer: 900,
             cursor: {
               x: 10,
@@ -51,8 +51,8 @@ describe("presentation protocol parsing", () => {
       payload: {
         state: {
           page: 2,
-          cue: 1,
-          cueTotal: 4,
+          step: 1,
+          stepTotal: 4,
           timer: 900,
           cursor: {
             x: 10,

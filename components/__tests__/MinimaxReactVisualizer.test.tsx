@@ -6,17 +6,17 @@ import {
 } from "@/features/presentation/reveal/RevealContext";
 import { MinimaxReactVisualizer } from "../MinimaxReactVisualizer";
 
-function createRevealValue(clicks: number): RevealContextValue {
+function createRevealValue(step: number): RevealContextValue {
   return {
     slideId: "slide-visualizer",
-    clicks,
-    clicksTotal: 4,
-    setClicks: vi.fn(),
+    step,
+    stepTotal: 4,
+    setStep: vi.fn(),
     registerStep: vi.fn(() => () => {}),
     advance: vi.fn(),
     retreat: vi.fn(),
-    canAdvance: clicks < 4,
-    canRetreat: clicks > 0,
+    canAdvance: step < 4,
+    canRetreat: step > 0,
   };
 }
 
@@ -32,7 +32,7 @@ describe("MinimaxReactVisualizer", () => {
     expect(html).toContain(">42<");
   });
 
-  it("advances to the state layer based on reveal clicks", () => {
+  it("advances to the state layer based on reveal steps", () => {
     const html = renderToStaticMarkup(
       <RevealProvider value={createRevealValue(4)}>
         <MinimaxReactVisualizer />

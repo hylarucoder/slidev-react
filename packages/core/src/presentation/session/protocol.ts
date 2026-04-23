@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const PRESENTATION_PROTOCOL_VERSION = 1 as const;
+export const PRESENTATION_PROTOCOL_VERSION = 2 as const;
 
 export type PresentationRole = "standalone" | "presenter" | "viewer";
 export type SyncedPresentationRole = Exclude<PresentationRole, "standalone">;
@@ -28,8 +28,8 @@ export type PresentationDrawingsState = Record<string, PresentationDrawStroke[]>
 
 export interface PresentationSharedState {
   page: number;
-  cue: number;
-  cueTotal: number;
+  step: number;
+  stepTotal: number;
   timer: number;
   cursor: PresentationCursorState | null;
   drawings: PresentationDrawingsState;
@@ -109,8 +109,8 @@ const presentationDrawingsStateSchema = z.record(z.string(), z.array(presentatio
 
 const presentationSharedStateSchema = z.object({
   page: z.number(),
-  cue: z.number(),
-  cueTotal: z.number(),
+  step: z.number(),
+  stepTotal: z.number(),
   timer: z.number(),
   cursor: presentationCursorStateSchema.nullable(),
   drawings: presentationDrawingsStateSchema,

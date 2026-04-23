@@ -73,8 +73,8 @@ function createLocalState(
 ): PresentationSharedState {
   return {
     page: 0,
-    cue: 0,
-    cueTotal: 0,
+    step: 0,
+    stepTotal: 0,
     timer: 0,
     cursor: null,
     drawings: {},
@@ -216,8 +216,8 @@ describe('usePresentationSyncRuntime', () => {
           }),
           localState: createLocalState({
             page: 2,
-            cue: 1,
-            cueTotal: 3,
+            step: 1,
+            stepTotal: 3,
             timer: 9,
           }),
         }),
@@ -246,8 +246,8 @@ describe('usePresentationSyncRuntime', () => {
         }),
         localState: createLocalState({
           page: 4,
-          cue: 2,
-          cueTotal: 3,
+          step: 2,
+          stepTotal: 3,
           timer: 12,
         }),
       }),

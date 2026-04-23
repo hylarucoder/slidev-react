@@ -20,101 +20,101 @@ function noopRegisterStep() {
 
 function createRevealContextValue({
   slideId,
-  clicks,
-  clicksTotal,
+  step,
+  stepTotal,
 }: {
   slideId: string;
-  clicks: number;
-  clicksTotal: number;
+  step: number;
+  stepTotal: number;
 }): RevealContextValue {
   return {
     slideId,
-    clicks,
-    clicksTotal,
+    step,
+    stepTotal,
     disableAnimation: false,
-    setClicks: () => {},
+    setStep: () => {},
     registerStep: noopRegisterStep,
     advance: () => {},
     retreat: () => {},
-    canAdvance: clicks < clicksTotal,
-    canRetreat: clicks > 0,
+    canAdvance: step < stepTotal,
+    canRetreat: step > 0,
   };
 }
 
 function resolvePreviewStep({
   mode,
-  currentClicks,
-  currentClicksTotal,
-  selectedClicks,
+  currentStep,
+  currentStepTotal,
+  selectedStep,
 }: {
   mode: FlowPreviewMode;
-  currentClicks: number;
-  currentClicksTotal: number;
-  selectedClicks: number;
+  currentStep: number;
+  currentStepTotal: number;
+  selectedStep: number;
 }) {
-  if (mode === "final") return currentClicksTotal;
-  if (mode === "steps") return selectedClicks;
+  if (mode === "final") return currentStepTotal;
+  if (mode === "steps") return selectedStep;
 
-  return currentClicks;
+  return currentStep;
 }
 
 function describePreviewStep(step: number, total: number) {
   if (total <= 0) return "Base state";
-  if (step <= 0) return "Before cue 1";
-  if (step >= total) return `Cue ${total}/${total} • final state`;
+  if (step <= 0) return "Before step 1";
+  if (step >= total) return `Step ${total}/${total} • final state`;
 
-  return `Cue ${step}/${total}`;
+  return `Step ${step}/${total}`;
 }
 
 export function FlowTimeline({
   slide,
-  currentClicks,
-  currentClicksTotal,
+  currentStep,
+  currentStepTotal,
   slidesConfig,
-  onJumpToCue,
+  onJumpToStep,
   onClose,
   className,
 }: {
   slide: CompiledSlide;
-  currentClicks: number;
-  currentClicksTotal: number;
+  currentStep: number;
+  currentStepTotal: number;
   slidesConfig: Pick<SlidesConfig, "slidesViewport" | "slidesLayout" | "slidesBackground">;
-  onJumpToCue?: (cueIndex: number) => void;
+  onJumpToStep?: (stepIndex: number) => void;
   onClose?: () => void;
   className?: string;
 }) {
   const { slidesViewport, slidesLayout, slidesBackground } = slidesConfig;
   const [mode, setMode] = useState<FlowPreviewMode>("live");
-  const [selectedClicks, setSelectedClicks] = useState(currentClicks);
+  const [selectedStep, setSelectedStep] = useState(currentStep);
   const Layout = useResolvedLayout(slide.meta.layout ?? slidesLayout);
   const Slide = slide.component;
   const overviewStage = useMemo(
     () => resolveOverviewStageMetrics(slidesViewport),
     [slidesViewport],
   );
-  const cueSteps = useMemo(
-    () => Array.from({ length: currentClicksTotal + 1 }, (_, index) => index),
-    [currentClicksTotal],
+  const stepOptions = useMemo(
+    () => Array.from({ length: currentStepTotal + 1 }, (_, index) => index),
+    [currentStepTotal],
   );
 
   useEffect(() => {
-    setSelectedClicks(currentClicks);
-  }, [currentClicks, currentClicksTotal, slide.id]);
+    setSelectedStep(currentStep);
+  }, [currentStep, currentStepTotal, slide.id]);
 
-  const previewClicks = resolvePreviewStep({
+  const previewStep = resolvePreviewStep({
     mode,
-    currentClicks,
-    currentClicksTotal,
-    selectedClicks,
+    currentStep,
+    currentStepTotal,
+    selectedStep,
   });
   const revealContextValue = useMemo(
     () =>
       createRevealContextValue({
         slideId: `${slide.id}:timeline-preview`,
-        clicks: previewClicks,
-        clicksTotal: currentClicksTotal,
+        step: previewStep,
+        stepTotal: currentStepTotal,
       }),
-    [currentClicksTotal, previewClicks, slide.id],
+    [currentStepTotal, previewStep, slide.id],
   );
   const surface = resolveSlideSurface({
     meta: slide.meta,
@@ -124,13 +124,13 @@ export function FlowTimeline({
       overflowHidden: true,
     }),
   });
-  const previewLabel = describePreviewStep(previewClicks, currentClicksTotal);
+  const previewLabel = describePreviewStep(previewStep, currentStepTotal);
   const modeDescription =
     mode === "live"
       ? "Mirror the current stage state."
       : mode === "final"
         ? "Flatten to the final result."
-        : "Inspect one cue position without changing the stage.";
+        : "Inspect one step position without changing the stage.";
 
   return (
     <ChromePanel className={`flex flex-col ${className ?? ""}`}>
@@ -205,11 +205,11 @@ export function FlowTimeline({
       <div className="mb-3 flex items-center justify-between gap-3 text-xs chrome-fg-subtle">
         <span>
           Current stage:{" "}
-          {currentClicksTotal > 0 ? `${currentClicks}/${currentClicksTotal}` : "base"}
+          {currentStepTotal > 0 ? `${currentStep}/${currentStepTotal}` : "base"}
         </span>
-        {onJumpToCue && previewClicks !== currentClicks && (
+        {onJumpToStep && previewStep !== currentStep && (
           <button
-            onClick={() => onJumpToCue(previewClicks)}
+            onClick={() => onJumpToStep(previewStep)}
             className={chromeTagClassName({
               tone: "active",
               className: "transition hover:bg-emerald-100",
@@ -219,12 +219,12 @@ export function FlowTimeline({
           </button>
         )}
       </div>
-      {currentClicksTotal > 0 ? (
+      {currentStepTotal > 0 ? (
         <div className="grid grid-cols-2 gap-2 overflow-auto pr-1">
-          {cueSteps.map((step) => {
-            const selected = previewClicks === step;
-            const current = currentClicks === step;
-            const label = step === 0 ? "Start" : `Cue ${step}`;
+          {stepOptions.map((step) => {
+            const selected = previewStep === step;
+            const current = currentStep === step;
+            const label = step === 0 ? "Start" : `Step ${step}`;
 
             return (
               <button
@@ -232,7 +232,7 @@ export function FlowTimeline({
                 type="button"
                 onClick={() => {
                   setMode("steps");
-                  setSelectedClicks(step);
+                  setSelectedStep(step);
                 }}
                 className={`rounded-md border px-3 py-2 text-left transition ${
                   selected
@@ -258,8 +258,8 @@ export function FlowTimeline({
                   }`}
                 >
                   {step === 0
-                    ? "Base slide state before cues."
-                    : `Reveal cue ${step} becomes active.`}
+                    ? "Base slide state before reveal."
+                    : `Reveal step ${step} becomes active.`}
                 </div>
               </button>
             );
@@ -267,7 +267,7 @@ export function FlowTimeline({
         </div>
       ) : (
         <ChromePanel as="div" tone="dashed" radius="inset" className="px-4 py-5 text-sm">
-          No cue steps detected on this slide yet.
+          No reveal steps detected on this slide yet.
         </ChromePanel>
       )}
     </ChromePanel>

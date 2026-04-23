@@ -28,10 +28,6 @@
       "types": "./dist/presentation/flow/navigation.d.ts",
       "import": "./dist/presentation/flow/navigation.js"
     },
-    "./presentation/flow/cue": {
-      "types": "./dist/presentation/flow/cue.d.ts",
-      "import": "./dist/presentation/flow/cue.js"
-    },
     "./presentation/flow/step": {
       "types": "./dist/presentation/flow/step.d.ts",
       "import": "./dist/presentation/flow/step.js"

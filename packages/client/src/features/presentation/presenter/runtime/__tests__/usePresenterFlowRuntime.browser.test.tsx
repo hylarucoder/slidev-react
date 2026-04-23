@@ -18,8 +18,8 @@ function FlowHarness() {
   return (
     <div>
       <span data-testid="index">{currentIndex}</span>
-      <span data-testid="clicks">{flow.currentClicks}</span>
-      <span data-testid="clicks-total">{flow.currentClicksTotal}</span>
+      <span data-testid="step">{flow.currentStep}</span>
+      <span data-testid="step-total">{flow.currentStepTotal}</span>
       <span data-testid="can-prev">{String(flow.canPrev)}</span>
       <span data-testid="can-next">{String(flow.canNext)}</span>
       <button type="button" data-testid="advance" onClick={flow.advanceReveal}>advance</button>
@@ -33,46 +33,46 @@ async function textOf(testId: string) {
   return document.querySelector(`[data-testid="${testId}"]`)?.textContent
 }
 
-test('advances through reveal cues within a slide before moving on', async () => {
+test('advances through reveal steps within a slide before moving on', async () => {
   await render(<FlowHarness />)
 
   await expect.poll(() => textOf('index')).toBe('0')
-  await expect.poll(() => textOf('clicks-total')).toBe('2')
+  await expect.poll(() => textOf('step-total')).toBe('2')
   await expect.poll(() => textOf('can-prev')).toBe('false')
   await expect.poll(() => textOf('can-next')).toBe('true')
 
   document.querySelector<HTMLButtonElement>('[data-testid="advance"]')?.click()
-  await expect.poll(() => textOf('clicks')).toBe('1')
+  await expect.poll(() => textOf('step')).toBe('1')
   await expect.poll(() => textOf('index')).toBe('0')
 
   document.querySelector<HTMLButtonElement>('[data-testid="advance"]')?.click()
-  await expect.poll(() => textOf('clicks')).toBe('2')
+  await expect.poll(() => textOf('step')).toBe('2')
 
   document.querySelector<HTMLButtonElement>('[data-testid="advance"]')?.click()
   await expect.poll(() => textOf('index')).toBe('1')
-  await expect.poll(() => textOf('clicks')).toBe('0')
+  await expect.poll(() => textOf('step')).toBe('0')
 })
 
-test('retreats back into the previous slide at its last cue', async () => {
+test('retreats back into the previous slide at its last step', async () => {
   await render(<FlowHarness />)
 
   document.querySelector<HTMLButtonElement>('[data-testid="jump-last"]')?.click()
   await expect.poll(() => textOf('index')).toBe('2')
-  await expect.poll(() => textOf('clicks')).toBe('0')
+  await expect.poll(() => textOf('step')).toBe('0')
 
   document.querySelector<HTMLButtonElement>('[data-testid="retreat"]')?.click()
   await expect.poll(() => textOf('index')).toBe('1')
 })
 
-test('goToSlideAtStart resets the cue index on the target slide', async () => {
+test('goToSlideAtStart resets the step index on the target slide', async () => {
   await render(<FlowHarness />)
 
   document.querySelector<HTMLButtonElement>('[data-testid="advance"]')?.click()
-  await expect.poll(() => textOf('clicks')).toBe('1')
+  await expect.poll(() => textOf('step')).toBe('1')
   document.querySelector<HTMLButtonElement>('[data-testid="advance"]')?.click()
-  await expect.poll(() => textOf('clicks')).toBe('2')
+  await expect.poll(() => textOf('step')).toBe('2')
 
   document.querySelector<HTMLButtonElement>('[data-testid="jump-last"]')?.click()
   await expect.poll(() => textOf('index')).toBe('2')
-  await expect.poll(() => textOf('clicks')).toBe('0')
+  await expect.poll(() => textOf('step')).toBe('0')
 })

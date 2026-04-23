@@ -22,10 +22,10 @@ function renderPreview(props?: Partial<React.ComponentProps<typeof FlowTimeline>
       <AddonProvider>
         <FlowTimeline
           slide={demoSlide}
-          currentClicks={1}
-          currentClicksTotal={3}
+          currentStep={1}
+          currentStepTotal={3}
           slidesConfig={{ slidesViewport: DEFAULT_SLIDES_VIEWPORT }}
-          onJumpToCue={vi.fn()}
+          onJumpToStep={vi.fn()}
           {...props}
         />
       </AddonProvider>
@@ -34,21 +34,21 @@ function renderPreview(props?: Partial<React.ComponentProps<typeof FlowTimeline>
 }
 
 describe("FlowTimeline", () => {
-  it("renders timeline controls and cue nodes for the current slide", () => {
+  it("renders timeline controls and step nodes for the current slide", () => {
     const html = renderPreview();
 
     expect(html).toContain("Timeline Preview");
     expect(html).toContain("Start");
-    expect(html).toContain("Cue 1");
-    expect(html).toContain("Cue 3");
+    expect(html).toContain("Step 1");
+    expect(html).toContain("Step 3");
   });
 
-  it("shows an empty-state message when the slide has no cue steps", () => {
+  it("shows an empty-state message when the slide has no reveal steps", () => {
     const html = renderPreview({
-      currentClicks: 0,
-      currentClicksTotal: 0,
+      currentStep: 0,
+      currentStepTotal: 0,
     });
 
-    expect(html).toContain("No cue steps detected on this slide yet.");
+    expect(html).toContain("No reveal steps detected on this slide yet.");
   });
 });

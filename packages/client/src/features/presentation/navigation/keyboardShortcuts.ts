@@ -167,11 +167,11 @@ export function buildShortcutHelpSections({
       items: [
         {
           keys: "Right / Space / PageDown",
-          action: "Next cue or next slide",
+          action: "Next step or next slide",
         },
         {
           keys: "Left / Shift + Space / PageUp",
-          action: "Previous cue or previous slide",
+          action: "Previous step or previous slide",
         },
         {
           keys: "Home",

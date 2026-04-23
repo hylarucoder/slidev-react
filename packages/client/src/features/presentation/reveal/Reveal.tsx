@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
-import { normalizeCueStep } from '@slidev-react/core/presentation/flow/step'
+import { normalizeStep } from '@slidev-react/core/presentation/flow/step'
 import { useRevealStep } from './useRevealStep'
 import {
   DEFAULT_REVEAL_VARIANT,
@@ -210,7 +210,7 @@ export function Steps({
       {Children.map(children, (child) => {
         if (child === null || child === undefined || typeof child === 'boolean') return child
 
-        const step = normalizeCueStep(start + index * increment) ?? 1
+        const step = normalizeStep(start + index * increment) ?? 1
         const stepTiming = {
           ...timing,
           delay: (timing?.delay ?? 0) + index * stagger,
