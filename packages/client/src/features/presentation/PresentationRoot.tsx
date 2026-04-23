@@ -1,57 +1,75 @@
-import { useCallback } from "react"
-import type { CompiledSlide, SlidesConfig } from './model/types'
-import { DrawProvider } from "../draw/DrawProvider"
-import { KeyboardController } from "../navigation/KeyboardController"
-import { ShortcutsHelpOverlay } from "../navigation/ShortcutsHelpOverlay"
-import { NotesOverview } from "../overview/NotesOverview"
-import { PresentationNavbar } from "../navigation/PresentationNavbar"
-import { useSlidesNavigation } from "../navigation/useSlidesNavigation"
-import { QuickOverview } from "../overview/QuickOverview"
-import { PresentationStatus } from "../PresentationStatus"
-import { buildPrintExportUrl } from "@slidev-react/core/presentation/export/urls"
-import { buildPresentationEntryUrl, type PresentationSession } from "../session"
-import type { PresentationSyncMode } from "../types"
-import { RevealProvider } from "../reveal/RevealContext"
-import { FlowTimelinePreview } from "./FlowTimelinePreview"
-import { PresenterTopProgress } from "./PresenterTopProgress"
-import { usePresenterFlowRuntime } from "./runtime/usePresenterFlowRuntime"
-import { usePresenterChromeRuntime } from "./runtime/usePresenterChromeRuntime"
-import { usePresenterSessionRuntime } from "./runtime/usePresenterSessionRuntime"
-import { useWakeLock } from "./platform/useWakeLock"
-import { useFullscreen } from "./platform/useFullscreen"
-import { PresenterModeView } from "./PresenterModeView"
-import { StandaloneModeView } from "./StandaloneModeView"
+import { useCallback, useMemo } from 'react'
+import type compiledSlides from '@generated/slides'
+import { buildPrintExportUrl } from '@slidev-react/core/presentation/export/urls'
+import { DrawProvider } from './draw/DrawProvider'
+import { KeyboardController } from './navigation/KeyboardController'
+import { ShortcutsHelpOverlay } from './navigation/ShortcutsHelpOverlay'
+import { NotesOverview } from './overview/NotesOverview'
+import { PresentationNavbar } from './navigation/PresentationNavbar'
+import { useSlidesNavigation } from './navigation/useSlidesNavigation'
+import { QuickOverview } from './overview/QuickOverview'
+import { PresentationStatus } from './PresentationStatus'
+import { buildPresentationEntryUrl, type PresentationSession } from './session'
+import type { PresentationSyncMode } from './types'
+import { RevealProvider } from './reveal/RevealContext'
+import { FlowTimelinePreview } from './presenter/FlowTimelinePreview'
+import { PresenterTopProgress } from './presenter/PresenterTopProgress'
+import { PresenterModeView } from './presenter/PresenterModeView'
+import { StandaloneModeView } from './presenter/StandaloneModeView'
+import {
+  PresenterContextProvider,
+  type PresenterContextValue,
+} from './presenter/PresenterContext'
+import { usePresenterFlowRuntime } from './presenter/runtime/usePresenterFlowRuntime'
+import { usePresenterChromeRuntime } from './presenter/runtime/usePresenterChromeRuntime'
+import { usePresenterSessionRuntime } from './presenter/runtime/usePresenterSessionRuntime'
+import { useWakeLock } from './presenter/platform/useWakeLock'
+import { useFullscreen } from './presenter/platform/useFullscreen'
 
-function canControlNavigation(session: PresentationSession) {
-  return !session.enabled || session.role === "presenter"
-}
 const PRESENTER_BOTTOM_BAR_CLEARANCE = 72
 
-export function PresenterShell({
-  slides,
-  slidesTitle,
-  slidesConfig,
-  slidesExportFilename,
-  slidesSessionSeed,
-  drawStorageKey,
+function canControlNavigation(session: PresentationSession) {
+  return !session.enabled || session.role === 'presenter'
+}
+
+export function PresentationRoot({
+  slidesDocument,
   session,
   onSyncModeChange,
 }: {
-  slides: CompiledSlide[]
-  slidesTitle?: string
-  slidesConfig: SlidesConfig
-  slidesExportFilename?: string
-  slidesSessionSeed: string
-  drawStorageKey: string
+  slidesDocument: typeof compiledSlides
   session: PresentationSession
   onSyncModeChange: (mode: PresentationSyncMode) => void
 }) {
+  const slides = slidesDocument.slides
+  const slidesTitle = slidesDocument.meta.title
+  const slidesConfig = useMemo(
+    () => ({
+      slidesViewport: slidesDocument.meta.viewport,
+      slidesLayout: slidesDocument.meta.layout,
+      slidesBackground: slidesDocument.meta.background,
+      slidesTransition: slidesDocument.meta.transition,
+    }),
+    [
+      slidesDocument.meta.viewport,
+      slidesDocument.meta.layout,
+      slidesDocument.meta.background,
+      slidesDocument.meta.transition,
+    ],
+  )
+  const slidesExportFilename = slidesDocument.meta.exportFilename
+  const slidesSessionSeed = slidesDocument.sourceHash
+  const drawStorageKey = useMemo(
+    () => `slide-react:draw:${slidesSessionSeed}`,
+    [slidesSessionSeed],
+  )
+
   const navigation = useSlidesNavigation()
   const currentSlide = slides[navigation.currentIndex]
   const nextSlide = slides[navigation.currentIndex + 1] ?? null
   const canControl = canControlNavigation(session)
-  const isPresenterRole = session.role === "presenter"
-  const canOpenOverview = canControl || session.role === "viewer"
+  const isPresenterRole = session.role === 'presenter'
+  const canOpenOverview = canControl || session.role === 'viewer'
 
   const flow = usePresenterFlowRuntime({ slides, navigation })
   const chrome = usePresenterChromeRuntime({ canControl, canOpenOverview, isPresenterRole })
@@ -88,45 +106,67 @@ export function PresenterShell({
     flow.goToSlideAtStart(Math.max(navigation.total - 1, 0))
   }, [sessionState.detachFromPresenter, flow.goToSlideAtStart, navigation.total])
 
-  const handleEnterPresenterMode = useCallback(() => {
-    const entryUrl = buildPresentationEntryUrl("presenter", slidesSessionSeed)
+  const onEnterPresenterMode = useCallback(() => {
+    const entryUrl = buildPresentationEntryUrl('presenter', slidesSessionSeed)
     if (!entryUrl) return
-
     window.location.assign(entryUrl)
   }, [slidesSessionSeed])
 
-  const handleOpenPrintExport = useCallback(() => {
+  const onOpenPrintExport = useCallback(() => {
     const exportUrl = buildPrintExportUrl(window.location.href)
-    const exportWindow = window.open(exportUrl, "_blank")
+    const exportWindow = window.open(exportUrl, '_blank')
     if (exportWindow) {
       exportWindow.opener = null
       return
     }
-
     window.location.assign(exportUrl)
   }, [])
 
-  const handleOpenMirrorStage = useCallback(() => {
+  const onOpenMirrorStage = useCallback(() => {
     const targetUrl = session.viewerUrl
     if (!targetUrl) return
-
-    const mirrorWindow = window.open(targetUrl, "_blank", "noopener,noreferrer")
+    const mirrorWindow = window.open(targetUrl, '_blank', 'noopener,noreferrer')
     if (mirrorWindow) {
       mirrorWindow.opener = null
       return
     }
-
     window.location.assign(targetUrl)
   }, [session.viewerUrl])
 
   const progressPercent =
     navigation.total > 0 ? ((navigation.currentIndex + 1) / navigation.total) * 100 : 0
 
+  const contextValue: PresenterContextValue = {
+    slides,
+    slidesTitle,
+    slidesConfig,
+    slidesExportFilename,
+    slidesSessionSeed,
+    session,
+    navigation,
+    flow,
+    chrome,
+    sessionState,
+    wakeLock,
+    fullscreen,
+    canControl,
+    isPresenterRole,
+    canOpenOverview,
+    onOpenPrintExport,
+    onOpenMirrorStage,
+    onEnterPresenterMode,
+    onSyncModeChange,
+    handleViewerAdvance,
+    handleViewerRetreat,
+    handleViewerFirst,
+    handleViewerLast,
+  }
+
   return (
-    <>
+    <PresenterContextProvider value={contextValue}>
       <RevealProvider value={flow.revealContextValue}>
         <KeyboardController
-          enabled={canControl || session.role === "viewer"}
+          enabled={canControl || session.role === 'viewer'}
           overlayOpen={Boolean(chrome.activeOverlay)}
           onAdvance={!canControl ? handleViewerAdvance : undefined}
           onRetreat={!canControl ? handleViewerRetreat : undefined}
@@ -144,8 +184,8 @@ export function PresenterShell({
       >
         <div
           className={`relative grid h-dvh max-h-dvh grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden ${
-            isPresenterRole ? "bg-slate-50" : "bg-black"
-          } ${chrome.hideCursor ? "cursor-none" : ""}`}
+            isPresenterRole ? 'bg-slate-50' : 'bg-black'
+          } ${chrome.hideCursor ? 'cursor-none' : ''}`}
         >
           {isPresenterRole && (
             <>
@@ -178,8 +218,8 @@ export function PresenterShell({
               }}
               sessionTimerSeconds={canControl ? sessionState.localTimer : sessionState.remoteTimer}
               canRecord={canControl}
-              onOpenMirrorStage={handleOpenMirrorStage}
-              onOpenPrintExport={handleOpenPrintExport}
+              onOpenMirrorStage={onOpenMirrorStage}
+              onOpenPrintExport={onOpenPrintExport}
               onSyncModeChange={onSyncModeChange}
             />
           )}
@@ -187,7 +227,7 @@ export function PresenterShell({
             style={
               isPresenterRole ? { paddingBottom: `${PRESENTER_BOTTOM_BAR_CLEARANCE}px` } : undefined
             }
-            className={`relative min-h-0 min-w-0 size-full ${isPresenterRole ? "px-0 pb-0 pt-0 lg:px-0" : ""}`}
+            className={`relative min-h-0 min-w-0 size-full ${isPresenterRole ? 'px-0 pb-0 pt-0 lg:px-0' : ''}`}
           >
             {isPresenterRole ? (
               <PresenterModeView
@@ -236,14 +276,12 @@ export function PresenterShell({
               total={navigation.total}
               canPrev={flow.canPrev}
               canNext={flow.canNext}
-              showPresenterModeButton={session.role !== "presenter"}
+              showPresenterModeButton={session.role !== 'presenter'}
               overviewOpen={chrome.overviewOpen}
               notesOpen={chrome.notesOverviewOpen}
               shortcutsOpen={chrome.shortcutsHelpOpen}
               canOpenOverview={canOpenOverview}
-              onEnterPresenterMode={
-                session.role !== "presenter" ? handleEnterPresenterMode : undefined
-              }
+              onEnterPresenterMode={session.role !== 'presenter' ? onEnterPresenterMode : undefined}
               onToggleOverview={chrome.toggleOverview}
               onToggleNotes={chrome.toggleNotes}
               onToggleShortcuts={chrome.toggleShortcuts}
@@ -281,6 +319,6 @@ export function PresenterShell({
           />
         </div>
       </DrawProvider>
-    </>
+    </PresenterContextProvider>
   )
 }

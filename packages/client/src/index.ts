@@ -7,4 +7,4 @@ export { SlidesNavigationProvider, useSlidesState } from "./app/providers/Slides
 export { AddonProvider, useSlideAddons } from "./addons/AddonProvider";
 export { ThemeProvider, useSlideTheme, useSlideThemeTokens } from "./theme/ThemeProvider";
 export { PrintSlidesView } from "./features/presentation/PrintSlidesView";
-export { PresenterShell } from "./features/presentation/presenter/PresenterShell";
+export { PresentationRoot } from "./features/presentation/PresentationRoot";
