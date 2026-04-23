@@ -11,6 +11,7 @@ import { QuickOverview } from './overview/QuickOverview'
 import { buildPresentationEntryUrl, type PresentationSession } from './session'
 import type { PresentationSyncMode } from './types'
 import { RevealProvider } from './reveal/RevealContext'
+import { PresentationEmptyState } from './modes/PresentationEmptyState'
 import { PresenterMode } from './modes/PresenterMode'
 import { ViewerMode } from './modes/ViewerMode'
 import {
@@ -60,6 +61,7 @@ export function PresentationRoot({
   )
 
   const navigation = useSlidesNavigation()
+  if (slides.length === 0) return <PresentationEmptyState />
   const currentSlide = slides[navigation.currentIndex]
   const canControl = canControlNavigation(session)
   const isPresenterRole = session.role === 'presenter'
