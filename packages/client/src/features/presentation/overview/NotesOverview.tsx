@@ -1,7 +1,8 @@
-import { NotebookText, X } from "lucide-react";
+import { NotebookText } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { CompiledSlide } from "../presenter/model/types";
 import { ChromePanel } from "../../../ui/primitives/ChromePanel";
+import { OverlayShell } from "../../../ui/primitives/OverlayShell";
 
 function summarizeNotes(notes?: string) {
   if (!notes) return "No speaker notes yet.";
@@ -49,35 +50,21 @@ export function NotesOverview({
   );
   const selectedNotes = toParagraphs(selectedSlide?.meta.notes);
 
-  if (!open) return null;
-
   return (
-    <div className="absolute inset-0 z-50 bg-slate-100/84 backdrop-blur-sm">
-      <div className="mx-auto flex h-full w-full max-w-[1800px] flex-col px-6 py-6">
-        <header className="mb-4 flex items-start justify-between gap-6">
-          <div className="text-slate-900">
-            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-1 text-xs font-medium text-slate-600">
-              <NotebookText size={14} />
-              <span>
-                {notedSlidesCount}/{slides.length} slides have notes
-              </span>
-            </div>
-            <h2 className="text-lg font-semibold">Notes Workspace</h2>
-            <p className="text-sm text-slate-600">
-              Review the whole narrative, then jump directly to the slide you want to rehearse.
-              Press `N` or `Esc` to close.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close notes workspace"
-            className="inline-flex size-10 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-          >
-            <X size={18} />
-          </button>
-        </header>
-        <div className="grid min-h-0 flex-1 gap-4 xl:grid-cols-[minmax(340px,420px)_minmax(0,1fr)]">
+    <OverlayShell
+      open={open}
+      onClose={onClose}
+      title="Notes Workspace"
+      variant="fullscreen"
+      closeAriaLabel="Close notes workspace"
+      description={
+        <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/90 px-3 py-1 text-xs font-medium text-slate-600">
+          <NotebookText size={14} />
+          {notedSlidesCount}/{slides.length} slides have notes · Press N or Esc to close
+        </span>
+      }
+    >
+      <div className="grid min-h-0 flex-1 gap-4 xl:grid-cols-[minmax(340px,420px)_minmax(0,1fr)]">
           <ChromePanel tone="solid" radius="section" padding="none" className="overflow-hidden">
             <div className="border-b border-slate-200/80 px-5 py-4">
               <h3 className="text-sm font-semibold text-slate-900">Slide Notes Index</h3>
@@ -193,8 +180,7 @@ export function NotesOverview({
               )}
             </div>
           </ChromePanel>
-        </div>
       </div>
-    </div>
+    </OverlayShell>
   );
 }

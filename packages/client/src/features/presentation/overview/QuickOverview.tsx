@@ -1,10 +1,9 @@
 import { startTransition, useEffect, useState, type KeyboardEvent } from "react";
-import { X } from "lucide-react";
 import { formatViewportAspectRatio } from "@slidev-react/core/slides/viewport";
 import type { CompiledSlide, SlidesConfig } from "../presenter/model/types";
-import { ChromeIconButton } from "../../../ui/primitives/ChromeIconButton";
 import { ChromePanel } from "../../../ui/primitives/ChromePanel";
 import { ChromeTag } from "../../../ui/primitives/ChromeTag";
+import { OverlayShell } from "../../../ui/primitives/OverlayShell";
 import { SlidePreviewSurface } from "../stage/SlidePreviewSurface";
 
 function OverviewSlidePreview({
@@ -104,28 +103,16 @@ export function QuickOverview({
     onSelect(index);
   }
 
-  if (!open) return null;
-
   return (
-    <div className="absolute inset-0 z-50 bg-slate-100/84 backdrop-blur-md">
-      <div className="mx-auto flex h-full w-full max-w-[2200px] flex-col px-6 py-6">
-        <header className="mb-5 flex items-center justify-between">
-          <div className="text-slate-900">
-            <h2 className="text-lg font-semibold">Quick Overview</h2>
-            <p className="text-sm text-slate-600">
-              Click a slide to jump. Press `O` or `Esc` to close.
-            </p>
-          </div>
-          <ChromeIconButton
-            onClick={onClose}
-            aria-label="Close quick overview"
-            className="rounded-full "
-          >
-            <X size={18} />
-          </ChromeIconButton>
-        </header>
-        <div className="min-h-0 flex-1 overflow-auto pr-1">
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(360px,1fr))] gap-5">
+    <OverlayShell
+      open={open}
+      onClose={onClose}
+      title="Quick Overview"
+      description="Click a slide to jump. Press O or Esc to close."
+      variant="fullscreen"
+      closeAriaLabel="Close quick overview"
+    >
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(360px,1fr))] gap-5">
             {slides.map((slide, index) => {
               const active = index === currentIndex;
               return (
@@ -157,9 +144,7 @@ export function QuickOverview({
                 </ChromePanel>
               );
             })}
-          </div>
-        </div>
       </div>
-    </div>
+    </OverlayShell>
   );
 }
