@@ -8,7 +8,7 @@ import { NotesOverview } from './overview/NotesOverview'
 import { PresentationNavbar } from './navigation/PresentationNavbar'
 import { useSlidesNavigation } from './navigation/useSlidesNavigation'
 import { QuickOverview } from './overview/QuickOverview'
-import { PresentationStatus } from './PresentationStatus'
+import { StatusBar } from './status/StatusBar'
 import { buildPresentationEntryUrl, type PresentationSession } from './session'
 import type { PresentationSyncMode } from './types'
 import { RevealProvider } from './reveal/RevealContext'
@@ -194,7 +194,7 @@ export function PresentationRoot({
             </>
           )}
           {isPresenterRole && (
-            <PresentationStatus
+            <StatusBar
               slideId={currentSlide.id}
               session={session}
               sync={sessionState.sync}
