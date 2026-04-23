@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { createRecordingDownloadName } from "./recordingFilename";
+import { createRecordingDownloadName } from "./filename";
 
 const ELAPSED_UPDATE_INTERVAL_MS = 250;
 

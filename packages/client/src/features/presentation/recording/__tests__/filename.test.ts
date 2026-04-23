@@ -3,7 +3,7 @@ import {
   createRecordingDownloadName,
   resolvePresentationFileNameBase,
   resolveRecordingFileNameBase,
-} from "../recordingFilename";
+} from "../filename";
 
 describe("recording filename", () => {
   it("prefers exportFilename when present", () => {

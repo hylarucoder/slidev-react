@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { isTypingElement } from "../browser";
+import { isTypingElement } from "../session/browser";
 import { createPersistedDrawState, parsePersistedDrawState } from "./persistence";
 
 export interface DrawPoint {

@@ -15,7 +15,7 @@ import {
   registerShortcutHelpKeyUp,
 } from "../../navigation/keyboardShortcuts";
 import { useIdleCursor } from "../platform/useIdleCursor";
-import { isTypingElement } from "../../browser";
+import { isTypingElement } from "../../session/browser";
 import {
   parsePersistedPresenterCursorMode,
   parsePersistedPresenterSidebarWidth,

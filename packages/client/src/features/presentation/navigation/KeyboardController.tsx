@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useReveal } from "../reveal/RevealContext";
 import { resolveNavigationShortcutAction } from "./keyboardShortcuts";
 import { useSlidesNavigation } from "./useSlidesNavigation";
-import { isTypingElement } from "../browser";
+import { isTypingElement } from "../session/browser";
 
 export function KeyboardController({
   enabled = true,

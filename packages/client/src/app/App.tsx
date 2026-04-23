@@ -3,7 +3,7 @@ import compiledSlides from "@generated/slides";
 import { useMemo } from "react";
 import { SlidesNavigationProvider } from "./providers/SlidesNavigationProvider";
 import { AddonProvider, useSlideAddons } from "../addons/AddonProvider";
-import { PrintSlidesView } from "../features/presentation/PrintSlidesView";
+import { PrintSlidesView } from "../features/presentation/modes/PrintMode";
 import { PresentationRoot } from "../features/presentation/PresentationRoot";
 import { buildSlidesUrl } from "@slidev-react/core/presentation/export/urls";
 import { type PresentationSession } from "../features/presentation/session";

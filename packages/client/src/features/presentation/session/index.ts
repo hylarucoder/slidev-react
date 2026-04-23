@@ -1,4 +1,4 @@
-import type { PresentationRole, PresentationSyncMode } from "./types";
+import type { PresentationRole, PresentationSyncMode } from "../types";
 import { buildRolePathFromPathname, buildStandalonePathFromPathname } from "./path";
 import { resolveSessionLocationState } from "./location";
 import presentationConfig from "virtual:slidev-react/presentation-config";

@@ -3,7 +3,7 @@ import {
   buildPresentationEntryUrl,
   resolvePresentationSession,
   updateSyncModeInUrl,
-} from "../session";
+} from "../index";
 
 const originalWindow = globalThis.window;
 

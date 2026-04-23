@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { DrawStroke } from "../../draw/DrawProvider"
 import { usePresentationSync } from "../../sync"
-import { usePresentationRecorder } from "../../usePresentationRecorder"
+import { usePresentationRecorder } from "../../recording/usePresentationRecorder"
 import type {
   PresentationCursorState,
   PresentationSharedState,
