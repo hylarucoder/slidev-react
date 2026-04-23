@@ -4,6 +4,7 @@ import { MoonlitCallout } from "./components/Callout";
 import { MoonlitEyebrow } from "./components/Eyebrow";
 import { MoonlitKeyStat } from "./components/KeyStat";
 import { MoonlitPullQuote } from "./components/PullQuote";
+import { MoonlitChapterLayout } from "./layouts/ChapterLayout";
 import { MoonlitCoverLayout } from "./layouts/CoverLayout";
 import { MoonlitSectionLayout } from "./layouts/SectionLayout";
 import { MoonlitStatementLayout } from "./layouts/StatementLayout";
@@ -74,11 +75,12 @@ export default defineTheme({
   rootAttributes: {
     "data-slide-theme": "moonlit",
   },
-  layoutIds: ["cover", "section", "statement"],
+  layoutIds: ["cover", "section", "statement", "chapter"],
   layouts: {
     cover: MoonlitCoverLayout,
     section: MoonlitSectionLayout,
     statement: MoonlitStatementLayout,
+    chapter: MoonlitChapterLayout,
   },
   mdxComponents: {
     Badge: MoonlitBadge,

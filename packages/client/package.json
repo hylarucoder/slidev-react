@@ -67,7 +67,7 @@
     "katex": "0.16.33",
     "lucide-react": "0.568.0",
     "mermaid": "11.12.3",
-    "plantuml-encoder": "1.4.0",
+    "motion": "^12.37.0",
     "shiki": "4.0.1",
     "shiki-magic-move": "1.2.1",
     "zod": "4.3.6"

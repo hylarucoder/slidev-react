@@ -112,7 +112,7 @@ describe("lint-slides CLI", () => {
     expect(result.code).toBe(0);
     expect(result.stderr).toContain("Slides lint found 3 warnings:");
     expect(result.stderr).toContain(
-      'Unknown theme "missing-theme". Add packages/theme-missing-theme/index.ts or install @slidev-react/theme-missing-theme.',
+      'Unknown theme "missing-theme". Use a built-in theme, add packages/theme-missing-theme/index.ts, or install @slidev-react/theme-missing-theme.',
     );
     expect(result.stderr).toContain(
       'Unknown slides layout "nebula". The runtime will fall back to the default layout.',
@@ -301,6 +301,43 @@ describe("lint-slides CLI", () => {
         "---",
         "",
         "# The deck should feel edited.",
+      ].join("\n"),
+    );
+
+    const result = await runLintSlides({
+      cwd: appRoot,
+    });
+
+    expect(result.code).toBe(0);
+    expect(result.stdout).toContain("Slides lint passed: no authoring warnings for slides.mdx");
+    expect(result.stderr).toBe("");
+  });
+
+  it("accepts the built-in moonlit theme without installing an external package", async () => {
+    const appRoot = await createTempAppRoot();
+    tempDirs.push(appRoot);
+    await writeSlidesSource(
+      appRoot,
+      [
+        "---",
+        "title: Demo Deck",
+        "theme: moonlit",
+        "layout: cover",
+        "---",
+        "",
+        "---",
+        "title: Section Intro",
+        "layout: section",
+        "---",
+        "",
+        "# Story arc",
+        "",
+        "---",
+        "title: Core Message",
+        "layout: statement",
+        "---",
+        "",
+        "# The deck should feel moonlit.",
       ].join("\n"),
     );
 

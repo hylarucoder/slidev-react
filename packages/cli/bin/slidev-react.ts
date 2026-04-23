@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { Command, CommanderError } from "@commander-js/extra-typings";
-import { runSlidesBuild, runSlidesDev, runSlidesExport, runSlidesLint } from "@slidev-react/node";
 
 interface CommandResult {
   code: number;
@@ -81,6 +82,15 @@ function exitWithCommandResult(result: CommandResult) {
   process.exit(result.code);
 }
 
+async function loadNodeCommands() {
+  const localNodeEntry = new URL("../../node/src/index.ts", import.meta.url);
+  if (existsSync(fileURLToPath(localNodeEntry))) {
+    return await import(localNodeEntry.href);
+  }
+
+  return await import("@slidev-react/node");
+}
+
 async function runWithViteArgs(
   argv: string[],
   runner: (options: { appRoot: string; viteArgs: string[] }) => Promise<CommandResult>,
@@ -137,7 +147,10 @@ createPassThroughCommand(
   program,
   "dev",
   "Start the Vite dev server for a slides source file",
-  (argv) => runWithViteArgs(argv, runSlidesDev),
+  async (argv) => {
+    const { runSlidesDev } = await loadNodeCommands();
+    await runWithViteArgs(argv, runSlidesDev);
+  },
   DEV_HELP_TEXT,
 );
 
@@ -145,7 +158,10 @@ createPassThroughCommand(
   program,
   "build",
   "Build the current slides app for production",
-  (argv) => runWithViteArgs(argv, runSlidesBuild),
+  async (argv) => {
+    const { runSlidesBuild } = await loadNodeCommands();
+    await runWithViteArgs(argv, runSlidesBuild);
+  },
   BUILD_HELP_TEXT,
 );
 
@@ -153,7 +169,10 @@ createPassThroughCommand(
   program,
   "export",
   "Export PDF / PNG artifacts through Playwright",
-  (argv) => runWithCliArgs(argv, runSlidesExport),
+  async (argv) => {
+    const { runSlidesExport } = await loadNodeCommands();
+    await runWithCliArgs(argv, runSlidesExport);
+  },
   EXPORT_HELP_TEXT,
 );
 
@@ -161,7 +180,10 @@ createPassThroughCommand(
   program,
   "lint",
   "Validate slides authoring warnings",
-  (argv) => runWithCliArgs(argv, runSlidesLint),
+  async (argv) => {
+    const { runSlidesLint } = await loadNodeCommands();
+    await runWithCliArgs(argv, runSlidesLint);
+  },
   LINT_HELP_TEXT,
 );
 

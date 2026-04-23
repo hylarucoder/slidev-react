@@ -28,11 +28,6 @@ function walk(parent: any) {
         children[index] = createDiagramNode("MermaidDiagram", node.value || "");
         continue;
       }
-
-      if (lang === "plantuml" || lang === "startuml") {
-        children[index] = createDiagramNode("PlantUmlDiagram", node.value || "");
-        continue;
-      }
     }
 
     walk(node);

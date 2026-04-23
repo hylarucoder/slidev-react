@@ -22,7 +22,7 @@
 - 编译期解析 slides 并生成可运行的 slides artifact
 - 内置多种布局：`default`、`center`、`cover`、`section`、`two-cols`、`image-right`、`statement`
 - React 风格的 MDX 组件：`Badge`、`Callout`、`Annotate`、`Reveal`、`RevealGroup` 等
-- 支持 Mermaid、PlantUML、G2 图表（通过 addon 启用）
+- 支持 Mermaid、G2 图表（通过 addon 启用）
 - 基于 KaTeX 的数学公式渲染
 - 支持 presenter / viewer 路由和同步状态管理
 - 基于 `BroadcastChannel` 的多标签页同步
@@ -311,7 +311,6 @@ layout: spotlight
 | `CourseCover`            | 课程封面辅助组件                                      |
 | `MagicMoveDemo`          | Shiki Magic Move 代码动画                             |
 | `MinimaxReactVisualizer` | Minimax 博弈树可视化                                  |
-| `PlantUmlDiagram`        | PlantUML 图表渲染                                     |
 | `Reveal`                 | 基于步骤的渐进揭示                                    |
 | `RevealGroup`            | 自动编号的 reveal 容器                                |
 

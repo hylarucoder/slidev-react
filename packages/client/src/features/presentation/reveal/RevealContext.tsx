@@ -4,6 +4,7 @@ export interface RevealContextValue {
   slideId: string;
   clicks: number;
   clicksTotal: number;
+  disableAnimation?: boolean;
   setClicks: (next: number) => void;
   registerStep: (step: number) => () => void;
   advance: () => void;

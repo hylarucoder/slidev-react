@@ -66,6 +66,7 @@ Reveal flow 中的一个 **触发步骤**。一张 slide 可以有 0 到多个 c
 
 - `cueIndex`：当前 cue 位置（0 = 初始态，无内容被展示）
 - `cueTotal`：该 slide 的 cue 上限
+- cue 负责导航语义；具体的 reveal/transition 动画由客户端 scene driver 解释
 
 ---
 
@@ -169,7 +170,7 @@ Markdown + JSX 的混合格式。项目使用 MDX 作为 slides 的编写语言�
 
 注入到 MDX 渲染上下文中的 React 组件。在 MDX 文件中可以直接使用标签调用（如 `<Badge>`、`<Callout>`）。组件来源：
 
-1. **核心组件**（始终可用）：`Badge`、`Callout`、`Step`、`Steps`、`Annotate`、`CodeMagicMove`、`PlantUmlDiagram` 等
+1. **核心组件**（始终可用）：`Badge`、`Callout`、`Step`、`Steps`、`Annotate`、`CodeMagicMove` 等
 2. **Theme 组件**：theme 通过 `mdxComponents` 字段覆盖
 3. **Addon 组件**：addon 通过 `mdxComponents` 字段注入
 
@@ -212,10 +213,6 @@ Slide 间的导航逻辑。核心函数：
 ### Page / PageIndex
 
 Slide 的页码。`pageIndex` 从 0 开始，URL 中的页码从 1 开始（`/1`、`/2`）。
-
-### PlantUML Diagram
-
-通过远程服务渲染的 UML 图表组件。使用 `plantuml-encoder` 编码后发送到远程 PlantUML 服务器生成 SVG。因为依赖极轻，作为核心内置组件。
 
 ### Presenter
 

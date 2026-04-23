@@ -31,6 +31,7 @@ function createRevealContextValue({
     slideId,
     clicks,
     clicksTotal,
+    disableAnimation: false,
     setClicks: () => {},
     registerStep: noopRegisterStep,
     advance: () => {},

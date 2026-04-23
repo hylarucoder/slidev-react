@@ -14,7 +14,7 @@ Short version:
 
 Good fit:
 
-- decks that mainly use Markdown, code fences, Mermaid, PlantUML, and simple layouts
+- decks that mainly use Markdown, code fences, Mermaid, and simple layouts
 - teams that prefer React + MDX over Vue SFCs and Vue directives
 - decks that want presenter notes, export, theme, and addon behavior inside a React-first runtime
 
@@ -125,6 +125,7 @@ Use:
 
 - `<Step step={1}>...</Step>`
 - `<Steps>` when grouping related steps
+- `variant`, `timing`, and optional `stagger` for motion-driven reveal scenes
 - `clicks:` when you need explicit pacing beyond detected step blocks
 
 Migration rule of thumb:

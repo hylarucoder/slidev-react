@@ -28,7 +28,7 @@ https://github.com/user-attachments/assets/553392a4-36ae-4505-87c2-ca54e7e00f08
 - Compile-time parsing and slides artifact generation
 - Built-in slide layouts: `default`, `center`, `cover`, `section`, `two-cols`, `image-right`, `statement`
 - React-native MDX helpers: `Badge`, `Callout`, `Annotate`, `Reveal`, `RevealGroup`, and more
-- Diagram fences for Mermaid, PlantUML, and G2 charts (via addons)
+- Diagram fences for Mermaid and G2 charts (via addons)
 - KaTeX-based math rendering
 - Presenter and viewer routes with sync-ready state handling
 - Multi-tab sync through `BroadcastChannel`
@@ -317,7 +317,6 @@ layout: spotlight
 | `CourseCover`            | Course cover page helper                                              |
 | `MagicMoveDemo`          | Shiki Magic Move code animations                                      |
 | `MinimaxReactVisualizer` | Minimax tree visualizer                                               |
-| `PlantUmlDiagram`        | PlantUML diagram rendering                                            |
 | `Reveal`                 | Step-based reveal for click-triggered content                         |
 | `RevealGroup`            | Auto-numbered reveal container                                        |
 

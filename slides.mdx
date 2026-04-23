@@ -1,7 +1,7 @@
 ---
 title: slidev-react Capability Tour
 layout: default
-theme: absolutely
+theme: moonlit
 addons:
   - mermaid
   - g2
@@ -212,7 +212,7 @@ Math is currently rendered through `remark-math` + `rehype-katex`.
 ---
 title: Diagrams
 notes: |
-  Diagram fences are transformed during compilation. Mermaid and G2 are loaded as addons declared in deck frontmatter, while PlantUML ships as a core component. The addon registry lives in `packages/client/src/addons/registry.ts`.
+  Diagram fences are transformed during compilation. Mermaid and G2 are loaded as addons declared in deck frontmatter. The addon registry lives in `packages/client/src/addons/registry.ts`.
 ---
 
 # Diagrams
@@ -230,15 +230,6 @@ graph TD
 B[Text] --> C{Decision}
 C -->|One| D[Result 1]
 C -->|Two| E[Result 2]
-```
-
-```startuml
-@startuml
-package "Some Group" {
-  HTTP - [First Component]
-  [Another Component]
-}
-@enduml
 ```
 
 ---
@@ -375,7 +366,7 @@ Add `insight` to the `addons` list in your deck frontmatter to enable this compo
 ---
 title: Step Flow
 notes: |
-  Step and Steps are the repo-native replacement for Slidev's `v-click`. They coordinate with the presentation flow engine in `packages/client/src/features/presentation/reveal/`. The `preset` prop supports `fade`, `fade-up`, and `scale-in` animations.
+  Step and Steps are the repo-native replacement for Slidev's `v-click`. They coordinate with the presentation flow engine in `packages/client/src/features/presentation/reveal/`. The preferred API is now `variant`, `timing`, and optional group `stagger`, while `preset` remains as a compatibility alias.
 ---
 
 # Step Flow
@@ -387,12 +378,16 @@ In `slidev-react`, progressive reveals are built with `Step` and `Steps`.
   <p>First click reveals this block.</p>
 </Step>
 
-<Step step={2} preset="scale-in">
+<Step
+  step={2}
+  variant="scale-in"
+  timing={{ duration: 0.32, ease: "circOut" }}
+>
   <p>Second click reveals this block.</p>
 </Step>
 
 <ul>
-  <Steps start={3} preset="fade-up" reserveSpace>
+  <Steps start={3} variant="fade-up" stagger={0.08} reserveSpace>
     <li>Third click reveals this point.</li>
     <li>Fourth click reveals this point.</li>
   </Steps>
@@ -405,12 +400,16 @@ This is the repo-native replacement for Slidev's `v-click`.
   <p>This block appears on the first click.</p>
 </Step>
 
-<Step step={2} preset="scale-in">
+<Step
+  step={2}
+  variant="scale-in"
+  timing={{ duration: 0.32, ease: "circOut" }}
+>
   <p>This block appears on the second click.</p>
 </Step>
 
 <ul>
-  <Steps start={3} preset="fade-up" reserveSpace>
+  <Steps start={3} variant="fade-up" stagger={0.08} reserveSpace>
     <li>Third click reveals this point.</li>
     <li>Fourth click reveals this point.</li>
   </Steps>
@@ -451,16 +450,32 @@ layout: statement
 ---
 ```
 
-<div className="rounded-xl border border-slate-200 bg-white/70 p-4">
-  <strong className="block text-sm text-slate-900">Supported layouts</strong>
-  <p className="mt-2 text-sm text-slate-700">
+<div
+  className="rounded-xl border p-4"
+  style={{
+    borderColor: "var(--slide-ui-border)",
+    background: "color-mix(in srgb, var(--slide-ui-surface) 78%, transparent)",
+  }}
+>
+  <strong className="block text-sm" style={{ color: "var(--slide-ui-heading)" }}>
+    Supported layouts
+  </strong>
+  <p className="mt-2 text-sm" style={{ color: "var(--slide-ui-text)" }}>
     `default`, `center`, `cover`, `section`, `immersive`, `two-cols`, `image-right`, `statement`
   </p>
 </div>
 
-<div className="rounded-xl border border-slate-200 bg-white/70 p-4">
-  <strong className="block text-sm text-slate-900">Addon layouts</strong>
-  <p className="mt-2 text-sm text-slate-700">
+<div
+  className="rounded-xl border p-4"
+  style={{
+    borderColor: "var(--slide-ui-border)",
+    background: "color-mix(in srgb, var(--slide-ui-surface) 78%, transparent)",
+  }}
+>
+  <strong className="block text-sm" style={{ color: "var(--slide-ui-heading)" }}>
+    Addon layouts
+  </strong>
+  <p className="mt-2 text-sm" style={{ color: "var(--slide-ui-text)" }}>
     Addons can register additional layouts. The `insight` addon adds a `spotlight` layout for full-page emphasis.
   </p>
 </div>
@@ -474,12 +489,12 @@ For now, prefer `layout:` and `class:` because they already participate in rende
 ---
 title: Slide Transitions
 notes: |
-  Slide transitions are CSS-based animations defined in `packages/client/src/theme/transitions.css`. Four transition types are built in: `fade`, `slide-left`, `slide-up`, and `zoom`. All transitions respect `prefers-reduced-motion`.
+  Slide transitions are motion-driven scene changes handled in `packages/client/src/features/presentation/stage/SlideStage.tsx`. Four transition types are built in: `fade`, `slide-left`, `slide-up`, and `zoom`. All transitions respect `prefers-reduced-motion`.
 ---
 
 # Slide Transitions
 
-Slide transitions are CSS-based animations that play when navigating between slides.
+Slide transitions are motion-driven scene changes that play when navigating between slides.
 
 | Transition | Effect |
 | --- | --- |

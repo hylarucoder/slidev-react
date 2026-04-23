@@ -12,6 +12,7 @@ describe("ThemeProvider root attributes", () => {
     const theme = resolveSlideTheme();
 
     expect(resolveThemeRootAttributes(theme)).toEqual({
+      "data-slide-color-scheme": "light",
       "data-slide-theme": "default",
     });
   });
@@ -21,6 +22,7 @@ describe("ThemeProvider root attributes", () => {
     const portraitViewport = resolveSlidesViewportMeta("3/4").viewport;
 
     expect(resolveThemeRootAttributes(theme, portraitViewport)).toEqual({
+      "data-slide-color-scheme": "light",
       "data-slide-theme": "default",
       "data-slide-viewport-orientation": "portrait",
     });
@@ -30,6 +32,7 @@ describe("ThemeProvider root attributes", () => {
     const theme = resolveSlideTheme();
 
     expect(resolveThemeRootAttributes(theme, DEFAULT_SLIDES_VIEWPORT)).toEqual({
+      "data-slide-color-scheme": "light",
       "data-slide-theme": "default",
       "data-slide-viewport-orientation": "landscape",
     });

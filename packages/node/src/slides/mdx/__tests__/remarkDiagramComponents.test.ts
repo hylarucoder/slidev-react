@@ -24,18 +24,20 @@ describe("remarkDiagramComponents", () => {
     });
   });
 
-  it("rewrites plantuml code fences to PlantUmlDiagram JSX elements", () => {
-    const tree = makeTree(makeCodeNode("plantuml", "@startuml\nAlice -> Bob\n@enduml"));
+  it("leaves plantuml code fences untouched", () => {
+    const codeNode = makeCodeNode("plantuml", "@startuml\nAlice -> Bob\n@enduml");
+    const tree = makeTree(codeNode);
     transform(tree);
 
-    expect(tree.children[0].name).toBe("PlantUmlDiagram");
+    expect(tree.children[0]).toBe(codeNode);
   });
 
-  it("rewrites startuml as PlantUmlDiagram", () => {
-    const tree = makeTree(makeCodeNode("startuml", "Bob -> Alice"));
+  it("leaves startuml code fences untouched", () => {
+    const codeNode = makeCodeNode("startuml", "Bob -> Alice");
+    const tree = makeTree(codeNode);
     transform(tree);
 
-    expect(tree.children[0].name).toBe("PlantUmlDiagram");
+    expect(tree.children[0]).toBe(codeNode);
   });
 
   it("leaves non-diagram code fences untouched", () => {

@@ -35,10 +35,88 @@ function createSlideModuleCode(compiledSource: string) {
 
 function normalizeDiagramCodeProps(compiledSource: string) {
   return compiledSource.replace(
-    /<(MermaidDiagram|PlantUmlDiagram) code="([\s\S]*?)" \/>/g,
+    /<(MermaidDiagram) code="([\s\S]*?)" \/>/g,
     (_match, componentName: string, code: string) =>
       `<${componentName} code={${JSON.stringify(code)}} />`,
   );
+}
+
+function toImportPath(filePath: string) {
+  return filePath.split(path.sep).join("/");
+}
+
+function splitSpecifierSuffix(specifier: string) {
+  const suffixIndex = specifier.search(/[?#]/);
+  if (suffixIndex === -1) {
+    return { pathPart: specifier, suffix: "" };
+  }
+
+  return {
+    pathPart: specifier.slice(0, suffixIndex),
+    suffix: specifier.slice(suffixIndex),
+  };
+}
+
+function resolveRelativeSpecifier({
+  specifier,
+  sourceFilePath,
+  generatedSlideFilePath,
+}: {
+  specifier: string;
+  sourceFilePath: string;
+  generatedSlideFilePath: string;
+}) {
+  const { pathPart, suffix } = splitSpecifierSuffix(specifier);
+  const resolvedTargetPath = path.resolve(path.dirname(sourceFilePath), pathPart);
+  let rewrittenPath = path.relative(path.dirname(generatedSlideFilePath), resolvedTargetPath);
+
+  if (!rewrittenPath.startsWith(".")) {
+    rewrittenPath = `./${rewrittenPath}`;
+  }
+
+  return `${toImportPath(rewrittenPath)}${suffix}`;
+}
+
+function rewriteRelativeModuleSpecifiers({
+  compiledSource,
+  sourceFilePath,
+  generatedSlideFilePath,
+}: {
+  compiledSource: string;
+  sourceFilePath: string;
+  generatedSlideFilePath: string;
+}) {
+  const rewriteIfRelative = (specifier: string) => {
+    if (!specifier.startsWith("./") && !specifier.startsWith("../")) {
+      return specifier;
+    }
+
+    return resolveRelativeSpecifier({
+      specifier,
+      sourceFilePath,
+      generatedSlideFilePath,
+    });
+  };
+
+  let rewritten = compiledSource.replace(
+    /((?:^|\n)\s*(?:import|export)\s[\s\S]*?\sfrom\s*)(["'])([^"'\\]+)(\2)/g,
+    (_match, prefix: string, quote: string, specifier: string) =>
+      `${prefix}${quote}${rewriteIfRelative(specifier)}${quote}`,
+  );
+
+  rewritten = rewritten.replace(
+    /((?:^|\n)\s*import\s*)(["'])([^"'\\]+)(\2)/g,
+    (_match, prefix: string, quote: string, specifier: string) =>
+      `${prefix}${quote}${rewriteIfRelative(specifier)}${quote}`,
+  );
+
+  rewritten = rewritten.replace(
+    /(\bimport\s*\(\s*)(["'])([^"'\\]+)(\2)(\s*\))/g,
+    (_match, prefix: string, quote: string, specifier: string, _closingQuote: string, suffix: string) =>
+      `${prefix}${quote}${rewriteIfRelative(specifier)}${quote}${suffix}`,
+  );
+
+  return rewritten;
 }
 
 function createManifestCode({
@@ -162,6 +240,7 @@ async function resolveSlideUnitSource({
       {
         ...slide,
         watchedFiles: [] as string[],
+        sourceFilePath: slidesSourceFile,
         externalFilePath: undefined,
         externalFileSource: undefined,
       },
@@ -203,6 +282,7 @@ async function resolveSlideUnitSource({
       ...slide.meta,
     },
     watchedFiles: [externalFilePath],
+    sourceFilePath: externalFilePath,
     externalFilePath,
     externalFileSource,
   }));
@@ -262,7 +342,12 @@ export async function generateCompiledSlidesArtifacts(options: {
 
     try {
       const compiledSource = await compileSlideModule(slide.source);
-      await writeIfChanged(slideFilePath, createSlideModuleCode(compiledSource));
+      const rewrittenSource = rewriteRelativeModuleSpecifiers({
+        compiledSource,
+        sourceFilePath: slide.sourceFilePath,
+        generatedSlideFilePath: slideFilePath,
+      });
+      await writeIfChanged(slideFilePath, createSlideModuleCode(rewrittenSource));
     } catch (error) {
       const slideName = slide.meta.title
         ? `${slide.index + 1} (${slide.meta.title})`

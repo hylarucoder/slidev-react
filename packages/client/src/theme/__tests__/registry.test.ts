@@ -73,6 +73,7 @@ describe("theme registry", () => {
     expect(theme.layouts.cover).toBe(moonlitTheme.layouts?.cover);
     expect(theme.layouts.section).toBe(moonlitTheme.layouts?.section);
     expect(theme.layouts.statement).toBe(moonlitTheme.layouts?.statement);
+    expect(theme.layouts.chapter).toBe(moonlitTheme.layouts?.chapter);
     expect(theme.mdxComponents.Badge).toBe(moonlitTheme.mdxComponents?.Badge);
     expect(theme.mdxComponents.Callout).toBe(moonlitTheme.mdxComponents?.Callout);
     expect(theme.mdxComponents.KeyStat).toBe(moonlitTheme.mdxComponents?.KeyStat);

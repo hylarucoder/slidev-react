@@ -1,6 +1,8 @@
 import { createElement, type ComponentType } from "react"
 import { useEffect, useState } from "react"
+import { useSlideThemeTokens } from "../../../theme/ThemeProvider"
 import type { SlideAddonDefinition } from "../../types"
+import { resolveChartFrameSize, resolveChartFrameStyle } from "./chartFrame"
 
 type G2Module = typeof import("./G2Chart")
 type G2ComponentName =
@@ -20,6 +22,9 @@ type G2ComponentName =
 
 function createDeferredG2Component(name: G2ComponentName) {
   const DeferredG2Component = (props: Record<string, unknown>) => {
+    const themeTokens = useSlideThemeTokens()
+    const frameSize = resolveChartFrameSize(props)
+    const frameStyle = resolveChartFrameStyle(themeTokens, frameSize)
     const [LoadedComponent, setLoadedComponent] = useState<ComponentType<Record<string, unknown>> | null>(null)
     const [error, setError] = useState<string | null>(null)
 
@@ -53,8 +58,15 @@ function createDeferredG2Component(name: G2ComponentName) {
 
     if (!LoadedComponent) {
       return createElement("div", {
-        className: "my-3 h-48 animate-pulse rounded-xl border border-slate-200 bg-slate-100",
+        className: "my-3",
         "aria-hidden": "true",
+        style: frameStyle,
+        children: createElement("div", {
+          className: "size-full animate-pulse",
+          style: {
+            background: `linear-gradient(135deg, color-mix(in srgb, ${themeTokens.ui.surfaceStrong} 82%, transparent) 0%, color-mix(in srgb, ${themeTokens.ui.surface} 92%, transparent) 100%)`,
+          },
+        }),
       })
     }
 

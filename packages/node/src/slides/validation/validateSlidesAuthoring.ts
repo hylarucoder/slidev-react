@@ -29,7 +29,7 @@ export async function validateSlidesAuthoring({
 
   if (slides.meta.theme && !resolvedTheme) {
     warnings.push(
-      `Unknown theme "${slides.meta.theme}". Add packages/theme-${slides.meta.theme}/index.ts or install @slidev-react/theme-${slides.meta.theme}.`,
+      `Unknown theme "${slides.meta.theme}". Use a built-in theme, add packages/theme-${slides.meta.theme}/index.ts, or install @slidev-react/theme-${slides.meta.theme}.`,
     );
   }
 

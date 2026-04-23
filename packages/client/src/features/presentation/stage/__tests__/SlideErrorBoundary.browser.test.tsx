@@ -5,7 +5,7 @@ import { cleanup, render } from 'vitest-browser-react'
 import { SlideErrorBoundary } from '../SlideErrorBoundary'
 
 function BrokenSlide(): ReactNode {
-  throw new Error('PlantUML encoder failed to initialize in the browser runtime.')
+  throw new Error('Broken slide runtime')
 }
 
 function HealthySlide({ label }: { label: string }) {
@@ -34,7 +34,7 @@ test('keeps a rendering failure inside the failing slide boundary', async () => 
   await expect
     .element(page.getByText(/this problem is isolated to the current slide/i))
     .toBeInTheDocument()
-  await expect.element(page.getByText('PlantUML encoder failed to initialize in the browser runtime.')).toBeInTheDocument()
+  await expect.element(page.getByText('Broken slide runtime')).toBeInTheDocument()
   await expect.element(page.getByText('Healthy slide content')).toBeInTheDocument()
 })
 

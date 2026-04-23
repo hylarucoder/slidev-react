@@ -32,16 +32,19 @@ function createRevealContextValue({
   clicks,
   clicksTotal,
   registerStep,
+  disableAnimation,
 }: {
   slideId: string;
   clicks: number;
   clicksTotal: number;
   registerStep: RevealContextValue["registerStep"];
+  disableAnimation?: boolean;
 }): RevealContextValue {
   return {
     slideId,
     clicks,
     clicksTotal,
+    disableAnimation,
     setClicks: () => { },
     registerStep,
     advance: () => { },
@@ -73,6 +76,7 @@ function PrintSlideSnapshot({
         clicks,
         clicksTotal,
         registerStep,
+        disableAnimation: true,
       }),
     [clicks, clicksTotal, registerStep, slideId],
   );
