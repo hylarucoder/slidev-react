@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Copy, Expand, Link2, List, Printer, SunMedium } from 'lucide-react'
+import { ChromeButton } from '../../../../ui/primitives/ChromeButton'
 import { ChromeTag } from '../../../../ui/primitives/ChromeTag'
-import { FormSelect } from '../../../../ui/primitives/FormSelect'
+import { ChromeToggleGroup } from '../../../../ui/primitives/ChromeToggleGroup'
 import type { FullscreenRuntime } from '../../presenter/platform/useFullscreen'
 import type { WakeLockRuntime } from '../../presenter/platform/useWakeLock'
 import type { PresentationSession } from '../../session'
@@ -21,6 +22,13 @@ export interface SyncControlsRowProps {
   onToggleTimelinePreview: () => void
   onSyncModeChange?: (mode: PresentationSyncMode) => void
 }
+
+const SYNC_MODE_OPTIONS = [
+  { value: 'send', label: 'send' },
+  { value: 'receive', label: 'receive' },
+  { value: 'both', label: 'both' },
+  { value: 'off', label: 'off' },
+] as const satisfies ReadonlyArray<{ value: PresentationSyncMode; label: string }>
 
 export function SyncControlsRow({
   session,
@@ -48,22 +56,17 @@ export function SyncControlsRow({
           {statusLabelOf(syncStatus)}
         </span>
       </ChromeTag>
-      <FormSelect
+      <ChromeToggleGroup
         label="sync"
         size="sm"
         value={session.syncMode}
-        onChange={(event) => {
-          onSyncModeChange?.(event.target.value as PresentationSyncMode)
-        }}
-      >
-        <option value="send">send</option>
-        <option value="receive">receive</option>
-        <option value="both">both</option>
-        <option value="off">off</option>
-      </FormSelect>
+        options={SYNC_MODE_OPTIONS}
+        onChange={(value) => onSyncModeChange?.(value)}
+      />
       {canCopyViewerLink && (
-        <button
-          type="button"
+        <ChromeButton
+          size="sm"
+          leading={copiedViewer ? <Copy size={12} /> : <Link2 size={12} />}
           onClick={async () => {
             if (!session.viewerUrl) return
             try {
@@ -74,82 +77,58 @@ export function SyncControlsRow({
               setCopiedViewer(false)
             }
           }}
-          className="inline-flex items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-white"
         >
-          {copiedViewer ? <Copy size={12} /> : <Link2 size={12} />}
           {copiedViewer ? 'Viewer copied' : 'Copy viewer link'}
-        </button>
+        </ChromeButton>
       )}
       {onOpenMirrorStage && (
-        <button
-          type="button"
-          onClick={onOpenMirrorStage}
-          className="inline-flex items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-white"
-        >
-          <Link2 size={12} />
+        <ChromeButton size="sm" leading={<Link2 size={12} />} onClick={onOpenMirrorStage}>
           Open mirror stage
-        </button>
+        </ChromeButton>
       )}
       {canRecord && onOpenPrintExport && (
-        <button
-          type="button"
-          onClick={onOpenPrintExport}
-          className="inline-flex items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-white"
-        >
-          <Printer size={12} />
+        <ChromeButton size="sm" leading={<Printer size={12} />} onClick={onOpenPrintExport}>
           Print / PDF
-        </button>
+        </ChromeButton>
       )}
-      <button
-        type="button"
+      <ChromeButton
+        size="sm"
+        tone={timelinePreviewOpen ? 'violet' : 'default'}
+        leading={<List size={12} />}
         onClick={onToggleTimelinePreview}
-        className={`inline-flex items-center justify-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition ${
-          timelinePreviewOpen
-            ? 'border-violet-300 bg-violet-50 text-violet-700'
-            : 'border-slate-200 bg-white/88 text-slate-700 hover:bg-white'
-        }`}
       >
-        <List size={12} />
         Timeline
-      </button>
-      <button
-        type="button"
+      </ChromeButton>
+      <ChromeButton
+        size="sm"
+        tone={fullscreen.supported && fullscreen.active ? 'success' : 'default'}
+        leading={<Expand size={12} />}
+        disabled={!fullscreen.supported}
         onClick={() => {
           void fullscreen.toggle()
         }}
-        disabled={!fullscreen.supported}
-        className={`inline-flex items-center justify-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
-          fullscreen.supported && fullscreen.active
-            ? 'border-emerald-300 bg-emerald-50 text-emerald-700'
-            : 'border-slate-200 bg-white/88 text-slate-700 hover:bg-white'
-        }`}
       >
-        <Expand size={12} />
         {fullscreen.supported
           ? fullscreen.active
             ? 'Fullscreen on'
             : 'Fullscreen'
           : 'Fullscreen unavailable'}
-      </button>
-      <button
-        type="button"
+      </ChromeButton>
+      <ChromeButton
+        size="sm"
+        tone={wakeLock.supported && wakeLock.active ? 'success' : 'default'}
+        leading={<SunMedium size={12} />}
+        disabled={!wakeLock.supported}
         onClick={() => {
           void wakeLock.toggle()
         }}
-        disabled={!wakeLock.supported}
-        className={`inline-flex items-center justify-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
-          wakeLock.supported && wakeLock.active
-            ? 'border-emerald-300 bg-emerald-50 text-emerald-700'
-            : 'border-slate-200 bg-white/88 text-slate-700 hover:bg-white'
-        }`}
       >
-        <SunMedium size={12} />
         {wakeLock.supported
           ? wakeLock.active
             ? 'Wake lock on'
             : 'Wake lock'
           : 'Wake lock unavailable'}
-      </button>
+      </ChromeButton>
     </div>
   )
 }

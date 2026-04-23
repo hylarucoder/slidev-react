@@ -1,4 +1,4 @@
-import { FormSelect } from '../../../../ui/primitives/FormSelect'
+import { ChromeToggleGroup } from '../../../../ui/primitives/ChromeToggleGroup'
 import {
   CURSOR_MODE_OPTIONS,
   STAGE_SCALE_OPTIONS,
@@ -19,35 +19,21 @@ export function DisplayControlsRow({
   onCursorModeChange,
 }: DisplayControlsRowProps) {
   return (
-    <div className="mb-3 grid gap-2 sm:grid-cols-2">
-      <FormSelect
+    <div className="mb-3 flex flex-wrap items-center gap-4">
+      <ChromeToggleGroup
         label="stage scale"
         size="sm"
-        value={String(stageScale)}
-        onChange={(event) => {
-          onStageScaleChange(Number(event.target.value))
-        }}
-      >
-        {STAGE_SCALE_OPTIONS.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </FormSelect>
-      <FormSelect
+        value={stageScale}
+        options={STAGE_SCALE_OPTIONS}
+        onChange={onStageScaleChange}
+      />
+      <ChromeToggleGroup
         label="cursor"
         size="sm"
         value={cursorMode}
-        onChange={(event) => {
-          onCursorModeChange(event.target.value as CursorModeOption)
-        }}
-      >
-        {CURSOR_MODE_OPTIONS.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </FormSelect>
+        options={CURSOR_MODE_OPTIONS}
+        onChange={onCursorModeChange}
+      />
     </div>
   )
 }
