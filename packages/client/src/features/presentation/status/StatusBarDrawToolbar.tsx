@@ -52,7 +52,7 @@ export function StatusBarDrawToolbar({ slideId }: { slideId: string }) {
           >
             <Eraser size={15} />
           </ChromeIconButton>
-          <div className="mx-1 h-6 w-px bg-slate-200" aria-hidden />
+          <div className="mx-1 h-6 w-px chrome-divider" aria-hidden />
           {DRAW_COLORS.map((color) => (
             <button
               key={color}
@@ -63,11 +63,11 @@ export function StatusBarDrawToolbar({ slideId }: { slideId: string }) {
               }}
               title={`Set draw color ${color}`}
               aria-label={`Set draw color ${color}`}
-              className={`inline-flex size-5 items-center justify-center rounded-full border shadow-sm transition ${draw.color === color ? 'border-slate-700 ring-2 ring-emerald-300' : 'border-slate-300 opacity-90 hover:opacity-100'}`}
+              className={`inline-flex size-5 items-center justify-center rounded-full border shadow-sm transition ${draw.color === color ? 'ring-2 ring-emerald-300 [border-color:var(--chrome-fg)]' : 'opacity-90 hover:opacity-100 chrome-border'}`}
               style={{ backgroundColor: color }}
             />
           ))}
-          <div className="mx-1 h-6 w-px bg-slate-200" aria-hidden />
+          <div className="mx-1 h-6 w-px chrome-divider" aria-hidden />
           {DRAW_WIDTHS.map((value) => (
             <ChromeIconButton
               key={value}
@@ -88,7 +88,7 @@ export function StatusBarDrawToolbar({ slideId }: { slideId: string }) {
               />
             </ChromeIconButton>
           ))}
-          <div className="mx-1 h-6 w-px bg-slate-200" aria-hidden />
+          <div className="mx-1 h-6 w-px chrome-divider" aria-hidden />
           <ChromeIconButton
             onClick={() => draw.undo(slideId)}
             disabled={!hasStrokes}

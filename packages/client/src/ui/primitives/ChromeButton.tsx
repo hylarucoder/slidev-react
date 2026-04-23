@@ -6,7 +6,7 @@ function joinClassNames(...classNames: Array<string | false | null | undefined>)
 
 const toneClassNames = {
   default:
-    'border-slate-200/80 bg-white/88 text-slate-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-60',
+    'chrome-border chrome-surface chrome-fg hover:chrome-surface-raised disabled:cursor-not-allowed disabled:opacity-60',
   active: 'border-emerald-200/80 bg-emerald-50 text-emerald-700',
   danger:
     'border-rose-300/80 bg-rose-50 text-rose-700 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60',

@@ -56,10 +56,10 @@ function SlideContext({
   if (slideIndex === undefined || slideTotal === undefined) return null
 
   return (
-    <div className="flex min-w-0 items-center gap-2 text-xs text-slate-500">
-      <span className="font-semibold tabular-nums text-slate-700">
+    <div className="flex min-w-0 items-center gap-2 text-xs chrome-fg-subtle">
+      <span className="font-semibold tabular-nums chrome-fg">
         {slideIndex + 1}
-        <span className="text-slate-300"> / {slideTotal}</span>
+        <span className="chrome-fg-subtle"> / {slideTotal}</span>
       </span>
       {slideTitle && <span className="truncate">{slideTitle}</span>}
     </div>
@@ -127,7 +127,7 @@ export function StatusBar({
           }}
         >
           {diagnosticMessages.length > 0 && (
-            <div className="flex flex-wrap items-center gap-3 border-b border-slate-200/60 px-3 py-1.5 text-xs">
+            <div className="flex flex-wrap items-center gap-3 border-b chrome-border px-3 py-1.5 text-xs">
               {diagnosticMessages.map((entry, index) => (
                 <span
                   key={`${entry.tone}-${index}`}

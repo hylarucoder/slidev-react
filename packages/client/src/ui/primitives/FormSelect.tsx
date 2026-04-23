@@ -31,7 +31,7 @@ export function FormSelect({
   return (
     <label
       className={joinClassNames(
-        "inline-flex items-center rounded-md border border-slate-200/80 bg-white/88 text-xs font-medium text-slate-700",
+        "inline-flex items-center rounded-md border chrome-border chrome-surface chrome-fg text-xs font-medium",
         sizeStyles[size].container,
         className,
       )}
@@ -40,7 +40,7 @@ export function FormSelect({
       <select
         {...props}
         className={joinClassNames(
-          "rounded-md border border-slate-200/80 bg-white text-xs text-slate-700 outline-none",
+          "rounded-md border chrome-border chrome-surface-raised chrome-fg text-xs outline-none",
           sizeStyles[size].select,
         )}
       >

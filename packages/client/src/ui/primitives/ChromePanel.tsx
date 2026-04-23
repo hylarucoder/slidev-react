@@ -5,13 +5,11 @@ function joinClassNames(...classNames: Array<string | false | null | undefined>)
 }
 
 const toneClassNames = {
-  glass:
-    "border-slate-200/80 bg-white/88 text-slate-900",
-  solid:
-    "border-slate-200/80 bg-white/92 text-slate-900",
-  inset: "border-slate-200/80 bg-slate-50/78 text-slate-600",
-  frame: "border-slate-200/80 bg-white",
-  dashed: "border-slate-200/80 bg-slate-50/75 text-slate-500",
+  glass: "border chrome-border chrome-surface chrome-fg",
+  solid: "border chrome-border chrome-surface-raised chrome-fg",
+  inset: "border chrome-border chrome-surface-sunken chrome-fg-muted",
+  frame: "border chrome-border chrome-surface-raised",
+  dashed: "border chrome-border chrome-surface-sunken chrome-fg-subtle",
 } as const;
 
 const radiusClassNames = {

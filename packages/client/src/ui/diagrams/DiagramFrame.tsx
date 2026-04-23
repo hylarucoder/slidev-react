@@ -28,13 +28,13 @@ export function DiagramFrame({
 }: DiagramFrameProps) {
   return (
     <div
-      className={`slide-diagram-frame relative overflow-hidden rounded-[6px] border border-slate-200/80 bg-white/88 ${className ?? ''}`}
+      className={`slide-diagram-frame relative overflow-hidden rounded-[6px] border chrome-border chrome-surface ${className ?? ''}`}
       style={style}
       data-state={state}
     >
       {state === 'loading' && (
         <div
-          className="slide-diagram-frame__loading absolute inset-0 grid place-items-center text-xs text-slate-500"
+          className="slide-diagram-frame__loading absolute inset-0 grid place-items-center text-xs chrome-fg-subtle"
           aria-live="polite"
         >
           <span className="inline-flex items-center gap-2">

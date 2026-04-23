@@ -26,7 +26,7 @@ export function SpeakerNotes({
   return (
     <ChromePanel className="flex flex-col">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] chrome-fg-subtle">
           Notes
         </p>
         {currentClicksTotal > 0 && (
@@ -35,11 +35,11 @@ export function SpeakerNotes({
       </div>
       <ChromePanel tone="inset" radius="frame" className="flex-1 p-4 text-sm leading-7">
         {notes ? (
-          <div className="space-y-4 text-slate-600">{renderNotes(notes)}</div>
+          <div className="space-y-4 chrome-fg-muted">{renderNotes(notes)}</div>
         ) : (
           <>
-            <p className="font-medium text-slate-900">No notes yet.</p>
-            <p className="mt-3 text-slate-500">
+            <p className="font-medium chrome-fg">No notes yet.</p>
+            <p className="mt-3 chrome-fg-subtle">
               Add slide-level frontmatter with <code>notes: |</code> to keep your phrasing,
               punchlines, and handoff lines close to the slide.
             </p>

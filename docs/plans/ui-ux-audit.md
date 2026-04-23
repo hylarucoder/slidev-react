@@ -180,6 +180,43 @@ $ grep -rn 'duration-' packages/client/src/features packages/client/src/ui | wc 
 7
 ```
 
+### After Phase 5 semantic-class migration follow-up
+
+```
+$ grep -rn 'bg-slate-\|text-slate-\|border-slate-' packages/client/src/features packages/client/src/ui | wc -l
+31         # down from 80 in the initial baseline
+
+# Remaining hits are concentrated in:
+#   - overview/NotesOverview.tsx, presenter/panels/FlowTimeline.tsx,
+#     overview/QuickOverview.tsx: inverse-color "active/selected"
+#     states (bg-slate-900 + text-white) that need a dedicated pair of
+#     tokens rather than a direct chrome-* mapping.
+#   - modes/PrintMode.tsx: print-mode output — light-mode fixed is
+#     intentional.
+#   - status/tone.ts, status/panels/SessionInfoRow.tsx: semantic
+#     "disabled" sync-status badge; already uses a named tone.
+#   - ui/mdx/*: slide-content visualisers, outside UI chrome.
+#   - draw/DrawOverlay.tsx: a single slate-400 used for the cursor
+#     ring (stays readable in both themes).
+```
+
+New `chrome-*` utility classes defined in `theme/chrome.css`:
+`.chrome-surface` `.chrome-surface-raised` `.chrome-surface-sunken`
+`.chrome-backdrop` `.chrome-border` `.chrome-divider` `.chrome-fg`
+`.chrome-fg-muted` `.chrome-fg-subtle` `.chrome-scrim-soft`
+`.chrome-scrim-strong`. CSS variables declared in `theme/tokens.css`
+with a `@media (prefers-color-scheme: dark)` override block.
+
+Primitives fully migrated: `ChromePanel`, `ChromeTag`, `ChromeButton`,
+`ChromeIconButton` (default tone), `ChromeToggleGroup`, `FormSelect`,
+`OverlayShell`, `DiagramFrame`.
+
+Feature chrome migrated: `StatusBar`, `StatusBarDrawToolbar`,
+`PresenterMode`, `PresentationNavbar`, `PresentationEmptyState`,
+`SidePreview`, `SpeakerNotes`, plus bulk batch across
+`ShortcutsHelpOverlay` / `FlowTimeline` / `NotesOverview` /
+`QuickOverview` for non-inverse-color surfaces.
+
 ### Post-refactor baseline (2026-04-23, end of Phase 5)
 
 ```

@@ -143,9 +143,12 @@
   --chrome-surface-sunken: rgba(248, 250, 252, 0.72);
   --chrome-backdrop: #f8fafc;
   --chrome-border: rgba(226, 232, 240, 0.8);
+  --chrome-divider: #e2e8f0;
   --chrome-fg: #0f172a;
   --chrome-fg-muted: #475569;
   --chrome-fg-subtle: #94a3b8;
+  --chrome-scrim-soft: rgba(241, 245, 249, 0.84);
+  --chrome-scrim-strong: rgba(2, 6, 23, 0.35);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -155,9 +158,12 @@
     --chrome-surface-sunken: rgba(15, 23, 42, 0.72);
     --chrome-backdrop: #0f172a;
     --chrome-border: rgba(71, 85, 105, 0.5);
+    --chrome-divider: rgba(71, 85, 105, 0.5);
     --chrome-fg: #e2e8f0;
     --chrome-fg-muted: #94a3b8;
     --chrome-fg-subtle: #64748b;
+    --chrome-scrim-soft: rgba(15, 23, 42, 0.72);
+    --chrome-scrim-strong: rgba(2, 6, 23, 0.65);
   }
 }
 

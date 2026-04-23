@@ -40,7 +40,7 @@ export function SidePreview({
   return (
     <ChromePanel className="flex h-full min-h-0 min-w-0 flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] chrome-fg-subtle">
           {title}
         </p>
         <ChromeTag tone="muted" weight="semibold">
@@ -61,7 +61,7 @@ export function SidePreview({
         })}
         stageClassName="text-black"
       />
-      <p className="shrink-0 truncate text-base font-semibold text-slate-900">
+      <p className="shrink-0 truncate text-base font-semibold chrome-fg">
         {slide.meta.title ?? "Untitled"}
       </p>
     </ChromePanel>

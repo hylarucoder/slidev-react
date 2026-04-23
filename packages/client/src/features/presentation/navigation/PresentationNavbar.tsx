@@ -76,7 +76,7 @@ export function PresentationNavbar({
     >
       <div aria-hidden className="h-14 w-20 rounded-t-2xl" />
       <nav
-        className={`absolute bottom-0 left-0 flex items-center gap-1 rounded-t-xl border border-b-0 border-slate-200 bg-white/95 px-2 py-1.5 text-slate-800  ring-1 ring-black/5 backdrop-blur-md transition-[opacity,transform] ease-out ${open ? "pointer-events-auto translate-y-0 opacity-100 duration-0" : "pointer-events-none translate-y-2 opacity-0 duration-180"}`}
+        className={`absolute bottom-0 left-0 flex items-center gap-1 rounded-t-xl border border-b-0 chrome-border chrome-surface-raised chrome-fg px-2 py-1.5 ring-1 ring-black/5 backdrop-blur-md transition-[opacity,transform] ease-out ${open ? "pointer-events-auto translate-y-0 opacity-100 duration-0" : "pointer-events-none translate-y-2 opacity-0 duration-180"}`}
         aria-label="Presentation navbar"
       >
         <ChromeIconButton
@@ -152,7 +152,7 @@ export function PresentationNavbar({
             >
               <ChevronRight size={16} />
             </ChromeIconButton>
-            <div className="mx-1 h-5 w-px bg-slate-200" aria-hidden />
+            <div className="mx-1 h-5 w-px chrome-divider" aria-hidden />
             <DrawControls />
           </>
         )}

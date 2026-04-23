@@ -40,7 +40,7 @@ export function ChromeToggleGroup<T extends string | number>({
       role="group"
       aria-label={ariaLabel ?? label}
       className={joinClassNames(
-        'inline-flex rounded-md border border-slate-200/80 bg-white/88 p-[2px] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]',
+        'inline-flex rounded-md border chrome-border chrome-surface p-[2px] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]',
         className,
       )}
     >
@@ -59,7 +59,7 @@ export function ChromeToggleGroup<T extends string | number>({
               sizeClassNames[size],
               selected
                 ? 'bg-emerald-50 text-emerald-700 shadow-[inset_0_0_0_1px_rgba(16,185,129,0.28)]'
-                : 'text-slate-600 hover:text-slate-900',
+                : 'chrome-fg-muted hover:[color:var(--chrome-fg)]',
               option.disabled && 'cursor-not-allowed opacity-60',
             )}
           >
@@ -73,7 +73,7 @@ export function ChromeToggleGroup<T extends string | number>({
   if (!label) return content
 
   return (
-    <label className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">
+    <label className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] chrome-fg-subtle">
       {label}
       {content}
     </label>

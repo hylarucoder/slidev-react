@@ -50,7 +50,7 @@ function OverviewSlidePreview({
           <div className="absolute inset-x-5 top-14 h-5 rounded-full bg-white/90 shadow-[0_1px_0_rgba(255,255,255,0.6)] animate-pulse" />
           <div className="absolute inset-x-10 top-24 h-3 rounded-full bg-slate-200/90 animate-pulse" />
           <div className="absolute inset-x-12 top-[7.75rem] h-3 rounded-full bg-slate-200/70 animate-pulse" />
-          <div className="absolute left-8 right-8 bottom-10 top-40 rounded-[24px] border border-slate-200/80 bg-white/88 shadow-[0_18px_40px_rgba(148,163,184,0.12)]" />
+          <div className="absolute left-8 right-8 bottom-10 top-40 rounded-[24px] border chrome-border bg-white/88 shadow-[0_18px_40px_rgba(148,163,184,0.12)]" />
         </div>
       )}
     </div>
@@ -138,7 +138,7 @@ export function QuickOverview({
                     ready={previewsReady}
                     slidesConfig={slidesConfig}
                   />
-                  <div className="truncate px-2.5 py-2 text-sm font-medium text-slate-900">
+                  <div className="truncate px-2.5 py-2 text-sm font-medium chrome-fg">
                     {slide.meta.title ?? `Slide ${index + 1}`}
                   </div>
                 </ChromePanel>

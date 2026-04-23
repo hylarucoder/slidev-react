@@ -136,10 +136,10 @@ export function FlowTimeline({
     <ChromePanel className={`flex flex-col ${className ?? ""}`}>
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] chrome-fg-subtle">
             Timeline Preview
           </p>
-          <p className="mt-1 text-xs text-slate-500">{modeDescription}</p>
+          <p className="mt-1 text-xs chrome-fg-subtle">{modeDescription}</p>
         </div>
         <div className="flex items-center gap-2">
           <ChromeTag>{previewLabel}</ChromeTag>
@@ -167,7 +167,7 @@ export function FlowTimeline({
               className={`inline-flex flex-1 items-center justify-center rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition ${
                 active
                   ? "bg-slate-900 text-white"
-                  : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                  : "chrome-fg-subtle hover:bg-slate-100 hover:chrome-fg"
               }`}
             >
               {value}
@@ -202,7 +202,7 @@ export function FlowTimeline({
           </div>
         </div>
       </ChromePanel>
-      <div className="mb-3 flex items-center justify-between gap-3 text-xs text-slate-500">
+      <div className="mb-3 flex items-center justify-between gap-3 text-xs chrome-fg-subtle">
         <span>
           Current stage:{" "}
           {currentClicksTotal > 0 ? `${currentClicks}/${currentClicksTotal}` : "base"}
@@ -239,14 +239,14 @@ export function FlowTimeline({
                     ? "border-slate-900 bg-slate-900 text-white"
                     : current
                       ? "border-emerald-300 bg-emerald-50 text-emerald-800"
-                      : "border-slate-200 bg-white/90 text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                      : "chrome-border bg-white/90 chrome-fg hover:border-slate-300 hover:bg-slate-50"
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-semibold">{label}</span>
                   <span
                     className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] ${
-                      selected ? "bg-white/18 text-white" : "bg-slate-100 text-slate-500"
+                      selected ? "bg-white/18 text-white" : "bg-slate-100 chrome-fg-subtle"
                     }`}
                   >
                     reveal
@@ -254,7 +254,7 @@ export function FlowTimeline({
                 </div>
                 <div
                   className={`mt-1 text-xs ${
-                    selected ? "text-white/78" : current ? "text-emerald-700" : "text-slate-500"
+                    selected ? "text-white/78" : current ? "text-emerald-700" : "chrome-fg-subtle"
                   }`}
                 >
                   {step === 0

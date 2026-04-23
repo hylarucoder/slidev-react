@@ -24,8 +24,8 @@ const variantContainer: Record<OverlayShellVariant, string> = {
 }
 
 const variantScrim: Record<OverlayShellVariant, string> = {
-  centered: 'bg-slate-950/35 backdrop-blur-[2px]',
-  fullscreen: 'bg-slate-100/84 backdrop-blur-md',
+  centered: 'chrome-scrim-strong backdrop-blur-[2px]',
+  fullscreen: 'chrome-scrim-soft backdrop-blur-md',
 }
 
 export function OverlayShell({
@@ -66,30 +66,30 @@ export function OverlayShell({
           tabIndex={-1}
           className={
             variant === 'centered'
-              ? `flex max-h-full w-full max-w-[520px] flex-col overflow-hidden rounded-[8px] border border-slate-200/80 bg-white/95 shadow-[0_16px_40px_rgba(15,23,42,0.12)] backdrop-blur-sm focus:outline-none ${contentClassName ?? ''}`
-              : `flex h-full w-full flex-col focus:outline-none ${contentClassName ?? ''}`
+              ? `flex max-h-full w-full max-w-[520px] flex-col overflow-hidden rounded-[8px] border chrome-border chrome-surface-raised chrome-fg shadow-[0_16px_40px_rgba(15,23,42,0.12)] backdrop-blur-sm focus:outline-none ${contentClassName ?? ''}`
+              : `flex h-full w-full flex-col chrome-fg focus:outline-none ${contentClassName ?? ''}`
           }
         >
           <header
             className={
               variant === 'centered'
-                ? 'flex items-center justify-between border-b border-slate-200/80 px-4 py-2.5'
+                ? 'flex items-center justify-between border-b chrome-border px-4 py-2.5'
                 : 'mb-5 flex items-center justify-between'
             }
           >
-            <div className={variant === 'fullscreen' ? 'text-slate-900' : ''}>
+            <div>
               <h2
                 id={titleId}
                 className={
                   variant === 'centered'
-                    ? 'text-sm font-semibold text-slate-900'
-                    : 'text-lg font-semibold'
+                    ? 'text-sm font-semibold chrome-fg'
+                    : 'text-lg font-semibold chrome-fg'
                 }
               >
                 {title}
               </h2>
               {description && (
-                <p id={descriptionId} className="mt-1 text-sm text-slate-600">
+                <p id={descriptionId} className="mt-1 text-sm chrome-fg-muted">
                   {description}
                 </p>
               )}

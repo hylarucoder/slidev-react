@@ -13,13 +13,13 @@ function ShortcutKeys({ value }: { value: string }) {
             {keys.map((key, keyIndex) => (
               <kbd
                 key={`${key}-${keyIndex}`}
-                className="inline-flex min-w-[22px] items-center justify-center rounded-[4px] border border-slate-200 bg-white px-1.5 py-[2px] font-mono text-[11px] font-medium text-slate-700 shadow-[inset_0_-1px_0_rgba(15,23,42,0.05)]"
+                className="inline-flex min-w-[22px] items-center justify-center rounded-[4px] border chrome-border bg-white px-1.5 py-[2px] font-mono text-[11px] font-medium chrome-fg shadow-[inset_0_-1px_0_rgba(15,23,42,0.05)]"
               >
                 {key}
               </kbd>
             ))}
             {chordIndex < chords.length - 1 ? (
-              <span className="px-[2px] text-[11px] text-slate-300">/</span>
+              <span className="px-[2px] text-[11px] chrome-fg-subtle">/</span>
             ) : null}
           </span>
         )
@@ -47,7 +47,7 @@ export function ShortcutsHelpOverlay({
     >
       {sections.map((section, sectionIndex) => (
         <section key={section.title} className={sectionIndex === 0 ? '' : 'mt-4'}>
-          <h3 className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+          <h3 className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] chrome-fg-subtle">
             {section.title}
           </h3>
           <dl className="grid grid-cols-[minmax(140px,auto)_1fr] gap-x-5 gap-y-1 text-sm">
@@ -56,7 +56,7 @@ export function ShortcutsHelpOverlay({
                 <dt className="flex items-center py-1">
                   <ShortcutKeys value={item.keys} />
                 </dt>
-                <dd className="flex items-center py-1 text-[13px] text-slate-700">
+                <dd className="flex items-center py-1 text-[13px] chrome-fg">
                   {item.action}
                 </dd>
               </div>

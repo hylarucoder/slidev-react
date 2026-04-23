@@ -69,7 +69,7 @@ export function PresenterMode() {
           style={ctx.chrome.presenterLayoutStyle}
           className="grid h-full min-h-0 grid-cols-1 gap-0"
         >
-          <section className="relative min-h-0 overflow-hidden rounded-md border border-slate-200 bg-white">
+          <section className="relative min-h-0 overflow-hidden rounded-md border chrome-border chrome-surface-raised">
             <div className="relative z-0 h-full">
               <RevealProvider value={ctx.flow.revealContextValue}>
                 <SlideStage
@@ -96,10 +96,10 @@ export function PresenterMode() {
             onKeyDown={ctx.chrome.handleSidebarResizeKeyDown}
             className="group relative hidden cursor-col-resize lg:block"
           >
-            <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-slate-200" />
-            <div className="absolute inset-y-0 left-1/2 w-1.5 -translate-x-1/2 rounded-sm bg-slate-300 opacity-0 transition-opacity group-hover:opacity-100" />
+            <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 chrome-divider" />
+            <div className="absolute inset-y-0 left-1/2 w-1.5 -translate-x-1/2 rounded-sm chrome-divider opacity-0 transition-opacity group-hover:opacity-100" />
           </div>
-          <aside className="relative z-10 flex min-h-0 min-w-0 flex-col text-slate-900">
+          <aside className="relative z-10 flex min-h-0 min-w-0 flex-col chrome-fg">
             <div className="grid min-h-0 flex-1 gap-3 lg:grid-rows-[minmax(220px,0.92fr)_minmax(0,1.08fr)]">
               <SidePreview
                 title="Up Next"
