@@ -7,7 +7,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { isTypingElement } from "../session/browser";
 import { createPersistedDrawState, parsePersistedDrawState } from "./persistence";
 
 export interface DrawPoint {
@@ -86,18 +85,14 @@ function strokeContainsPoint(
 }
 
 export function DrawProvider({
-  currentSlideId,
   storageKey,
   readOnly = false,
-  overlayOpen = false,
   remoteStrokes,
   onStrokesChange,
   children,
 }: {
-  currentSlideId: string;
   storageKey: string;
   readOnly?: boolean;
-  overlayOpen?: boolean;
   remoteStrokes?: {
     revision: number;
     strokesBySlideId: Record<string, DrawStroke[]>;
@@ -238,72 +233,6 @@ export function DrawProvider({
     lastAppliedRemoteRevisionRef.current = remoteStrokes.revision;
     setStrokesBySlideId(remoteStrokes.strokesBySlideId);
   }, [remoteStrokes]);
-
-  useEffect(() => {
-    if (readOnly) return;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (isTypingElement(event.target)) return;
-      if (overlayOpen) return;
-
-      const key = event.key.toLowerCase();
-      const hasModifier = event.metaKey || event.ctrlKey || event.altKey;
-
-      if (key === "d" && !hasModifier) {
-        event.preventDefault();
-        setEnabled((value) => !value);
-        return;
-      }
-
-      if (key === "escape" && enabled && !hasModifier) {
-        event.preventDefault();
-        setEnabled(false);
-        return;
-      }
-
-      if (key === "e" && !hasModifier) {
-        event.preventDefault();
-        setTool("eraser");
-        setEnabled(true);
-        return;
-      }
-
-      if (key === "p" && !hasModifier) {
-        event.preventDefault();
-        setTool("pen");
-        setEnabled(true);
-        return;
-      }
-
-      if (key === "r" && !hasModifier) {
-        event.preventDefault();
-        setTool("rectangle");
-        setEnabled(true);
-        return;
-      }
-
-      if (key === "b" && !hasModifier) {
-        event.preventDefault();
-        setTool("circle");
-        setEnabled(true);
-        return;
-      }
-
-      if ((event.metaKey || event.ctrlKey) && key === "z") {
-        event.preventDefault();
-        undo(currentSlideId);
-        return;
-      }
-
-      if (enabled && key === "c" && !hasModifier) {
-        event.preventDefault();
-        clear(currentSlideId);
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [currentSlideId, enabled, overlayOpen, readOnly]);
 
   useEffect(() => {
     try {

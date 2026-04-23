@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import type compiledSlides from '@generated/slides'
 import { buildPrintExportUrl } from '@slidev-react/core/presentation/export/urls'
+import { DrawKeyboardBridge } from './draw/DrawKeyboardBridge'
 import { DrawProvider } from './draw/DrawProvider'
 import { KeyboardController } from './navigation/KeyboardController'
 import { ShortcutsHelpOverlay } from './navigation/ShortcutsHelpOverlay'
@@ -165,13 +166,16 @@ export function PresentationRoot({
         />
       </RevealProvider>
       <DrawProvider
-        currentSlideId={currentSlide.id}
         storageKey={drawStorageKey}
         readOnly={!canControl}
-        overlayOpen={Boolean(chrome.activeOverlay)}
         remoteStrokes={canControl ? null : sessionState.remoteDrawings}
         onStrokesChange={sessionState.onStrokesChange}
       >
+        <DrawKeyboardBridge
+          currentSlideId={currentSlide.id}
+          readOnly={!canControl}
+          overlayOpen={Boolean(chrome.activeOverlay)}
+        />
         <div
           className={`relative grid h-dvh max-h-dvh grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden ${
             isPresenterRole ? 'bg-slate-50' : 'bg-black'
