@@ -34,9 +34,7 @@ import type { FullscreenRuntime } from "./presenter/platform/useFullscreen";
 import { ChromeIconButton } from "../../ui/primitives/ChromeIconButton";
 import { ChromeTag } from "../../ui/primitives/ChromeTag";
 import { FormSelect } from "../../ui/primitives/FormSelect";
-
-const DRAW_COLORS = ["#ef4444", "#3b82f6", "#22c55e", "#f59e0b", "#111827"];
-const DRAW_WIDTHS = [3, 5, 8];
+import { DRAW_COLORS, DRAW_WIDTHS } from "../../ui/tokens";
 
 interface PresenterChromeProps {
   stageScale: number;
