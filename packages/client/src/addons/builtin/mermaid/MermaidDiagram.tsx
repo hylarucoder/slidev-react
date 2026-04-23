@@ -2,6 +2,8 @@ import mermaid from "mermaid/dist/mermaid.esm.min.mjs";
 import { Expand, X } from "lucide-react";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { ChromeIconButton } from "../../../ui/primitives/ChromeIconButton";
+import { DiagramFrame } from "../../../ui/diagrams/DiagramFrame";
 import { useSlideThemeTokens } from "../../../theme/ThemeProvider";
 import { serializeThemeTokens } from "../../../theme/themeTokens";
 import type { SlideThemeTokens } from "../../../theme/types";
@@ -468,16 +470,16 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
 
   if (error) {
     return (
-      <div className="my-3 rounded-xl border border-rose-300 bg-rose-50 p-3 text-sm text-rose-900">
-        Mermaid render error: {error}
+      <div className="my-3">
+        <DiagramFrame state="error" errorMessage={`Mermaid render error: ${error}`} />
       </div>
     );
   }
 
   if (!previewSvg) {
     return (
-      <div className="my-3 rounded-xl border p-3 text-sm" style={diagramMutedSurfaceStyle}>
-        Rendering Mermaid...
+      <div className="my-3">
+        <DiagramFrame state="loading" style={diagramMutedSurfaceStyle} />
       </div>
     );
   }
@@ -516,20 +518,13 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
                     Esc or click outside to close
                   </div>
                 </div>
-                <button
-                  type="button"
+                <ChromeIconButton
                   onClick={() => setZoomed(false)}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border transition"
-                  style={{
-                    borderColor: tokens.ui.border,
-                    background: tokens.diagram.surfaceAlt,
-                    color: tokens.ui.muted,
-                  }}
                   aria-label="Close Mermaid zoom preview"
                   title="Close"
                 >
                   <X size={18} />
-                </button>
+                </ChromeIconButton>
               </div>
               <div
                 className="flex-1 overflow-auto p-6"
@@ -560,20 +555,14 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
           className="relative w-full overflow-hidden rounded-xl border p-3 shadow-sm"
           style={diagramFrameStyle}
         >
-          <button
-            type="button"
+          <ChromeIconButton
             onClick={() => setZoomed(true)}
-            className="absolute top-3 right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border shadow-sm transition"
-            style={{
-              borderColor: tokens.ui.border,
-              background: "color-mix(in srgb, var(--slide-diagram-surface) 92%, white 8%)",
-              color: tokens.ui.muted,
-            }}
+            className="absolute top-3 right-3 z-10"
             aria-label="Open Mermaid zoom preview"
             title="Zoom Mermaid diagram"
           >
             <Expand size={16} />
-          </button>
+          </ChromeIconButton>
           <div className="max-w-full overflow-x-auto pr-12">
             <div
               className="w-full [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-w-full [&_svg_tspan]:fill-current [&_svg_text]:fill-current"

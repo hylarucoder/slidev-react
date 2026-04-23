@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { G2Spec } from "@antv/g2";
 
+import { DiagramFrame } from "../../../ui/diagrams/DiagramFrame";
 import { useSlideTheme, useSlideThemeTokens } from "../../../theme/ThemeProvider";
 import {
   buildSlideTheme,
@@ -158,8 +159,8 @@ export function Chart({ width, height, size, preset, ...spec }: ChartProps) {
 
   if (error) {
     return (
-      <div className="my-3 rounded-xl border border-rose-300 bg-rose-50 p-3 text-sm text-rose-900">
-        Chart render error: {error}
+      <div className="my-3">
+        <DiagramFrame state="error" errorMessage={`Chart render error: ${error}`} />
       </div>
     );
   }
