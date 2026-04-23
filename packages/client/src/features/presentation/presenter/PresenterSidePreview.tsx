@@ -40,10 +40,10 @@ export function PresenterSidePreview({
   return (
     <ChromePanel className="flex h-full min-h-0 min-w-0 flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
           {title}
         </p>
-        <ChromeTag tone="active" weight="semibold">
+        <ChromeTag tone="muted" weight="semibold">
           {indexLabel}
         </ChromeTag>
       </div>

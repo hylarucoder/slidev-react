@@ -68,17 +68,14 @@ export function PresenterModeView({
         <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-slate-200" />
         <div className="absolute inset-y-0 left-1/2 w-1.5 -translate-x-1/2 rounded-sm bg-slate-300 opacity-0 transition-opacity group-hover:opacity-100" />
       </div>
-      <aside className="relative z-10 flex min-h-0 min-w-0 flex-col gap-0 text-slate-900">
-        <div className="grid min-h-0 flex-1 gap-0 lg:grid-rows-[minmax(220px,0.92fr)_12px_minmax(0,1.08fr)]">
+      <aside className="relative z-10 flex min-h-0 min-w-0 flex-col text-slate-900">
+        <div className="grid min-h-0 flex-1 gap-3 lg:grid-rows-[minmax(220px,0.92fr)_minmax(0,1.08fr)]">
           <PresenterSidePreview
             title="Up Next"
             indexLabel={nextSlide ? String(navigation.currentIndex + 2) : "--"}
             slide={nextSlide}
             slidesConfig={slidesConfig}
           />
-          <div className="flex items-center justify-center px-2" aria-hidden>
-            <div className="h-px w-full bg-slate-200" />
-          </div>
           <SpeakerNotesPanel
             currentClicks={flow.currentClicks}
             currentClicksTotal={flow.currentClicksTotal}

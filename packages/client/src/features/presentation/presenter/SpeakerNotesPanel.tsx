@@ -26,12 +26,12 @@ export function SpeakerNotesPanel({
   return (
     <ChromePanel className="flex flex-col">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-500">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
           Notes
         </p>
-        <ChromeTag>
-          {currentClicksTotal > 0 ? `Clicks ${currentClicks}/${currentClicksTotal}` : "Slide cue"}
-        </ChromeTag>
+        {currentClicksTotal > 0 && (
+          <ChromeTag>{`Clicks ${currentClicks}/${currentClicksTotal}`}</ChromeTag>
+        )}
       </div>
       <ChromePanel tone="inset" radius="frame" className="flex-1 p-4 text-sm leading-7">
         {notes ? (

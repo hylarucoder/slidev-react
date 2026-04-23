@@ -199,6 +199,66 @@ export function PresentationStatus({
                   Open mirror stage
                 </button>
               )}
+              {canRecord && onOpenPrintExport && (
+                <button
+                  type="button"
+                  onClick={onOpenPrintExport}
+                  className="inline-flex items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-white/88 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-white"
+                >
+                  <Printer size={12} />
+                  Print / PDF
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={chrome.onToggleTimelinePreview}
+                className={`inline-flex items-center justify-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition ${
+                  chrome.timelinePreviewOpen
+                    ? "border-violet-300 bg-violet-50 text-violet-700"
+                    : "border-slate-200 bg-white/88 text-slate-700 hover:bg-white"
+                }`}
+              >
+                <List size={12} />
+                Timeline
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  void fullscreen.toggle();
+                }}
+                disabled={!fullscreen.supported}
+                className={`inline-flex items-center justify-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                  fullscreen.supported && fullscreen.active
+                    ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                    : "border-slate-200 bg-white/88 text-slate-700 hover:bg-white"
+                }`}
+              >
+                <Expand size={12} />
+                {fullscreen.supported
+                  ? fullscreen.active
+                    ? "Fullscreen on"
+                    : "Fullscreen"
+                  : "Fullscreen unavailable"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  void wakeLock.toggle();
+                }}
+                disabled={!wakeLock.supported}
+                className={`inline-flex items-center justify-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                  wakeLock.supported && wakeLock.active
+                    ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                    : "border-slate-200 bg-white/88 text-slate-700 hover:bg-white"
+                }`}
+              >
+                <SunMedium size={12} />
+                {wakeLock.supported
+                  ? wakeLock.active
+                    ? "Wake lock on"
+                    : "Wake lock"
+                  : "Wake lock unavailable"}
+              </button>
             </div>
             <div className="mb-3 grid gap-2 sm:grid-cols-2">
               <FormSelect
@@ -224,36 +284,6 @@ export function PresentationStatus({
                 <option value="always">always visible</option>
                 <option value="idle-hide">hide when idle</option>
               </FormSelect>
-              <span
-                className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-xs ${
-                  fullscreen.supported
-                    ? fullscreen.active
-                      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                      : "border-slate-200 bg-white/82 text-slate-600"
-                    : "border-amber-200 bg-amber-50 text-amber-700"
-                }`}
-              >
-                fullscreen:{" "}
-                {fullscreen.supported ? (fullscreen.active ? "active" : "off") : "unsupported"}
-              </span>
-              <span
-                className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-xs ${
-                  wakeLock.supported
-                    ? wakeLock.active
-                      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                      : "border-slate-200 bg-white/82 text-slate-600"
-                    : "border-amber-200 bg-amber-50 text-amber-700"
-                }`}
-              >
-                wake lock:{" "}
-                {wakeLock.supported
-                  ? wakeLock.requested || wakeLock.active
-                    ? wakeLock.active
-                      ? "active"
-                      : "requesting"
-                    : "off"
-                  : "unsupported"}
-              </span>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
               <ChromeTag tone="muted" size="md" className="py-2 text-xs">
@@ -399,7 +429,6 @@ export function PresentationStatus({
                 weight="semibold"
                 className="h-9 px-3.5 text-sm tabular-nums"
               >
-                <Radio size={13} />
                 {formatTimer(sessionTimerSeconds)}
               </ChromeTag>
               {canRecord && recorder.supported && (
@@ -412,16 +441,7 @@ export function PresentationStatus({
                   aria-label={recorder.isRecording ? "Stop recording" : "Start recording"}
                   tone={recorder.isRecording ? "danger" : "default"}
                 >
-                  {recorder.isRecording ? <Square size={12} /> : <CircleDot size={12} />}
-                </ChromeIconButton>
-              )}
-              {canRecord && onOpenPrintExport && (
-                <ChromeIconButton
-                  onClick={onOpenPrintExport}
-                  title="Print / PDF"
-                  aria-label="Print / PDF"
-                >
-                  <Printer size={12} />
+                  {recorder.isRecording ? <Square size={14} /> : <CircleDot size={14} />}
                 </ChromeIconButton>
               )}
               <ChromeIconButton
@@ -430,7 +450,7 @@ export function PresentationStatus({
                 aria-label="Toggle notes workspace"
                 tone={chrome.notesOpen ? "active" : "default"}
               >
-                <NotebookText size={13} />
+                <NotebookText size={14} />
               </ChromeIconButton>
               <ChromeIconButton
                 onClick={chrome.onToggleOverview}
@@ -439,7 +459,7 @@ export function PresentationStatus({
                 aria-label="Toggle quick overview"
                 tone={chrome.overviewOpen ? "active" : "default"}
               >
-                <LayoutGrid size={13} />
+                <LayoutGrid size={14} />
               </ChromeIconButton>
               <ChromeIconButton
                 onClick={chrome.onToggleShortcuts}
@@ -447,57 +467,16 @@ export function PresentationStatus({
                 aria-label="Toggle keyboard shortcuts"
                 tone={chrome.shortcutsOpen ? "active" : "default"}
               >
-                <Keyboard size={13} />
-              </ChromeIconButton>
-              <ChromeIconButton
-                onClick={chrome.onToggleTimelinePreview}
-                title={chrome.timelinePreviewOpen ? "Hide timeline preview" : "Show timeline preview"}
-                aria-label={chrome.timelinePreviewOpen ? "Hide timeline preview" : "Show timeline preview"}
-                tone={chrome.timelinePreviewOpen ? "violet" : "default"}
-              >
-                <List size={13} />
-              </ChromeIconButton>
-              <ChromeIconButton
-                onClick={() => {
-                  void wakeLock.toggle();
-                }}
-                disabled={!wakeLock.supported}
-                title={
-                  wakeLock.supported
-                    ? wakeLock.active
-                      ? "Wake lock on"
-                      : "Turn on wake lock"
-                    : "Wake lock unsupported"
-                }
-                aria-label={
-                  wakeLock.supported
-                    ? wakeLock.active
-                      ? "Wake lock on"
-                      : "Turn on wake lock"
-                    : "Wake lock unsupported"
-                }
-                tone={wakeLock.active ? "success" : "default"}
-              >
-                <SunMedium size={13} />
-              </ChromeIconButton>
-              <ChromeIconButton
-                onClick={() => {
-                  void fullscreen.toggle();
-                }}
-                disabled={!fullscreen.supported}
-                title={fullscreen.active ? "Fullscreen on" : "Fullscreen"}
-                aria-label={fullscreen.active ? "Fullscreen on" : "Fullscreen"}
-                tone={fullscreen.active ? "info" : "default"}
-              >
-                <Expand size={12} />
+                <Keyboard size={14} />
               </ChromeIconButton>
               <ChromeIconButton
                 onClick={() => setDetailsOpen((value) => !value)}
                 title={detailsOpen ? "Hide live details" : "Show live details"}
                 aria-label={detailsOpen ? "Hide live details" : "Show live details"}
+                tone={detailsOpen ? "active" : "default"}
               >
                 <span className="relative inline-flex items-center justify-center">
-                  <Radio size={13} />
+                  <Radio size={14} />
                   <span
                     className={`absolute right-0 bottom-0 size-2 rounded-full ring-2 ring-white ${statusDotClassName(sync.status)}`}
                   />
