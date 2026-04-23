@@ -3,6 +3,7 @@
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { Command, CommanderError } from "@commander-js/extra-typings";
+import { normalizeArgv } from "./normalizeArgv.ts";
 
 interface CommandResult {
   code: number;
@@ -13,10 +14,13 @@ type CommandRunner = (argv: string[]) => Promise<void>;
 
 const ROOT_HELP_TEXT = `
 Run \`slidev-react <command> --help\` for command-specific options.
+When no command is given, \`dev\` is assumed — a bare \`slidev-react\` or
+\`slidev-react slides.mdx\` is equivalent to \`slidev-react dev [slides.mdx]\`.
 
 Examples:
-  slidev-react dev
-  slidev-react dev slides-ar-3-4.mdx --host 0.0.0.0 --port 5174
+  slidev-react                                         # dev on ./slides.mdx
+  slidev-react slides-ar-3-4.mdx --host 0.0.0.0        # dev with a file
+  slidev-react dev slides-ar-3-4.mdx --port 5174
   slidev-react build slides-ar-3-4.mdx
   slidev-react export slides-ar-3-4.mdx --format png --slides 3-7
   slidev-react lint slides-ar-3-4.mdx --strict
@@ -26,6 +30,7 @@ const DEV_HELP_TEXT = `
 Supported options:
   --file <path>, --host <host>, --port <port>, --open, --open=false
   --strictPort, --strictPort=false, --base <path>, --mode <mode>
+  --no-scaffold  (do not auto-generate slides.mdx when missing)
 
 Examples:
   slidev-react dev
@@ -137,7 +142,7 @@ function createPassThroughCommand(
 const program = new Command()
   .name("slidev-react")
   .description("CLI entrypoint for slidev-react authoring and build workflows")
-  .usage("<command> [file] [options...]")
+  .usage("[command|file] [options...]")
   .showHelpAfterError()
   .showSuggestionAfterError()
   .addHelpText("after", ROOT_HELP_TEXT)
@@ -188,7 +193,8 @@ createPassThroughCommand(
 );
 
 try {
-  await program.parseAsync(process.argv);
+  const normalized = normalizeArgv(process.argv.slice(2));
+  await program.parseAsync(normalized, { from: "user" });
 } catch (error) {
   if (error instanceof CommanderError) {
     if (error.code === "commander.helpDisplayed") {

@@ -46,23 +46,15 @@ describe("slidev-react CLI", () => {
 
     expect(result.code).toBe(0);
     expect(result.stderr).toBe("");
-    expect(result.stdout).toContain("Usage: slidev-react <command> [file] [options...]");
+    expect(result.stdout).toContain("Usage: slidev-react [command|file] [options...]");
     expect(result.stdout).toContain("Commands:");
     expect(result.stdout).toContain("dev [file]");
     expect(result.stdout).toContain("export [file]");
     expect(result.stdout).toContain(
       "Run `slidev-react <command> --help` for command-specific options.",
     );
+    expect(result.stdout).toContain("When no command is given, `dev` is assumed");
     expect(result.stdout).toContain("Examples:");
-  });
-
-  it("prints an unknown command error once and exits with failure", async () => {
-    const result = await runCli(["nope"]);
-
-    expect(result.code).toBe(1);
-    expect(result.stdout).toBe("");
-    expect(result.stderr).toContain("error: unknown command 'nope'");
-    expect(result.stderr).not.toContain("[slidev-react]");
   });
 
   it("prints command-specific help for export", async () => {

@@ -43,15 +43,15 @@ The project is under active development. Core features (MDX authoring, layouts, 
 
 This is a pnpm workspace monorepo with the following packages:
 
-| Package                     | Path                   | Description                                                    |
-| --------------------------- | ---------------------- | -------------------------------------------------------------- |
-| `create-slidev-react`       | `packages/create-app`  | Starter app scaffolding and recommended first-run entry        |
-| `@slidev-react/core`        | `packages/core`        | Pure presentation models, flow logic, and shared contracts     |
-| `@slidev-react/client`      | `packages/client`      | React app assembly, providers, presentation UI, themes, addons |
-| `@slidev-react/node`        | `packages/node`        | Node-side dev/build/export/lint entry points and servers       |
-| `@slidev-react/cli`         | `packages/cli`         | Low-level command runner used by generated app scripts         |
-| `@slidev-react/theme-absolutely` | `packages/theme-absolutely` | The "absolutely" theme package                           |
-| `@slidev-react/theme-paper` | `packages/theme-paper` | The "paper" theme package                                      |
+| Package                          | Path                        | Description                                                    |
+| -------------------------------- | --------------------------- | -------------------------------------------------------------- |
+| `create-slidev-react`            | `packages/create-app`       | Starter app scaffolding and recommended first-run entry        |
+| `@slidev-react/core`             | `packages/core`             | Pure presentation models, flow logic, and shared contracts     |
+| `@slidev-react/client`           | `packages/client`           | React app assembly, providers, presentation UI, themes, addons |
+| `@slidev-react/node`             | `packages/node`             | Node-side dev/build/export/lint entry points and servers       |
+| `@slidev-react/cli`              | `packages/cli`              | Low-level command runner used by generated app scripts         |
+| `@slidev-react/theme-absolutely` | `packages/theme-absolutely` | The "absolutely" theme package                                 |
+| `@slidev-react/theme-paper`      | `packages/theme-paper`      | The "paper" theme package                                      |
 
 The root `package.json` is `private: true` and wires the Vite dev server and top-level scripts. Publishable packages under `packages/` are released via [Changesets](https://github.com/changesets/changesets).
 
@@ -61,6 +61,16 @@ The root `package.json` is `private: true` and wires the Vite dev server and top
 
 - Node.js `>=22`
 - pnpm `10`
+
+### Zero-install demo
+
+```bash
+# in any directory — auto-scaffolds slides.mdx on first run
+npx @slidev-react/cli@latest
+
+# pass a file explicitly
+npx @slidev-react/cli@latest slides.mdx --port 4000
+```
 
 ### Create a deck
 

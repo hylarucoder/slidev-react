@@ -78,10 +78,7 @@ function spawnCommand(
   };
 }
 
-async function startPresentationRelay(options: {
-  cwd: string;
-  port: number;
-}) {
+async function startPresentationRelay(options: { cwd: string; port: number }) {
   let relayOutput = "";
   const relayProcess = spawnCommand(
     "node",
@@ -102,10 +99,7 @@ async function startPresentationRelay(options: {
     },
   );
 
-  await waitForOutput(
-    () => /\bpresentation relay listening\b/i.test(relayOutput),
-    10_000,
-  );
+  await waitForOutput(() => /\bpresentation relay listening\b/i.test(relayOutput), 10_000);
 
   return {
     relayProcess,
@@ -215,12 +209,16 @@ async function waitForPageReady(page: Page, url: string, expectedTitle: string, 
       });
 
       if ((await page.title()) !== expectedTitle) {
-        throw new Error(`Expected page title ${JSON.stringify(expectedTitle)}, got ${JSON.stringify(await page.title())}.`);
+        throw new Error(
+          `Expected page title ${JSON.stringify(expectedTitle)}, got ${JSON.stringify(await page.title())}.`,
+        );
       }
 
       const html = await page.content();
       if (/Cannot GET \//i.test(html)) {
-        throw new Error("Dev server responded with a fallback error page instead of the deck HTML.");
+        throw new Error(
+          "Dev server responded with a fallback error page instead of the deck HTML.",
+        );
       }
 
       return;
@@ -336,7 +334,7 @@ function formatBrowserFailures(options: {
 }
 
 async function packPackage(packageDir: string, packDir: string) {
-  const packProcess = spawnCommand("npm", ["pack", "--pack-destination", packDir], {
+  const packProcess = spawnCommand("pnpm", ["pack", "--pack-destination", packDir], {
     cwd: packageDir,
   });
   const packResult = await packProcess.completed;
@@ -350,7 +348,7 @@ async function packPackage(packageDir: string, packDir: string) {
     throw new Error(`Failed to parse tarball name for ${packageDir}:\n${packResult.stdout}`);
   }
 
-  return path.join(packDir, tarballName);
+  return path.isAbsolute(tarballName) ? tarballName : path.join(packDir, tarballName);
 }
 
 async function assertDevServerInBrowser(options: {
@@ -376,9 +374,9 @@ async function assertDevServerInBrowser(options: {
     await page.waitForTimeout(1_500);
 
     if (
-      browserProbe.consoleErrors.length > 0
-      || browserProbe.pageErrors.length > 0
-      || browserProbe.requestFailures.length > 0
+      browserProbe.consoleErrors.length > 0 ||
+      browserProbe.pageErrors.length > 0 ||
+      browserProbe.requestFailures.length > 0
     ) {
       throw new Error(
         `Dev server opened in Chromium, but browser errors were detected:\n${formatBrowserFailures({
@@ -438,38 +436,50 @@ async function runCreateAppSmoke(options: {
   const createResult = await createProcess.completed;
 
   if (createResult.code !== 0) {
-    throw new Error(`create-slidev-react smoke failed:\n${createResult.stderr || createResult.stdout}`);
+    throw new Error(
+      `create-slidev-react smoke failed:\n${createResult.stderr || createResult.stdout}`,
+    );
   }
 
   const generatedPackageJson = readJson<PackageJson>(path.join(options.appRoot, "package.json"));
   if (generatedPackageJson.name !== path.basename(options.appRoot)) {
-    throw new Error("create-slidev-react generated package.json, but the package name does not match the target directory.");
+    throw new Error(
+      "create-slidev-react generated package.json, but the package name does not match the target directory.",
+    );
   }
   if (generatedPackageJson.dependencies?.["@slidev-react/theme-absolutely"] != null) {
-    throw new Error("create-slidev-react generated package.json, but the starter still depends on the external absolutely theme package.");
+    throw new Error(
+      "create-slidev-react generated package.json, but the starter still depends on the external absolutely theme package.",
+    );
   }
-  if (generatedPackageJson.scripts?.dev !== "vp dev") {
-    throw new Error("create-slidev-react generated package.json, but the dev script does not match the starter contract.");
+  if (generatedPackageJson.scripts?.dev !== "slidev-react dev") {
+    throw new Error(
+      "create-slidev-react generated package.json, but the dev script does not match the starter contract.",
+    );
   }
-  if (generatedPackageJson.scripts?.build !== "vp build") {
-    throw new Error("create-slidev-react generated package.json, but the build script does not match the starter contract.");
+  if (generatedPackageJson.scripts?.build !== "slidev-react build") {
+    throw new Error(
+      "create-slidev-react generated package.json, but the build script does not match the starter contract.",
+    );
   }
 
   const generatedSlides = await readFile(path.join(options.appRoot, "slides.mdx"), "utf8");
   if (
-    !generatedSlides.includes("theme: moonlit")
-    || !generatedSlides.includes("addons:")
-    || !generatedSlides.includes("g2")
-    || !generatedSlides.includes("mermaid")
+    !generatedSlides.includes("theme: moonlit") ||
+    !generatedSlides.includes("addons:") ||
+    !generatedSlides.includes("g2") ||
+    !generatedSlides.includes("mermaid")
   ) {
-    throw new Error("create-slidev-react generated slides.mdx, but the default moonlit + g2 + mermaid starter content is missing.");
+    throw new Error(
+      "create-slidev-react generated slides.mdx, but the default moonlit + g2 + mermaid starter content is missing.",
+    );
   }
 
-  const localVpBin = path.join(
+  const localCliBin = path.join(
     options.appRoot,
     "node_modules",
     ".bin",
-    process.platform === "win32" ? "vp.cmd" : "vp",
+    process.platform === "win32" ? "slidev-react.cmd" : "slidev-react",
   );
 
   const installProcess = spawnCommand(
@@ -495,12 +505,16 @@ async function runCreateAppSmoke(options: {
   const installResult = await installProcess.completed;
 
   if (installResult.code !== 0) {
-    throw new Error(`create-app npm install smoke failed:\n${installResult.stderr || installResult.stdout}`);
+    throw new Error(
+      `create-app npm install smoke failed:\n${installResult.stderr || installResult.stdout}`,
+    );
   }
 
-  assertNoKnownPackagingErrors(createResult.stdout + createResult.stderr + installResult.stdout + installResult.stderr);
+  assertNoKnownPackagingErrors(
+    createResult.stdout + createResult.stderr + installResult.stdout + installResult.stderr,
+  );
 
-  const buildProcess = spawnCommand(localVpBin, ["build"], {
+  const buildProcess = spawnCommand(localCliBin, ["build"], {
     cwd: options.appRoot,
     env: {
       PRESENTATION_WS_ENABLED: "true",
@@ -515,13 +529,15 @@ async function runCreateAppSmoke(options: {
 
   const builtHtml = await readFile(path.join(options.appRoot, "dist/index.html"), "utf8");
   if (!builtHtml.includes("My Slidev React Deck")) {
-    throw new Error("create-app build produced output, but dist/index.html is missing the starter deck title.");
+    throw new Error(
+      "create-app build produced output, but dist/index.html is missing the starter deck title.",
+    );
   }
 
   const port = await findFreePort();
   const devUrl = `http://localhost:${port}/`;
   let devOutput = "";
-  const devProcess = spawnCommand(localVpBin, ["dev", "--port", String(port)], {
+  const devProcess = spawnCommand(localCliBin, ["dev", "--port", String(port)], {
     cwd: options.appRoot,
     env: {
       PRESENTATION_WS_ENABLED: "true",
@@ -549,7 +565,10 @@ async function runCreateAppSmoke(options: {
 async function main() {
   const repoRoot = path.resolve(import.meta.dirname, "..");
   const packDir = await mkdtemp(path.join(tmpdir(), "slidev-react-pack-"));
-  const createAppRoot = path.join(await mkdtemp(path.join(tmpdir(), "slidev-react-create-app-")), "starter-deck");
+  const createAppRoot = path.join(
+    await mkdtemp(path.join(tmpdir(), "slidev-react-create-app-")),
+    "starter-deck",
+  );
   const relayPort = await findFreePort();
   const rootPackageJson = readJson<PackageJson>(path.join(repoRoot, "package.json"));
   const reactVersion = rootPackageJson.dependencies?.react;
@@ -560,13 +579,15 @@ async function main() {
     throw new Error("Missing runtime peer versions needed for npm install smoke test.");
   }
 
-  const [createAppTarball, coreTarball, clientTarball, nodeTarball, cliTarball] = await Promise.all([
-    packPackage(path.join(repoRoot, "packages/create-app"), packDir),
-    packPackage(path.join(repoRoot, "packages/core"), packDir),
-    packPackage(path.join(repoRoot, "packages/client"), packDir),
-    packPackage(path.join(repoRoot, "packages/node"), packDir),
-    packPackage(path.join(repoRoot, "packages/cli"), packDir),
-  ]);
+  const [createAppTarball, coreTarball, clientTarball, nodeTarball, cliTarball] = await Promise.all(
+    [
+      packPackage(path.join(repoRoot, "packages/create-app"), packDir),
+      packPackage(path.join(repoRoot, "packages/core"), packDir),
+      packPackage(path.join(repoRoot, "packages/client"), packDir),
+      packPackage(path.join(repoRoot, "packages/node"), packDir),
+      packPackage(path.join(repoRoot, "packages/cli"), packDir),
+    ],
+  );
 
   const relay = await startPresentationRelay({
     cwd: repoRoot,
@@ -596,7 +617,9 @@ async function main() {
     );
 
     if (relayResult.code !== 0 && relayResult.code !== null) {
-      relayShutdownError = new Error(`Presentation relay smoke server exited unexpectedly:\n${relayResult.stderr || relayResult.stdout}`);
+      relayShutdownError = new Error(
+        `Presentation relay smoke server exited unexpectedly:\n${relayResult.stderr || relayResult.stdout}`,
+      );
     }
   }
 

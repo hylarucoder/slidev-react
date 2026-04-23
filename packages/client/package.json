@@ -1,6 +1,6 @@
 {
   "name": "@slidev-react/client",
-  "version": "0.4.14",
+  "version": "0.5.0",
   "description": "Browser-side React app and presentation UI for slidev-react",
   "license": "MIT",
   "files": [

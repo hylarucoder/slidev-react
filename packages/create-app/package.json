@@ -1,10 +1,18 @@
 {
   "name": "create-slidev-react",
-  "version": "0.4.14",
+  "version": "0.5.0",
   "private": false,
   "description": "Create starter template for slidev-react",
+  "homepage": "https://github.com/hylarucoder/slidev-react/tree/main/packages/create-app",
+  "bugs": {
+    "url": "https://github.com/hylarucoder/slidev-react/issues"
+  },
   "license": "MIT",
-  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/hylarucoder/slidev-react.git",
+    "directory": "packages/create-app"
+  },
   "bin": {
     "create-slidev-react": "./dist/index.mjs"
   },
@@ -13,22 +21,14 @@
     "template",
     "README.md"
   ],
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build:pkg": "pnpm exec tsdown",
     "dev:pkg": "pnpm exec tsdown --watch",
     "prepack": "pnpm run build:pkg"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/hylarucoder/slidev-react.git",
-    "directory": "packages/create-app"
-  },
-  "homepage": "https://github.com/hylarucoder/slidev-react/tree/main/packages/create-app",
-  "bugs": {
-    "url": "https://github.com/hylarucoder/slidev-react/issues"
   },
   "engines": {
     "node": ">=22"

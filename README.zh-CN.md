@@ -37,15 +37,15 @@
 
 这是一个 pnpm workspace monorepo，包含以下包：
 
-| 包名                        | 路径                   | 说明                                     |
-| --------------------------- | ---------------------- | ---------------------------------------- |
-| `create-slidev-react`       | `packages/create-app`  | starter app 脚手架与推荐入口             |
-| `@slidev-react/core`        | `packages/core`        | 纯演示模型、flow 逻辑、共享契约          |
-| `@slidev-react/client`      | `packages/client`      | React 应用装配、UI、主题、addons         |
-| `@slidev-react/node`        | `packages/node`        | Node 侧 dev/build/export/lint 入口和服务 |
-| `@slidev-react/cli`         | `packages/cli`         | 模板项目 scripts 背后的底层命令层        |
-| `@slidev-react/theme-absolutely` | `packages/theme-absolutely` | "absolutely" 主题包                |
-| `@slidev-react/theme-paper` | `packages/theme-paper` | "paper" 主题包                           |
+| 包名                             | 路径                        | 说明                                     |
+| -------------------------------- | --------------------------- | ---------------------------------------- |
+| `create-slidev-react`            | `packages/create-app`       | starter app 脚手架与推荐入口             |
+| `@slidev-react/core`             | `packages/core`             | 纯演示模型、flow 逻辑、共享契约          |
+| `@slidev-react/client`           | `packages/client`           | React 应用装配、UI、主题、addons         |
+| `@slidev-react/node`             | `packages/node`             | Node 侧 dev/build/export/lint 入口和服务 |
+| `@slidev-react/cli`              | `packages/cli`              | 模板项目 scripts 背后的底层命令层        |
+| `@slidev-react/theme-absolutely` | `packages/theme-absolutely` | "absolutely" 主题包                      |
+| `@slidev-react/theme-paper`      | `packages/theme-paper`      | "paper" 主题包                           |
 
 根目录 `package.json` 设为 `private: true`，承载 Vite 开发服务器和顶层脚本。`packages/` 下的可发布子包通过 [Changesets](https://github.com/changesets/changesets) 统一发布到 npm。
 
@@ -55,6 +55,16 @@
 
 - Node.js `>=22`
 - pnpm `10`
+
+### 零安装 Demo
+
+```bash
+# 在任意目录运行 — 首次会自动生成 slides.mdx
+npx @slidev-react/cli@latest
+
+# 也可以显式指定文件 / 端口
+npx @slidev-react/cli@latest slides.mdx --port 4000
+```
 
 ### 创建一个 deck app
 
