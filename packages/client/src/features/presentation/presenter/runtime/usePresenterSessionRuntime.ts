@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { DrawStroke } from "../../draw/DrawProvider"
-import { usePresentationSync } from "../../sync"
-import { usePresentationRecorder } from "../../recording/usePresentationRecorder"
+import { usePresentationSyncRuntime } from "../../sync"
+import { useRecorderRuntime } from "../../recording/useRecorderRuntime"
 import type {
   PresentationCursorState,
   PresentationSharedState,
@@ -23,8 +23,8 @@ export interface PresenterSessionState {
     revision: number
     strokesBySlideId: Record<string, DrawStroke[]>
   } | null
-  sync: ReturnType<typeof usePresentationSync>
-  recorder: ReturnType<typeof usePresentationRecorder>
+  sync: ReturnType<typeof usePresentationSyncRuntime>
+  recorder: ReturnType<typeof useRecorderRuntime>
   onStrokesChange: (nextStrokes: Record<string, DrawStroke[]>) => void
   setLocalCursor: (cursor: PresentationCursorState | null) => void
   setRemoteCursor: (cursor: PresentationCursorState | null) => void
@@ -117,7 +117,7 @@ export function usePresenterSessionRuntime({
     ],
   )
 
-  const sync = usePresentationSync({
+  const sync = usePresentationSyncRuntime({
     session,
     currentIndex: navigation.currentIndex,
     total: navigation.total,
@@ -150,7 +150,7 @@ export function usePresenterSessionRuntime({
     },
   })
 
-  const recorder = usePresentationRecorder({
+  const recorder = useRecorderRuntime({
     enabled: canControl,
     exportFilename: slidesExportFilename,
     slidesTitle,

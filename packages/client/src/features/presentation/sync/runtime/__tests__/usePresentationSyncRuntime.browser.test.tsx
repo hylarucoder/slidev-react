@@ -4,7 +4,7 @@ import type { PresentationSession } from '../../../session'
 import type { PresentationSharedState } from '../../../types'
 import { createEnvelope } from '../../model/replication'
 import type { UsePresentationSyncOptions } from '../../types'
-import { usePresentationSync } from '../usePresentationSync'
+import { usePresentationSyncRuntime } from '../usePresentationSyncRuntime'
 
 class FakeBroadcastChannel {
   static channels = new Map<string, Set<FakeBroadcastChannel>>()
@@ -139,10 +139,10 @@ afterEach(async () => {
   vi.useRealTimers()
 })
 
-describe('usePresentationSync runtime', () => {
+describe('usePresentationSyncRuntime', () => {
   it('does not create transports for disabled standalone sessions', async () => {
     const sync = await renderHook(
-      (props: UsePresentationSyncOptions) => usePresentationSync(props),
+      (props: UsePresentationSyncOptions) => usePresentationSyncRuntime(props),
       {
         initialProps: createOptions({
           session: createSession({
@@ -167,7 +167,7 @@ describe('usePresentationSync runtime', () => {
   })
 
   it('sends join and snapshot envelopes in presenter send mode', async () => {
-    await renderHook((props: UsePresentationSyncOptions) => usePresentationSync(props), {
+    await renderHook((props: UsePresentationSyncOptions) => usePresentationSyncRuntime(props), {
       initialProps: createOptions({
         session: createSession({
           sessionId: 'sync-room',
@@ -189,7 +189,7 @@ describe('usePresentationSync runtime', () => {
     const onRemoteState = vi.fn()
 
     const viewer = await renderHook(
-      (props: UsePresentationSyncOptions) => usePresentationSync(props),
+      (props: UsePresentationSyncOptions) => usePresentationSyncRuntime(props),
       {
         initialProps: createOptions({
           session: createSession({
@@ -205,7 +205,7 @@ describe('usePresentationSync runtime', () => {
     )
 
     const presenter = await renderHook(
-      (props: UsePresentationSyncOptions) => usePresentationSync(props),
+      (props: UsePresentationSyncOptions) => usePresentationSyncRuntime(props),
       {
         initialProps: createOptions({
           session: createSession({
@@ -266,7 +266,7 @@ describe('usePresentationSync runtime', () => {
   it('does not follow remote pages when followRemotePage is disabled', async () => {
     const goTo = vi.fn()
 
-    await renderHook((props: UsePresentationSyncOptions) => usePresentationSync(props), {
+    await renderHook((props: UsePresentationSyncOptions) => usePresentationSyncRuntime(props), {
       initialProps: createOptions({
         session: createSession({
           role: 'viewer',
@@ -279,7 +279,7 @@ describe('usePresentationSync runtime', () => {
       }),
     })
 
-    await renderHook((props: UsePresentationSyncOptions) => usePresentationSync(props), {
+    await renderHook((props: UsePresentationSyncOptions) => usePresentationSyncRuntime(props), {
       initialProps: createOptions({
         session: createSession({
           role: 'presenter',
@@ -300,7 +300,7 @@ describe('usePresentationSync runtime', () => {
     const onRemoteState = vi.fn()
 
     await renderHook(
-      (props: UsePresentationSyncOptions) => usePresentationSync(props),
+      (props: UsePresentationSyncOptions) => usePresentationSyncRuntime(props),
       {
         initialProps: createOptions({
           session: createSession({
@@ -322,7 +322,7 @@ describe('usePresentationSync runtime', () => {
     })
 
     const presenter = await renderHook(
-      (props: UsePresentationSyncOptions) => usePresentationSync(props),
+      (props: UsePresentationSyncOptions) => usePresentationSyncRuntime(props),
       {
         initialProps: createOptions({
           session,
@@ -375,7 +375,7 @@ describe('usePresentationSync runtime', () => {
 
   it('removes stale peers during presence sweeps', async () => {
     const viewer = await renderHook(
-      (props: UsePresentationSyncOptions) => usePresentationSync(props),
+      (props: UsePresentationSyncOptions) => usePresentationSyncRuntime(props),
       {
         initialProps: createOptions({
           session: createSession({

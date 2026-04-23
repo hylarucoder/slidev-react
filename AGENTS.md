@@ -41,7 +41,17 @@ Use TypeScript and React function components. Follow the existing style:
 - no semicolons
 - named exports for shared utilities; default exports only where already established
 
-Name components in PascalCase (`PresenterShell.tsx`), helpers in camelCase (`parseDeck.ts`), and tests as `featureName.test.ts`. Keep new files in the domain folder that owns the behavior; avoid catch-all `utils.ts` or `types.ts`.
+Name components in PascalCase (`PresentationRoot.tsx`), helpers in camelCase (`parseDeck.ts`), and tests as `featureName.test.ts`. Keep new files in the domain folder that owns the behavior; avoid catch-all `utils.ts` or `types.ts`.
+
+### Hook Conventions
+
+Custom React hooks follow three suffixes based on what they own:
+
+- `useXxxRuntime` — composes state + side effects (subscriptions, timers, localStorage, network). Examples: `usePresenterFlowRuntime`, `usePresentationSyncRuntime`, `useRecorderRuntime`.
+- `useXxxState` — returns value + setter with no side effects. The reducer hook is a common host.
+- `useXxxSelector` — read-only derivation from a source of truth (context, store, another hook).
+
+React-idiomatic DOM wrappers (`useFullscreen`, `useWakeLock`, `useFocusTrap`, `useIdleCursor`) and trivial context consumers (`useDraw`, `useSlideTheme`, `useReveal`) keep their conventional names and are exempt from the suffix rule.
 
 ## Testing Guidelines
 

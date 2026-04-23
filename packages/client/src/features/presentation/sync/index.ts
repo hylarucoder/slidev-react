@@ -1,4 +1,4 @@
-export { usePresentationSync } from './runtime/usePresentationSync'
+export { usePresentationSyncRuntime } from './runtime/usePresentationSyncRuntime'
 export type {
   PresentationSyncStatus,
   PresentationTransportState,

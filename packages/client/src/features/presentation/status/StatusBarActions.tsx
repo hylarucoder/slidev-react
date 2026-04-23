@@ -2,7 +2,7 @@ import { CircleDot, Keyboard, LayoutGrid, NotebookText, Radio, Square } from 'lu
 import { ChromeIconButton } from '../../../ui/primitives/ChromeIconButton'
 import { ChromeTag } from '../../../ui/primitives/ChromeTag'
 import type { PresentationSyncStatus } from '../sync'
-import type { PresentationRecorderRuntime } from '../recording/usePresentationRecorder'
+import type { PresentationRecorderRuntime } from '../recording/useRecorderRuntime'
 import { formatSessionTimer, statusDotClassName } from './tone'
 
 export interface StatusBarActionsProps {

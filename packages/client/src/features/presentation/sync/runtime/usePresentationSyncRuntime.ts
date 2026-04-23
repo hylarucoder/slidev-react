@@ -11,7 +11,7 @@ import { useSyncPresenceRuntime } from './useSyncPresenceRuntime'
 import { useSyncReplicationRuntime } from './useSyncReplicationRuntime'
 import { useSyncTransportRuntime } from './useSyncTransportRuntime'
 
-export function usePresentationSync({
+export function usePresentationSyncRuntime({
   session,
   currentIndex,
   total,

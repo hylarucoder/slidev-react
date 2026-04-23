@@ -36,7 +36,7 @@ function downloadBlob({
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export function usePresentationRecorder({
+export function useRecorderRuntime({
   enabled,
   exportFilename,
   slidesTitle,
@@ -191,4 +191,4 @@ export function usePresentationRecorder({
   };
 }
 
-export type PresentationRecorderRuntime = ReturnType<typeof usePresentationRecorder>;
+export type PresentationRecorderRuntime = ReturnType<typeof useRecorderRuntime>;
