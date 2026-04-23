@@ -63,7 +63,7 @@
   "dependencies": {
     "@antv/g-svg": "^2.1.1",
     "@antv/g2": "^5.4.8",
-    "@slidev-react/core": "0.4.14",
+    "@slidev-react/core": "workspace:*",
     "katex": "0.16.33",
     "lucide-react": "0.568.0",
     "mermaid": "11.12.3",
