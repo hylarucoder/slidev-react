@@ -1,9 +1,9 @@
-import type { CompiledSlide, SlidesConfig } from "./model/types";
-import { ChromePanel, chromePanelClassName } from "../../../ui/primitives/ChromePanel";
-import { ChromeTag } from "../../../ui/primitives/ChromeTag";
-import { SlidePreviewSurface } from "../stage/SlidePreviewSurface";
+import type { CompiledSlide, SlidesConfig } from "../model/types";
+import { ChromePanel, chromePanelClassName } from "../../../../ui/primitives/ChromePanel";
+import { ChromeTag } from "../../../../ui/primitives/ChromeTag";
+import { SlidePreviewSurface } from "../../stage/SlidePreviewSurface";
 
-export function PresenterSidePreview({
+export function SidePreview({
   title,
   indexLabel,
   slide,

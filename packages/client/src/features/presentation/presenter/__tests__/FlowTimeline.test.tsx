@@ -3,8 +3,8 @@ import { describe, expect, it, vi } from "vite-plus/test";
 import { AddonProvider } from "../../../../addons/AddonProvider";
 import { DEFAULT_SLIDES_VIEWPORT } from "@slidev-react/core/slides/viewport";
 import { ThemeProvider } from "../../../../theme/ThemeProvider";
-import { FlowTimelinePreview } from "../FlowTimelinePreview";
-import type { CompiledSlide } from "../types";
+import { FlowTimeline } from "../panels/FlowTimeline";
+import type { CompiledSlide } from "../model/types";
 
 const demoSlide: CompiledSlide = {
   id: "timeline-demo",
@@ -16,11 +16,11 @@ const demoSlide: CompiledSlide = {
   },
 };
 
-function renderPreview(props?: Partial<React.ComponentProps<typeof FlowTimelinePreview>>) {
+function renderPreview(props?: Partial<React.ComponentProps<typeof FlowTimeline>>) {
   return renderToStaticMarkup(
     <ThemeProvider>
       <AddonProvider>
-        <FlowTimelinePreview
+        <FlowTimeline
           slide={demoSlide}
           currentClicks={1}
           currentClicksTotal={3}
@@ -33,7 +33,7 @@ function renderPreview(props?: Partial<React.ComponentProps<typeof FlowTimelineP
   );
 }
 
-describe("FlowTimelinePreview", () => {
+describe("FlowTimeline", () => {
   it("renders timeline controls and cue nodes for the current slide", () => {
     const html = renderPreview();
 

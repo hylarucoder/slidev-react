@@ -1,5 +1,5 @@
-import { ChromePanel } from "../../../ui/primitives/ChromePanel";
-import { ChromeTag } from "../../../ui/primitives/ChromeTag";
+import { ChromePanel } from "../../../../ui/primitives/ChromePanel";
+import { ChromeTag } from "../../../../ui/primitives/ChromeTag";
 
 function renderNotes(notes: string) {
   const sections = notes
@@ -14,7 +14,7 @@ function renderNotes(notes: string) {
   ));
 }
 
-export function SpeakerNotesPanel({
+export function SpeakerNotes({
   currentClicks,
   currentClicksTotal,
   notes,

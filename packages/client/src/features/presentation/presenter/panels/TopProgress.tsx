@@ -1,4 +1,4 @@
-export function PresenterTopProgress({
+export function TopProgress({
   total,
   progressPercent,
 }: {
