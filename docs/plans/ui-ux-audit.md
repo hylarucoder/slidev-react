@@ -263,4 +263,24 @@ $ wc -l packages/client/src/features/presentation/**/*.tsx | sort -rn | head
 
 Total: **+34 tests**. Unit: 181 → 202. Browser: 16 → 29.
 
+### Roadmap closeout (Phase 2 PR#5 + Phase 5 PR#2)
+
+**Phase 2 PR#5 · Tooltip**
+- 新增 `ui/primitives/ChromeTooltip.tsx`（headless，响应 hover + focus，支持 `label` + `shortcut` 徽标、`side='top/bottom/left/right'`、可配置 delay）。
+- `ChromeIconButton` 新增 `tooltip` prop（`ReactNode | { label, shortcut }`）。
+- 全站 `title=""` 原生 tooltip 属性清零：
+
+```
+$ grep -rn ' title="' packages/client/src/features packages/client/src/ui | wc -l
+7          # 24 → 7, 剩余全部是组件 props（SidePreview / OverlayShell）
+```
+
+**Phase 5 PR#2 · PresenterMode 12 栅格**
+- `useSidebarWidth` 默认比例从 `0.23 * innerWidth` 改为 `5/12 * innerWidth`；`SIDEBAR_MAX` 420 → 620 以允许实际达到 5/12。
+- `modes/PresenterMode.tsx` 侧栏内部 `grid-rows` 清理为语义化 `9fr/13fr`，新增底部 Timeline 折叠入口（与 StatusBar toggle 状态同步）。
+- 拖拽 / 键盘调整仍保留（`useSidebarWidth`）。
+
+**Phase 3 PR#2 · revealEngine**
+- 事实上已满足：cue 纯函数（`resolveAdvanceFlow` / `resolveRetreatFlow` / `canAdvanceFlow` / `canRetreatFlow` / `clampCueIndex`）存在于 `@slidev-react/core/presentation/flow/navigation`；motion helper 在 `reveal/revealMotion.ts`。`Reveal.tsx` 本身无额外 cue 调度逻辑可抽。
+
 > 每个 Phase 完工后跑相同 grep，把数字更新到本文档，作为可度量的进展指标。

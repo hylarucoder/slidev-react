@@ -1,3 +1,4 @@
+import { ChevronUp } from 'lucide-react'
 import { RevealProvider } from '../reveal/RevealContext'
 import { SlideStage } from '../stage/SlideStage'
 import { usePresenterContext } from '../presenter/PresenterContext'
@@ -96,8 +97,8 @@ export function PresenterMode() {
             <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 chrome-divider" />
             <div className="absolute inset-y-0 left-1/2 w-1.5 -translate-x-1/2 rounded-sm chrome-divider opacity-0 transition-opacity group-hover:opacity-100" />
           </div>
-          <aside className="relative z-10 flex min-h-0 min-w-0 flex-col chrome-fg">
-            <div className="grid min-h-0 flex-1 gap-3 lg:grid-rows-[minmax(220px,0.92fr)_minmax(0,1.08fr)]">
+          <aside className="relative z-10 flex min-h-0 min-w-0 flex-col gap-3 chrome-fg">
+            <div className="grid min-h-0 flex-1 gap-3 lg:grid-rows-[minmax(220px,9fr)_minmax(0,13fr)]">
               <SidePreview
                 title="Up Next"
                 indexLabel={nextSlide ? String(ctx.navigation.currentIndex + 2) : '--'}
@@ -110,6 +111,24 @@ export function PresenterMode() {
                 notes={currentSlide.meta.notes}
               />
             </div>
+            <button
+              type="button"
+              onClick={ctx.chrome.toggleTimelinePreview}
+              aria-expanded={ctx.chrome.timelinePreviewOpen}
+              className="group inline-flex items-center justify-between rounded-md border chrome-border chrome-surface px-3 py-2 text-xs chrome-fg-muted hover:chrome-surface-raised"
+            >
+              <span className="font-medium">Timeline</span>
+              <span className="inline-flex items-center gap-1.5">
+                <span className="tabular-nums">
+                  {ctx.flow.currentClicks}
+                  <span className="opacity-60"> / {Math.max(ctx.flow.currentClicksTotal, 0)}</span>
+                </span>
+                <ChevronUp
+                  size={14}
+                  className={`transition-transform ${ctx.chrome.timelinePreviewOpen ? 'rotate-180' : ''}`}
+                />
+              </span>
+            </button>
           </aside>
         </div>
       </div>

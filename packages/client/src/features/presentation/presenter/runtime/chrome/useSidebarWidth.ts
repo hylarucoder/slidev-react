@@ -13,10 +13,11 @@ import {
 } from '../../model/persistence'
 
 const SIDEBAR_MIN = 280
-const SIDEBAR_MAX = 420
+const SIDEBAR_MAX = 620
 const STAGE_MIN = 720
 const DIVIDER_WIDTH = 10
 const DESKTOP_BREAKPOINT = 1024
+const DEFAULT_SIDEBAR_RATIO = 5 / 12
 
 function clamp(value: number, containerWidth: number) {
   const maxWidth = Math.min(
@@ -35,7 +36,7 @@ function readInitial(): number {
   } catch {
     // Ignore storage read failures.
   }
-  return clamp(window.innerWidth * 0.23, window.innerWidth)
+  return clamp(window.innerWidth * DEFAULT_SIDEBAR_RATIO, window.innerWidth)
 }
 
 export function useSidebarWidth() {
