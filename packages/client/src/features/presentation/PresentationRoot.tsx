@@ -177,9 +177,10 @@ export function PresentationRoot({
           overlayOpen={Boolean(chrome.activeOverlay)}
         />
         <div
-          className={`relative grid h-dvh max-h-dvh grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden ${
-            isPresenterRole ? 'bg-slate-50' : 'bg-black'
-          } ${chrome.hideCursor ? 'cursor-none' : ''}`}
+          className={`relative grid h-dvh max-h-dvh grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden ${chrome.hideCursor ? 'cursor-none' : ''}`}
+          style={{
+            background: isPresenterRole ? 'var(--chrome-backdrop)' : '#000',
+          }}
         >
           {isPresenterRole ? <PresenterMode /> : <ViewerMode />}
 

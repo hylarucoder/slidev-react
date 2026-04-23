@@ -118,7 +118,14 @@ export function StatusBar({
             onSyncModeChange={onSyncModeChange}
           />
         )}
-        <div className="pointer-events-auto w-full overflow-hidden rounded-t-[6px] border border-b-0 border-slate-200/80 bg-white/82 text-slate-800 ring-1 ring-white/45 backdrop-blur-xl">
+        <div
+          className="pointer-events-auto w-full overflow-hidden rounded-t-[6px] border border-b-0 ring-1 ring-white/45 backdrop-blur-xl"
+          style={{
+            background: 'var(--chrome-surface)',
+            color: 'var(--chrome-fg)',
+            borderColor: 'var(--chrome-border)',
+          }}
+        >
           {diagnosticMessages.length > 0 && (
             <div className="flex flex-wrap items-center gap-3 border-b border-slate-200/60 px-3 py-1.5 text-xs">
               {diagnosticMessages.map((entry, index) => (
