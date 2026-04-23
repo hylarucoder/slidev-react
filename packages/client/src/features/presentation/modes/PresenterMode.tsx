@@ -25,6 +25,9 @@ export function PresenterMode() {
 
       <StatusBar
         slideId={currentSlide.id}
+        slideIndex={ctx.navigation.currentIndex}
+        slideTotal={ctx.navigation.total}
+        slideTitle={currentSlide.meta.title}
         session={ctx.session}
         sync={ctx.sessionState.sync}
         recorder={ctx.sessionState.recorder}
