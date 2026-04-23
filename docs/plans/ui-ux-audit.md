@@ -180,4 +180,50 @@ $ grep -rn 'duration-' packages/client/src/features packages/client/src/ui | wc 
 7
 ```
 
+### Post-refactor baseline (2026-04-23, end of Phase 5)
+
+```
+$ grep -rn '<button ' packages/client/src/features packages/client/src/addons | wc -l
+3          # unchanged — mostly swatch buttons in DrawToolbar, acceptable
+
+$ grep -rn ' title="' packages/client/src/features packages/client/src/ui | wc -l
+24         # went up slightly: new ChromeIconButton tooltips explicit via title
+
+$ grep -rn 'bg-slate-' packages/client/src/features packages/client/src/ui | wc -l
+34         # minor drop; semantic-class migration deferred per PR#3 scope note
+
+$ grep -rn 'duration-' packages/client/src/features packages/client/src/ui | wc -l
+7          # unchanged: all UI-chrome call sites aligned to MOTION tokens
+
+$ wc -l packages/client/src/features/presentation/**/*.tsx | sort -rn | head
+421  sync/runtime/__tests__/usePresentationSyncRuntime.browser.test.tsx
+360  modes/PrintMode.tsx
+275  presenter/panels/FlowTimeline.tsx
+253  reveal/Reveal.tsx
+228  draw/DrawProvider.tsx
+220  PresentationRoot.tsx
+210  stage/SlideStage.tsx
+```
+
+### God-components eliminated
+
+| File | Pre | Post | Notes |
+|---|---|---|---|
+| `PresentationStatus.tsx` (god bar) | 496 | — | Split into 7 files under `status/` |
+| `presenter/PresenterShell.tsx` | 286 | — | Replaced by `PresentationRoot.tsx` (220 lines) + `PresenterContext` |
+| `presenter/runtime/usePresenterChromeRuntime.ts` | 358 | 57 | Split into 4 `chrome/` hooks |
+| `draw/DrawProvider.tsx` | 394 | 228 | Reducer + persistence + remote extracted |
+
+### Tests added over the refactor
+
+- `usePresenterFlowRuntime.browser.test.tsx` (3 cases)
+- `ChromeButton.browser.test.tsx` (2)
+- `ChromeToggleGroup.browser.test.tsx` (2)
+- `OverlayShell.browser.test.tsx` (3)
+- `DiagramFrame.browser.test.tsx` (3)
+- `drawReducer.test.ts` (15)
+- `revealMotion.test.ts` (6)
+
+Total: **+34 tests**. Unit: 181 → 202. Browser: 16 → 29.
+
 > 每个 Phase 完工后跑相同 grep，把数字更新到本文档，作为可度量的进展指标。
