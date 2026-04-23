@@ -1,5 +1,6 @@
 import { Circle, Eraser, PenLine, RectangleHorizontal, RotateCcw, Trash2 } from 'lucide-react'
 import { ChromeIconButton } from '../../../ui/primitives/ChromeIconButton'
+import { ChromeTooltip } from '../../../ui/primitives/ChromeTooltip'
 import { DRAW_COLORS, DRAW_WIDTHS } from '../../../ui/tokens'
 import { useDraw } from '../draw/DrawProvider'
 
@@ -12,7 +13,7 @@ export function StatusBarDrawToolbar({ slideId }: { slideId: string }) {
     <>
       <ChromeIconButton
         onClick={draw.toggleEnabled}
-        title="Toggle draw (D)"
+        tooltip={{ label: 'Toggle draw', shortcut: 'D' }}
         aria-label="Toggle draw mode"
         tone={draw.enabled ? 'active' : 'default'}
       >
@@ -22,7 +23,7 @@ export function StatusBarDrawToolbar({ slideId }: { slideId: string }) {
         <>
           <ChromeIconButton
             onClick={() => draw.setTool('pen')}
-            title="Pen (P)"
+            tooltip={{ label: 'Pen', shortcut: 'P' }}
             aria-label="Use pen tool"
             tone={draw.tool === 'pen' ? 'active' : 'default'}
           >
@@ -30,7 +31,7 @@ export function StatusBarDrawToolbar({ slideId }: { slideId: string }) {
           </ChromeIconButton>
           <ChromeIconButton
             onClick={() => draw.setTool('circle')}
-            title="Circle (B)"
+            tooltip={{ label: 'Circle', shortcut: 'B' }}
             aria-label="Use circle tool"
             tone={draw.tool === 'circle' ? 'active' : 'default'}
           >
@@ -38,7 +39,7 @@ export function StatusBarDrawToolbar({ slideId }: { slideId: string }) {
           </ChromeIconButton>
           <ChromeIconButton
             onClick={() => draw.setTool('rectangle')}
-            title="Rectangle (R)"
+            tooltip={{ label: 'Rectangle', shortcut: 'R' }}
             aria-label="Use rectangle tool"
             tone={draw.tool === 'rectangle' ? 'active' : 'default'}
           >
@@ -46,7 +47,7 @@ export function StatusBarDrawToolbar({ slideId }: { slideId: string }) {
           </ChromeIconButton>
           <ChromeIconButton
             onClick={() => draw.setTool('eraser')}
-            title="Eraser (E)"
+            tooltip={{ label: 'Eraser', shortcut: 'E' }}
             aria-label="Use eraser tool"
             tone={draw.tool === 'eraser' ? 'active' : 'default'}
           >
@@ -54,18 +55,18 @@ export function StatusBarDrawToolbar({ slideId }: { slideId: string }) {
           </ChromeIconButton>
           <div className="mx-1 h-6 w-px chrome-divider" aria-hidden />
           {DRAW_COLORS.map((color) => (
-            <button
-              key={color}
-              type="button"
-              onClick={() => {
-                draw.setColor(color)
-                draw.setTool('pen')
-              }}
-              title={`Set draw color ${color}`}
-              aria-label={`Set draw color ${color}`}
-              className={`inline-flex size-5 items-center justify-center rounded-full border shadow-sm transition ${draw.color === color ? 'ring-2 ring-emerald-300 chrome-border-strong' : 'opacity-90 hover:opacity-100 chrome-border'}`}
-              style={{ backgroundColor: color }}
-            />
+            <ChromeTooltip key={color} label={`Set draw color ${color}`}>
+              <button
+                type="button"
+                onClick={() => {
+                  draw.setColor(color)
+                  draw.setTool('pen')
+                }}
+                aria-label={`Set draw color ${color}`}
+                className={`inline-flex size-5 items-center justify-center rounded-full border shadow-sm transition ${draw.color === color ? 'ring-2 ring-emerald-300 chrome-border-strong' : 'opacity-90 hover:opacity-100 chrome-border'}`}
+                style={{ backgroundColor: color }}
+              />
+            </ChromeTooltip>
           ))}
           <div className="mx-1 h-6 w-px chrome-divider" aria-hidden />
           {DRAW_WIDTHS.map((value) => (
@@ -75,7 +76,7 @@ export function StatusBarDrawToolbar({ slideId }: { slideId: string }) {
                 draw.setWidth(value)
                 draw.setTool('pen')
               }}
-              title={`Set brush size ${value}`}
+              tooltip={`Brush size ${value}`}
               aria-label={`Set brush size ${value}`}
               tone={draw.width === value ? 'active' : 'default'}
             >
@@ -92,7 +93,7 @@ export function StatusBarDrawToolbar({ slideId }: { slideId: string }) {
           <ChromeIconButton
             onClick={() => draw.undo(slideId)}
             disabled={!hasStrokes}
-            title="Undo last stroke (Cmd/Ctrl+Z)"
+            tooltip={{ label: 'Undo last stroke', shortcut: '⌘Z' }}
             aria-label="Undo last stroke"
           >
             <RotateCcw size={15} />
@@ -100,7 +101,7 @@ export function StatusBarDrawToolbar({ slideId }: { slideId: string }) {
           <ChromeIconButton
             onClick={() => draw.clear(slideId)}
             disabled={!hasStrokes}
-            title="Clear page strokes (C)"
+            tooltip={{ label: 'Clear page strokes', shortcut: 'C' }}
             aria-label="Clear page strokes"
           >
             <Trash2 size={15} />

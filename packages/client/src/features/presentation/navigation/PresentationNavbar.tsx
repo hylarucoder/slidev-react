@@ -18,7 +18,7 @@ function DrawControls() {
   return (
     <ChromeIconButton
       onClick={draw.toggleEnabled}
-      title="Toggle draw (D)"
+      tooltip={{ label: "Toggle draw", shortcut: "D" }}
       aria-label="Toggle draw mode"
       tone={draw.enabled ? "active" : "default"}
       size="sm"
@@ -80,7 +80,7 @@ export function PresentationNavbar({
         aria-label="Presentation navbar"
       >
         <ChromeIconButton
-          title={`${slideTitle ?? "Slide"} (${currentIndex + 1}/${total})`}
+          tooltip={`${slideTitle ?? "Slide"} (${currentIndex + 1}/${total})`}
           aria-label="Current slide info"
           size="sm"
           radius="soft"
@@ -89,7 +89,7 @@ export function PresentationNavbar({
         </ChromeIconButton>
         <ChromeIconButton
           onClick={onToggleShortcuts}
-          title="Keyboard shortcuts (?)"
+          tooltip={{ label: "Keyboard shortcuts", shortcut: "?" }}
           aria-label="Toggle keyboard shortcuts"
           tone={shortcutsOpen ? "active" : "default"}
           size="sm"
@@ -99,7 +99,7 @@ export function PresentationNavbar({
         </ChromeIconButton>
         <ChromeIconButton
           onClick={onToggleNotes}
-          title="Notes Workspace (N)"
+          tooltip={{ label: "Notes Workspace", shortcut: "N" }}
           aria-label="Toggle notes workspace"
           tone={notesOpen ? "active" : "default"}
           size="sm"
@@ -110,7 +110,7 @@ export function PresentationNavbar({
         </ChromeIconButton>
         <ChromeIconButton
           onClick={onToggleOverview}
-          title="Quick Overview (O)"
+          tooltip={{ label: "Quick Overview", shortcut: "O" }}
           aria-label="Toggle quick overview"
           tone={overviewOpen ? "active" : "default"}
           size="sm"
@@ -122,7 +122,7 @@ export function PresentationNavbar({
         {showPresenterModeButton && (
           <ChromeIconButton
             onClick={onEnterPresenterMode}
-            title="Enter presenter mode"
+            tooltip="Enter presenter mode"
             aria-label="Enter presenter mode"
             size="sm"
             radius="soft"
@@ -135,7 +135,7 @@ export function PresentationNavbar({
             <ChromeIconButton
               onClick={onPrev}
               disabled={!canPrev}
-              title="Previous slide"
+              tooltip="Previous slide"
               aria-label="Previous slide"
               size="sm"
               radius="soft"
@@ -145,7 +145,7 @@ export function PresentationNavbar({
             <ChromeIconButton
               onClick={onNext}
               disabled={!canNext}
-              title="Next slide"
+              tooltip="Next slide"
               aria-label="Next slide"
               size="sm"
               radius="soft"

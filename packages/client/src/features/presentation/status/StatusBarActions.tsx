@@ -52,7 +52,7 @@ export function StatusBarActions({
             if (recorder.isRecording) void recorder.stop()
             else void recorder.start()
           }}
-          title={recorder.isRecording ? 'Stop recording' : 'Start recording'}
+          tooltip={recorder.isRecording ? 'Stop recording' : 'Start recording'}
           aria-label={recorder.isRecording ? 'Stop recording' : 'Start recording'}
           tone={recorder.isRecording ? 'danger' : 'default'}
         >
@@ -61,7 +61,7 @@ export function StatusBarActions({
       )}
       <ChromeIconButton
         onClick={onToggleNotes}
-        title="Notes Workspace (N)"
+        tooltip={{ label: 'Notes Workspace', shortcut: 'N' }}
         aria-label="Toggle notes workspace"
         tone={notesOpen ? 'active' : 'default'}
       >
@@ -70,7 +70,7 @@ export function StatusBarActions({
       <ChromeIconButton
         onClick={onToggleOverview}
         disabled={!canOpenOverview}
-        title="Quick Overview (O)"
+        tooltip={{ label: 'Quick Overview', shortcut: 'O' }}
         aria-label="Toggle quick overview"
         tone={overviewOpen ? 'active' : 'default'}
       >
@@ -78,7 +78,7 @@ export function StatusBarActions({
       </ChromeIconButton>
       <ChromeIconButton
         onClick={onToggleShortcuts}
-        title="Keyboard shortcuts (?)"
+        tooltip={{ label: 'Keyboard shortcuts', shortcut: '?' }}
         aria-label="Toggle keyboard shortcuts"
         tone={shortcutsOpen ? 'active' : 'default'}
       >
@@ -86,7 +86,7 @@ export function StatusBarActions({
       </ChromeIconButton>
       <ChromeIconButton
         onClick={onToggleDetails}
-        title={detailsOpen ? 'Hide live details' : 'Show live details'}
+        tooltip={detailsOpen ? 'Hide live details' : 'Show live details'}
         aria-label={detailsOpen ? 'Hide live details' : 'Show live details'}
         tone={detailsOpen ? 'active' : 'default'}
       >

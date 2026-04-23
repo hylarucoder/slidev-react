@@ -97,7 +97,7 @@ export function OverlayShell({
             <ChromeIconButton
               onClick={onClose}
               aria-label={closeAriaLabel}
-              title={closeAriaLabel}
+              tooltip={closeAriaLabel}
             >
               <X size={variant === 'fullscreen' ? 18 : 14} />
             </ChromeIconButton>
