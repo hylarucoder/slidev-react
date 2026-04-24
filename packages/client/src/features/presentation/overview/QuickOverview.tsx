@@ -72,30 +72,30 @@ export function QuickOverview({
   onClose: () => void;
   onSelect: (index: number) => void;
 }) {
-  const [previewsReady, setPreviewsReady] = useState(false)
+  const [previewsReady, setPreviewsReady] = useState(false);
 
   useEffect(() => {
     if (!open) {
-      setPreviewsReady(false)
-      return
+      setPreviewsReady(false);
+      return;
     }
 
-    setPreviewsReady(false)
+    setPreviewsReady(false);
 
-    let secondFrameId = 0
+    let secondFrameId = 0;
     const firstFrameId = window.requestAnimationFrame(() => {
       secondFrameId = window.requestAnimationFrame(() => {
         startTransition(() => {
-          setPreviewsReady(true)
-        })
-      })
-    })
+          setPreviewsReady(true);
+        });
+      });
+    });
 
     return () => {
-      window.cancelAnimationFrame(firstFrameId)
-      if (secondFrameId) window.cancelAnimationFrame(secondFrameId)
-    }
-  }, [open, slides.length])
+      window.cancelAnimationFrame(firstFrameId);
+      if (secondFrameId) window.cancelAnimationFrame(secondFrameId);
+    };
+  }, [open, slides.length]);
 
   function handleSelectKeyDown(event: KeyboardEvent<HTMLElement>, index: number) {
     if (event.key !== "Enter" && event.key !== " ") return;
@@ -108,42 +108,39 @@ export function QuickOverview({
       open={open}
       onClose={onClose}
       title="Quick Overview"
-      description="Click a slide to jump. Press O or Esc to close."
       variant="fullscreen"
       closeAriaLabel="Close quick overview"
     >
       <div className="grid grid-cols-[repeat(auto-fit,minmax(360px,1fr))] gap-5">
-            {slides.map((slide, index) => {
-              const active = index === currentIndex;
-              return (
-                <ChromePanel
-                  key={slide.id}
-                  as="article"
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => onSelect(index)}
-                  onKeyDown={(event: KeyboardEvent<HTMLElement>) =>
-                    handleSelectKeyDown(event, index)
-                  }
-                  className={`group cursor-pointer overflow-hidden p-0 text-left transition focus:outline-none focus:ring-2 focus:ring-emerald-300/70 ${active ? "bg-white ring-1 ring-emerald-300/70" : "bg-white/90 ring-1 ring-transparent hover:bg-white/92  hover:ring-slate-300/70"}`}
-                  aria-label={`Go to slide ${index + 1}`}
-                  tone="solid"
-                  radius="section"
-                  padding="none"
-                >
-                  <OverviewSlidePreview
-                    index={index}
-                    active={active}
-                    slide={slide}
-                    ready={previewsReady}
-                    slidesConfig={slidesConfig}
-                  />
-                  <div className="truncate px-2.5 py-2 text-sm font-medium chrome-fg">
-                    {slide.meta.title ?? `Slide ${index + 1}`}
-                  </div>
-                </ChromePanel>
-              );
-            })}
+        {slides.map((slide, index) => {
+          const active = index === currentIndex;
+          return (
+            <ChromePanel
+              key={slide.id}
+              as="article"
+              role="button"
+              tabIndex={0}
+              onClick={() => onSelect(index)}
+              onKeyDown={(event: KeyboardEvent<HTMLElement>) => handleSelectKeyDown(event, index)}
+              className={`group cursor-pointer overflow-hidden p-0 text-left transition focus:outline-none focus:ring-2 focus:ring-emerald-300/70 ${active ? "bg-white ring-1 ring-emerald-300/70" : "bg-white/90 ring-1 ring-transparent hover:bg-white/92  hover:ring-slate-300/70"}`}
+              aria-label={`Go to slide ${index + 1}`}
+              tone="solid"
+              radius="section"
+              padding="none"
+            >
+              <OverviewSlidePreview
+                index={index}
+                active={active}
+                slide={slide}
+                ready={previewsReady}
+                slidesConfig={slidesConfig}
+              />
+              <div className="truncate px-2.5 py-2 text-sm font-medium chrome-fg">
+                {slide.meta.title ?? `Slide ${index + 1}`}
+              </div>
+            </ChromePanel>
+          );
+        })}
       </div>
     </OverlayShell>
   );

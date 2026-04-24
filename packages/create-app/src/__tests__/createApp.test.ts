@@ -81,7 +81,7 @@ describe("create-slidev-react scaffoldProject", () => {
     const packageJsonPath = path.join(result.projectRoot, "package.json");
     const slidesPath = path.join(result.projectRoot, "slides.mdx");
 
-    expect(readFileSync(slidesPath, "utf8")).toContain("Built-in Mermaid");
+    expect(readFileSync(slidesPath, "utf8")).toContain("<MermaidDiagram>");
 
     scaffoldProject({
       cwd: tempRoot,
@@ -90,7 +90,7 @@ describe("create-slidev-react scaffoldProject", () => {
     });
 
     expect(readFileSync(packageJsonPath, "utf8")).toContain('"@slidev-react/cli"');
-    expect(readFileSync(slidesPath, "utf8")).toContain("Built-in Charts");
+    expect(readFileSync(slidesPath, "utf8")).toContain("<BarChart");
   });
 
   it("normalizes package names from arbitrary paths", () => {

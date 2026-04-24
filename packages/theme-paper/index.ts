@@ -1,6 +1,15 @@
 import { defineTheme } from "@slidev-react/core/theme";
+import {
+  PlainChapterLayout,
+  PlainSectionLayout,
+  PlainStatementLayout,
+  SlideBadge,
+  SlideCallout,
+  SlideEyebrow,
+  SlideKeyStat,
+  SlidePullQuote,
+} from "@slidev-react/client/theme-shared";
 import { PaperCoverLayout } from "./layouts/CoverLayout";
-import { PaperBadge } from "./components/PaperBadge";
 
 export default defineTheme({
   id: "paper",
@@ -68,11 +77,18 @@ export default defineTheme({
   rootAttributes: {
     "data-slide-theme": "paper",
   },
-  layoutIds: ["cover"],
+  layoutIds: ["cover", "section", "statement", "chapter"],
   layouts: {
     cover: PaperCoverLayout,
+    section: PlainSectionLayout,
+    statement: PlainStatementLayout,
+    chapter: PlainChapterLayout,
   },
   mdxComponents: {
-    Badge: PaperBadge,
+    Badge: SlideBadge,
+    Callout: SlideCallout,
+    Eyebrow: SlideEyebrow,
+    KeyStat: SlideKeyStat,
+    PullQuote: SlidePullQuote,
   },
 });

@@ -6,13 +6,15 @@ addons:
   - mermaid
 ---
 
-# Hello Slidev React
+# My Slidev React Deck
 
-用 MDX、React、charts 和 mermaid 做演示文稿。
+这是一份起手式。先翻一下，再把内容换成你自己的。
 
-## Built-in Mermaid
+---
 
-<div id='mermaid-smoke'>
+## 写流程图
+
+<div id="mermaid-smoke">
   <MermaidDiagram>{`graph LR
   Deck[Slides]
   Deck --> Charts
@@ -22,21 +24,27 @@ addons:
   `}</MermaidDiagram>
 </div>
 
-## Built-in Charts
+架构图、流程图、决策树——mermaid 都能画。
 
-<div id='g2-smoke'>
+---
+
+## 摆数据
+
+<div id="g2-smoke">
   <BarChart
     width={700}
     height={320}
     data={[
-      { month: 'Jan', value: 12 },
-      { month: 'Feb', value: 18 },
-      { month: 'Mar', value: 24 },
-      { month: 'Apr', value: 21 },
-      { month: 'May', value: 30 },
+      { month: "Jan", value: 12 },
+      { month: "Feb", value: 18 },
+      { month: "Mar", value: 24 },
+      { month: "Apr", value: 21 },
+      { month: "May", value: 30 },
     ]}
-    x='month'
-    y='value'
-    color='month'
+    x="month"
+    y="value"
+    color="month"
   />
 </div>
+
+柱状图、折线图、饼图都行，配置写在组件 props 上。

@@ -98,26 +98,26 @@ export function SlidePreviewSurface({
   articleProps?: SlideArticleProps;
 }) {
   const { slidesViewport } = slidesConfig;
-  const { viewportRef, scale, offset } = useSlideScale(scaleMultiplier, alignment, slidesViewport);
+  const { viewportRef, scale, offset, ready } = useSlideScale(
+    scaleMultiplier,
+    alignment,
+    slidesViewport,
+  );
   const viewportStageStyle = useMemo(
     () => ({
       width: `${slidesViewport.width}px`,
       height: `${slidesViewport.height}px`,
       transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
       transformOrigin: "top left",
+      opacity: ready ? 1 : 0,
     }),
-    [slidesViewport.height, slidesViewport.width, offset.x, offset.y, scale],
+    [slidesViewport.height, slidesViewport.width, offset.x, offset.y, scale, ready],
   );
 
   return (
     <div ref={viewportRef} className={viewportClassName} style={viewportStyle}>
       <div className={stageClassName} style={viewportStageStyle}>
-        <SlideErrorBoundary
-          resetKey={slideId}
-          slideId={slideId}
-          title={meta.title}
-          compact
-        >
+        <SlideErrorBoundary resetKey={slideId} slideId={slideId} title={meta.title} compact>
           <SlidePreviewFrame
             Slide={Slide}
             meta={meta}

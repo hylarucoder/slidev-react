@@ -1,27 +1,23 @@
 export const DEMO_SLIDES_FILENAME = "slides.mdx";
 
 export const DEMO_SLIDES_MDX = `---
-title: Hello Slidev React
+title: slidev-react
 theme: moonlit
 ---
 
-# Hello Slidev React
+# slidev-react
 
-按下 \`→\` 或 \`Space\` 翻页。
-
----
-
-## 你现在可以做什么
-
-- 把这个文件换成你自己的 MDX
-- 在任意 slide 用 React 组件 / MDX / \`\`\`code
-- 运行 \`slidev-react build\` 产出静态站点
-- 运行 \`slidev-react export\` 导出 PDF / PNG
+这是你刚生成的 starter。改我就行。
 
 ---
 
-## 下一步
+## 怎么用
 
-- 查看 [文档](https://github.com/hylarucoder/slidev-react)
-- 在 \`slides.mdx\` 里把这页删掉，开始你的 deck
+翻页：\`→\` / \`Space\`。
+
+构建静态站：\`slidev-react build\`。导出 PDF / PNG：\`slidev-react export\`。
+
+其他命令：\`slidev-react --help\`。
+
+文档：[github.com/hylarucoder/slidev-react](https://github.com/hylarucoder/slidev-react)
 `;

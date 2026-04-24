@@ -54,132 +54,132 @@ export function NotesOverview({
     <OverlayShell
       open={open}
       onClose={onClose}
-      title="Notes Workspace"
+      title="Speaker Notes"
       variant="fullscreen"
-      closeAriaLabel="Close notes workspace"
+      closeAriaLabel="Close speaker notes"
       description={
         <span className="inline-flex items-center gap-2 rounded-full border chrome-border bg-white/90 px-3 py-1 text-xs font-medium chrome-fg-muted">
           <NotebookText size={14} />
-          {notedSlidesCount}/{slides.length} slides have notes · Press N or Esc to close
+          {notedSlidesCount} of {slides.length} slides have notes.
         </span>
       }
     >
       <div className="grid min-h-0 flex-1 gap-4 xl:grid-cols-[minmax(340px,420px)_minmax(0,1fr)]">
-          <ChromePanel tone="solid" radius="section" padding="none" className="overflow-hidden">
-            <div className="border-b chrome-border px-5 py-4">
-              <h3 className="text-sm font-semibold chrome-fg">Slide Notes Index</h3>
-              <p className="mt-1 text-sm chrome-fg-subtle">
-                Every slide is listed here, including the ones that still need notes.
-              </p>
-            </div>
-            <div className="min-h-0 overflow-auto p-3">
-              <div className="space-y-2">
-                {slides.map((slide, index) => {
-                  const active = index === selectedIndex;
-                  const isCurrent = index === currentIndex;
-                  const hasNotes = Boolean(slide.meta.notes?.trim());
+        <ChromePanel tone="solid" radius="section" padding="none" className="overflow-hidden">
+          <div className="border-b chrome-border px-5 py-4">
+            <h3 className="text-sm font-semibold chrome-fg">Slide Notes Index</h3>
+            <p className="mt-1 text-sm chrome-fg-subtle">
+              Slides that still need notes are marked.
+            </p>
+          </div>
+          <div className="min-h-0 overflow-auto p-3">
+            <div className="space-y-2">
+              {slides.map((slide, index) => {
+                const active = index === selectedIndex;
+                const isCurrent = index === currentIndex;
+                const hasNotes = Boolean(slide.meta.notes?.trim());
 
-                  return (
-                    <button
-                      key={slide.id}
-                      type="button"
-                      onClick={() => setSelectedIndex(index)}
-                      className={`w-full rounded-lg border p-4 text-left transition ${
-                        active
-                          ? "border-emerald-400 bg-emerald-50 "
-                          : "chrome-border bg-white hover:border-slate-300 hover:bg-slate-50"
-                      }`}
-                    >
-                      <div className="mb-2 flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                          <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold chrome-fg">
-                            {index + 1}
-                          </span>
-                          {isCurrent && (
-                            <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                              Current
-                            </span>
-                          )}
-                        </div>
-                        <span
-                          className={`rounded-md px-2 py-0.5 text-xs font-medium ${
-                            hasNotes
-                              ? "bg-emerald-100 text-emerald-700"
-                              : "bg-slate-100 chrome-fg-subtle"
-                          }`}
-                        >
-                          {hasNotes ? "Notes ready" : "No notes"}
+                return (
+                  <button
+                    key={slide.id}
+                    type="button"
+                    onClick={() => setSelectedIndex(index)}
+                    className={`w-full rounded-lg border p-4 text-left transition ${
+                      active
+                        ? "border-emerald-400 bg-emerald-50 "
+                        : "chrome-border bg-white hover:border-slate-300 hover:bg-slate-50"
+                    }`}
+                  >
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold chrome-fg">
+                          {index + 1}
                         </span>
+                        {isCurrent && (
+                          <span className="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                            Current
+                          </span>
+                        )}
                       </div>
-                      <div className="text-sm font-semibold chrome-fg">
-                        {slide.meta.title ?? `Slide ${index + 1}`}
-                      </div>
-                      <p className="mt-2 text-sm leading-6 chrome-fg-subtle">
-                        {summarizeNotes(slide.meta.notes)}
-                      </p>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </ChromePanel>
-          <ChromePanel
-            tone="solid"
-            radius="section"
-            padding="none"
-            className="flex flex-col overflow-hidden"
-          >
-            <div className="border-b chrome-border px-6 py-5">
-              <div className="mb-3 flex flex-wrap items-center gap-2">
-                <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold chrome-fg">
-                  {selectedIndex + 1}
-                </span>
-                {selectedSlide?.meta.layout && (
-                  <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs chrome-fg-subtle">
-                    {selectedSlide.meta.layout}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold chrome-fg">
-                    {selectedSlide?.meta.title ?? `Slide ${selectedIndex + 1}`}
-                  </h3>
-                  <p className="mt-1 text-sm chrome-fg-subtle">
-                    {selectedSlide?.meta.notes?.trim()
-                      ? "Full speaker notes for the selected slide."
-                      : "This slide still needs presenter notes."}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => onSelect(selectedIndex)}
-                  className="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
-                >
-                  Jump To Slide
-                </button>
-              </div>
-            </div>
-            <div className="min-h-0 flex-1 overflow-auto px-6 py-5">
-              {selectedNotes.length > 0 ? (
-                <div className="space-y-4 text-[15px] leading-7 chrome-fg-muted">
-                  {selectedNotes.map((paragraph, index) => (
-                    <p key={`${index}-${paragraph.slice(0, 24)}`} className="whitespace-pre-wrap">
-                      {paragraph}
+                      <span
+                        className={`rounded-md px-2 py-0.5 text-xs font-medium ${
+                          hasNotes
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-slate-100 chrome-fg-subtle"
+                        }`}
+                      >
+                        {hasNotes ? "Notes ready" : "No notes"}
+                      </span>
+                    </div>
+                    <div className="text-sm font-semibold chrome-fg">
+                      {slide.meta.title ?? `Slide ${index + 1}`}
+                    </div>
+                    <p className="mt-2 text-sm leading-6 chrome-fg-subtle">
+                      {summarizeNotes(slide.meta.notes)}
                     </p>
-                  ))}
-                </div>
-              ) : (
-                <div className="rounded-2xl border border-dashed chrome-border bg-slate-50/80 p-6">
-                  <p className="font-medium chrome-fg">No notes on this slide yet.</p>
-                  <p className="mt-2 text-sm leading-6 chrome-fg-subtle">
-                    Add slide frontmatter with <code>notes: |</code> to capture your framing,
-                    punchlines, and the line you do not want to improvise live.
-                  </p>
-                </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </ChromePanel>
+        <ChromePanel
+          tone="solid"
+          radius="section"
+          padding="none"
+          className="flex flex-col overflow-hidden"
+        >
+          <div className="border-b chrome-border px-6 py-5">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold chrome-fg">
+                {selectedIndex + 1}
+              </span>
+              {selectedSlide?.meta.layout && (
+                <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs chrome-fg-subtle">
+                  {selectedSlide.meta.layout}
+                </span>
               )}
             </div>
-          </ChromePanel>
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <h3 className="text-lg font-semibold chrome-fg">
+                  {selectedSlide?.meta.title ?? `Slide ${selectedIndex + 1}`}
+                </h3>
+                <p className="mt-1 text-sm chrome-fg-subtle">
+                  {selectedSlide?.meta.notes?.trim()
+                    ? "Full speaker notes for the selected slide."
+                    : "No notes yet."}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onSelect(selectedIndex)}
+                className="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+              >
+                Jump To Slide
+              </button>
+            </div>
+          </div>
+          <div className="min-h-0 flex-1 overflow-auto px-6 py-5">
+            {selectedNotes.length > 0 ? (
+              <div className="space-y-4 text-[15px] leading-7 chrome-fg-muted">
+                {selectedNotes.map((paragraph, index) => (
+                  <p key={`${index}-${paragraph.slice(0, 24)}`} className="whitespace-pre-wrap">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed chrome-border bg-slate-50/80 p-6">
+                <p className="font-medium chrome-fg">No notes on this slide yet.</p>
+                <p className="mt-2 text-sm leading-6 chrome-fg-subtle">
+                  Add slide frontmatter with <code>notes: |</code> to capture your framing,
+                  punchlines, and the line you do not want to improvise live.
+                </p>
+              </div>
+            )}
+          </div>
+        </ChromePanel>
       </div>
     </OverlayShell>
   );

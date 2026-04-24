@@ -236,6 +236,9 @@ importers:
 
   packages/theme-absolutely:
     dependencies:
+      '@slidev-react/client':
+        specifier: workspace:^
+        version: link:../client
       '@slidev-react/core':
         specifier: workspace:^
         version: link:../core
@@ -245,6 +248,9 @@ importers:
 
   packages/theme-paper:
     dependencies:
+      '@slidev-react/client':
+        specifier: workspace:^
+        version: link:../client
       '@slidev-react/core':
         specifier: workspace:^
         version: link:../core

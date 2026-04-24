@@ -73,11 +73,9 @@ describe("generateCompiledSlidesArtifacts", () => {
     await writeSupportFile(
       appRoot,
       "slides/intro.mdx",
-      [
-        'import CharacterCard from "../components/CharacterCard"',
-        "",
-        "<CharacterCard />",
-      ].join("\n"),
+      ['import CharacterCard from "../components/CharacterCard"', "", "<CharacterCard />"].join(
+        "\n",
+      ),
     );
     const slidesSourceFile = await writeSlidesSource(
       appRoot,
@@ -462,11 +460,9 @@ describe("generateCompiledSlidesArtifacts", () => {
       slidesSourceFile,
     });
 
+    expect(result.warnings).toContain('Unknown layout "nebula". Falling back to the default.');
     expect(result.warnings).toContain(
-      'Unknown slides layout "nebula". The runtime will fall back to the default layout.',
-    );
-    expect(result.warnings).toContain(
-      'Unknown layout "orbit" in slide 1 (Intro). The runtime will fall back to the default layout.',
+      'Unknown layout "orbit" in slide 1 (Intro). Falling back to the default.',
     );
   });
 

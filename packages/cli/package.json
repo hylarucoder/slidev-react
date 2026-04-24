@@ -2,7 +2,7 @@
   "name": "@slidev-react/cli",
   "version": "0.5.0",
   "private": false,
-  "description": "CLI entrypoint for slidev-react authoring and build workflows",
+  "description": "Run, build, and export MDX slide decks.",
   "homepage": "https://github.com/hylarucoder/slidev-react/tree/main/packages/cli",
   "bugs": {
     "url": "https://github.com/hylarucoder/slidev-react/issues"

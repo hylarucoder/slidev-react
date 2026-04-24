@@ -141,7 +141,7 @@ function createPassThroughCommand(
 
 const program = new Command()
   .name("slidev-react")
-  .description("CLI entrypoint for slidev-react authoring and build workflows")
+  .description("Run, build, and export MDX slide decks.")
   .usage("[command|file] [options...]")
   .showHelpAfterError()
   .showSuggestionAfterError()
@@ -151,7 +151,7 @@ const program = new Command()
 createPassThroughCommand(
   program,
   "dev",
-  "Start the Vite dev server for a slides source file",
+  "Start the dev server for your slides",
   async (argv) => {
     const { runSlidesDev } = await loadNodeCommands();
     await runWithViteArgs(argv, runSlidesDev);
@@ -162,7 +162,7 @@ createPassThroughCommand(
 createPassThroughCommand(
   program,
   "build",
-  "Build the current slides app for production",
+  "Build slides for production",
   async (argv) => {
     const { runSlidesBuild } = await loadNodeCommands();
     await runWithViteArgs(argv, runSlidesBuild);
@@ -184,7 +184,7 @@ createPassThroughCommand(
 createPassThroughCommand(
   program,
   "lint",
-  "Validate slides authoring warnings",
+  "Lint slides for authoring warnings",
   async (argv) => {
     const { runSlidesLint } = await loadNodeCommands();
     await runWithCliArgs(argv, runSlidesLint);

@@ -1,7 +1,13 @@
 import type { SlidesDocument } from "@slidev-react/core/slides/slides";
 import { layoutNames } from "@slidev-react/core/slides/layout";
-import { readAddonLayoutIds, readThemeLayoutIds } from "../build/extensions/resolveExtensionLayouts.ts";
-import { resolveAddonExtension, resolveThemeExtension } from "../build/extensions/resolveExtensions.ts";
+import {
+  readAddonLayoutIds,
+  readThemeLayoutIds,
+} from "../build/extensions/resolveExtensionLayouts.ts";
+import {
+  resolveAddonExtension,
+  resolveThemeExtension,
+} from "../build/extensions/resolveExtensions.ts";
 
 function collectKnownLayouts() {
   return new Set<string>(layoutNames);
@@ -52,9 +58,7 @@ export async function validateSlidesAuthoring({
   }
 
   if (slides.meta.layout && !knownLayouts.has(slides.meta.layout)) {
-    warnings.push(
-      `Unknown slides layout "${slides.meta.layout}". The runtime will fall back to the default layout.`,
-    );
+    warnings.push(`Unknown layout "${slides.meta.layout}". Falling back to the default.`);
   }
 
   for (const slide of slides.slides) {
@@ -62,7 +66,7 @@ export async function validateSlidesAuthoring({
     if (!slideLayout || knownLayouts.has(slideLayout)) continue;
 
     warnings.push(
-      `Unknown layout "${slideLayout}" in ${formatSlideLabel(slide)}. The runtime will fall back to the default layout.`,
+      `Unknown layout "${slideLayout}" in ${formatSlideLabel(slide)}. Falling back to the default.`,
     );
   }
 

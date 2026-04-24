@@ -114,11 +114,9 @@ describe("lint-slides CLI", () => {
     expect(result.stderr).toContain(
       'Unknown theme "missing-theme". Use a built-in theme, add packages/theme-missing-theme/index.ts, or install @slidev-react/theme-missing-theme.',
     );
+    expect(result.stderr).toContain('Unknown layout "nebula". Falling back to the default.');
     expect(result.stderr).toContain(
-      'Unknown slides layout "nebula". The runtime will fall back to the default layout.',
-    );
-    expect(result.stderr).toContain(
-      'Unknown layout "orbit" in slide 1 (Intro). The runtime will fall back to the default layout.',
+      'Unknown layout "orbit" in slide 1 (Intro). Falling back to the default.',
     );
   });
 
@@ -137,9 +135,7 @@ describe("lint-slides CLI", () => {
 
     expect(result.code).toBe(1);
     expect(result.stderr).toContain("Slides lint found 1 warning:");
-    expect(result.stderr).toContain(
-      'Unknown slides layout "nebula". The runtime will fall back to the default layout.',
-    );
+    expect(result.stderr).toContain('Unknown layout "nebula". Falling back to the default.');
   });
 
   it("accepts local theme and addon layout contributions", async () => {

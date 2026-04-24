@@ -244,17 +244,22 @@ async function waitForPresentationMount(page: Page, timeoutMs: number) {
   );
 }
 
-async function waitForAddonRender(page: Page, timeoutMs: number) {
-  await page.waitForFunction(
-    () => {
-      const chartSvg = document.querySelector("#g2-smoke svg");
-      const mermaidSvg = document.querySelector("#mermaid-smoke svg");
-      return !!chartSvg && !!mermaidSvg;
-    },
-    {
+async function waitForAddonRender(page: Page, devUrl: string, timeoutMs: number) {
+  const base = devUrl.endsWith("/") ? devUrl : `${devUrl}/`;
+  const probes = [
+    { slide: 2, selector: "#mermaid-smoke svg" },
+    { slide: 3, selector: "#g2-smoke svg" },
+  ];
+
+  for (const probe of probes) {
+    await page.goto(`${base}${probe.slide}`, {
+      waitUntil: "domcontentloaded",
+      timeout: 5_000,
+    });
+    await page.waitForFunction((selector) => !!document.querySelector(selector), probe.selector, {
       timeout: timeoutMs,
-    },
-  );
+    });
+  }
 }
 
 function createBrowserProbe(page: Page): BrowserProbe {
@@ -370,7 +375,7 @@ async function assertDevServerInBrowser(options: {
     await new Promise((resolve) => setTimeout(resolve, 1_500));
     await waitForPageReady(page, options.devUrl, options.expectedTitle, 30_000);
     await waitForPresentationMount(page, 10_000);
-    await waitForAddonRender(page, 10_000);
+    await waitForAddonRender(page, options.devUrl, 10_000);
     await page.waitForTimeout(1_500);
 
     if (

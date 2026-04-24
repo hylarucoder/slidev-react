@@ -99,8 +99,8 @@ export function PresentationNavbar({
         </ChromeIconButton>
         <ChromeIconButton
           onClick={onToggleNotes}
-          tooltip={{ label: "Notes Workspace", shortcut: "N" }}
-          aria-label="Toggle notes workspace"
+          tooltip={{ label: "Speaker Notes", shortcut: "N" }}
+          aria-label="Toggle speaker notes"
           tone={notesOpen ? "active" : "default"}
           size="sm"
           radius="soft"

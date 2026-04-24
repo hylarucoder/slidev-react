@@ -50,6 +50,11 @@
       "default": "./dist/themes/moonlit.js"
     },
     "./themes/moonlit/style.css": "./dist/themes/moonlit/style.css",
+    "./theme-shared": {
+      "types": "./dist/src/theme/shared/index.d.ts",
+      "import": "./dist/theme-shared.js",
+      "default": "./dist/theme-shared.js"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {

@@ -9,6 +9,7 @@ export default defineConfig({
     "addons/g2": "src/addons/builtin/g2/index.ts",
     "addons/insight": "src/addons/builtin/insight/index.ts",
     "themes/moonlit": "src/theme/builtin/moonlit/index.ts",
+    "theme-shared": "src/theme/shared/index.ts",
   },
   dts: true,
   deps: {

@@ -1,9 +1,5 @@
 import { defineTheme } from "@slidev-react/core/theme";
-import { MoonlitBadge } from "./components/Badge";
-import { MoonlitCallout } from "./components/Callout";
-import { MoonlitEyebrow } from "./components/Eyebrow";
-import { MoonlitKeyStat } from "./components/KeyStat";
-import { MoonlitPullQuote } from "./components/PullQuote";
+import { SlideBadge, SlideCallout, SlideEyebrow, SlideKeyStat, SlidePullQuote } from "../../shared";
 import { MoonlitChapterLayout } from "./layouts/ChapterLayout";
 import { MoonlitCoverLayout } from "./layouts/CoverLayout";
 import { MoonlitSectionLayout } from "./layouts/SectionLayout";
@@ -83,10 +79,10 @@ export default defineTheme({
     chapter: MoonlitChapterLayout,
   },
   mdxComponents: {
-    Badge: MoonlitBadge,
-    Callout: MoonlitCallout,
-    Eyebrow: MoonlitEyebrow,
-    KeyStat: MoonlitKeyStat,
-    PullQuote: MoonlitPullQuote,
+    Badge: SlideBadge,
+    Callout: SlideCallout,
+    Eyebrow: SlideEyebrow,
+    KeyStat: SlideKeyStat,
+    PullQuote: SlidePullQuote,
   },
 });

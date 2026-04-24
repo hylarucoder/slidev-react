@@ -1,9 +1,12 @@
 import { defineTheme } from "@slidev-react/core/theme";
-import { AbsolutelyBadge } from "./components/Badge";
-import { AbsolutelyCallout } from "./components/Callout";
-import { Eyebrow } from "./components/Eyebrow";
-import { KeyStat } from "./components/KeyStat";
-import { PullQuote } from "./components/PullQuote";
+import {
+  PlainChapterLayout,
+  SlideBadge,
+  SlideCallout,
+  SlideEyebrow,
+  SlideKeyStat,
+  SlidePullQuote,
+} from "@slidev-react/client/theme-shared";
 import { AbsolutelyCoverLayout } from "./layouts/CoverLayout";
 import { AbsolutelySectionLayout } from "./layouts/SectionLayout";
 import { AbsolutelyStatementLayout } from "./layouts/StatementLayout";
@@ -74,17 +77,18 @@ export default defineTheme({
   rootAttributes: {
     "data-slide-theme": "absolutely",
   },
-  layoutIds: ["cover", "section", "statement"],
+  layoutIds: ["cover", "section", "statement", "chapter"],
   layouts: {
     cover: AbsolutelyCoverLayout,
     section: AbsolutelySectionLayout,
     statement: AbsolutelyStatementLayout,
+    chapter: PlainChapterLayout,
   },
   mdxComponents: {
-    Badge: AbsolutelyBadge,
-    Callout: AbsolutelyCallout,
-    Eyebrow,
-    KeyStat,
-    PullQuote,
+    Badge: SlideBadge,
+    Callout: SlideCallout,
+    Eyebrow: SlideEyebrow,
+    KeyStat: SlideKeyStat,
+    PullQuote: SlidePullQuote,
   },
 });

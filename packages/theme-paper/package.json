@@ -23,6 +23,7 @@
     "prepack": "pnpm run build:pkg"
   },
   "peerDependencies": {
+    "@slidev-react/client": "workspace:^",
     "@slidev-react/core": "workspace:^",
     "react": "^19.0.0"
   }
