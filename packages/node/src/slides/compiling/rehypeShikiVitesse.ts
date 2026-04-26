@@ -1,7 +1,8 @@
 import type { HighlighterCore } from "shiki";
 import { createHighlighter } from "shiki";
 
-const SHIKI_THEME = "vitesse-light";
+const SHIKI_LIGHT_THEME = "vitesse-light";
+const SHIKI_DARK_THEME = "vitesse-dark";
 const PLAIN_TEXT_LANG = "txt";
 
 const preloadedLangs = [
@@ -37,7 +38,7 @@ interface HastNode {
 function getHighlighter() {
   if (!highlighterPromise) {
     highlighterPromise = createHighlighter({
-      themes: [SHIKI_THEME],
+      themes: [SHIKI_LIGHT_THEME, SHIKI_DARK_THEME],
       langs: preloadedLangs,
     });
   }
@@ -98,16 +99,21 @@ function detectLanguage(preNode: HastNode): string {
 
 async function highlight(code: string, lang: string) {
   const highlighter = await getHighlighter();
+  const options = {
+    lang,
+    themes: {
+      light: SHIKI_LIGHT_THEME,
+      dark: SHIKI_DARK_THEME,
+    },
+    defaultColor: "light" as const,
+  };
 
   try {
-    return highlighter.codeToHast(code, {
-      lang,
-      theme: SHIKI_THEME,
-    }) as HastNode;
+    return highlighter.codeToHast(code, options) as HastNode;
   } catch {
     return highlighter.codeToHast(code, {
+      ...options,
       lang: PLAIN_TEXT_LANG,
-      theme: SHIKI_THEME,
     }) as HastNode;
   }
 }

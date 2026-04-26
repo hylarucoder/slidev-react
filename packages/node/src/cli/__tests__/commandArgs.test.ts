@@ -13,6 +13,20 @@ describe("CLI arg parsers", () => {
       strictPort: undefined,
       base: undefined,
       mode: undefined,
+      noScaffold: undefined,
+    });
+  });
+
+  it("accepts --no-scaffold for dev", () => {
+    expect(parseDevArgs(["--no-scaffold"])).toEqual({
+      slidesFile: undefined,
+      host: undefined,
+      port: undefined,
+      open: undefined,
+      strictPort: undefined,
+      base: undefined,
+      mode: undefined,
+      noScaffold: true,
     });
   });
 

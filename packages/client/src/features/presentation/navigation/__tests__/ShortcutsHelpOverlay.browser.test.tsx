@@ -13,7 +13,7 @@ test("renders keyboard shortcuts overlay in a real browser", async () => {
   await render(<ShortcutsHelpOverlay open sections={sections} onClose={() => {}} />);
 
   await expect
-    .element(page.getByRole("heading", { name: /everything the runtime can do/i }))
+    .element(page.getByRole("heading", { name: /keyboard shortcuts/i }))
     .toBeInTheDocument();
   await expect.element(page.getByText(/Toggle quick overview/)).toBeInTheDocument();
   await expect.element(page.getByText(/Toggle draw mode/)).toBeInTheDocument();

@@ -5,9 +5,9 @@ function joinClassNames(...classNames: Array<string | false | null | undefined>)
 }
 
 const toneClassNames = {
-  default: "border-slate-200/80 bg-white/88 text-slate-500",
-  defaultStrong: "border-slate-200/80 bg-white/88 text-slate-800",
-  muted: "border-slate-200/80 bg-white/82 text-slate-600",
+  default: "chrome-border chrome-surface chrome-fg-subtle",
+  defaultStrong: "chrome-border chrome-surface chrome-fg",
+  muted: "chrome-border chrome-surface chrome-fg-muted",
   active: "border-emerald-200/80 bg-emerald-50 text-emerald-700",
   success: "border-emerald-200/80 bg-emerald-50 text-emerald-700",
   warning: "border-amber-200/80 bg-amber-50 text-amber-700",

@@ -28,7 +28,7 @@ https://github.com/user-attachments/assets/553392a4-36ae-4505-87c2-ca54e7e00f08
 - Compile-time parsing and slides artifact generation
 - Built-in slide layouts: `default`, `center`, `cover`, `section`, `two-cols`, `image-right`, `statement`
 - React-native MDX helpers: `Badge`, `Callout`, `Annotate`, `Reveal`, `RevealGroup`, and more
-- Diagram fences for Mermaid, PlantUML, and G2 charts (via addons)
+- Diagram fences for Mermaid and G2 charts (via addons)
 - KaTeX-based math rendering
 - Presenter and viewer routes with sync-ready state handling
 - Multi-tab sync through `BroadcastChannel`
@@ -43,15 +43,15 @@ The project is under active development. Core features (MDX authoring, layouts, 
 
 This is a pnpm workspace monorepo with the following packages:
 
-| Package                     | Path                   | Description                                                    |
-| --------------------------- | ---------------------- | -------------------------------------------------------------- |
-| `create-slidev-react`       | `packages/create-app`  | Starter app scaffolding and recommended first-run entry        |
-| `@slidev-react/core`        | `packages/core`        | Pure presentation models, flow logic, and shared contracts     |
-| `@slidev-react/client`      | `packages/client`      | React app assembly, providers, presentation UI, themes, addons |
-| `@slidev-react/node`        | `packages/node`        | Node-side dev/build/export/lint entry points and servers       |
-| `@slidev-react/cli`         | `packages/cli`         | Low-level command runner used by generated app scripts         |
-| `@slidev-react/theme-absolutely` | `packages/theme-absolutely` | The "absolutely" theme package                           |
-| `@slidev-react/theme-paper` | `packages/theme-paper` | The "paper" theme package                                      |
+| Package                          | Path                        | Description                                                    |
+| -------------------------------- | --------------------------- | -------------------------------------------------------------- |
+| `create-slidev-react`            | `packages/create-app`       | Starter app scaffolding and recommended first-run entry        |
+| `@slidev-react/core`             | `packages/core`             | Pure presentation models, flow logic, and shared contracts     |
+| `@slidev-react/client`           | `packages/client`           | React app assembly, providers, presentation UI, themes, addons |
+| `@slidev-react/node`             | `packages/node`             | Node-side dev/build/export/lint entry points and servers       |
+| `@slidev-react/cli`              | `packages/cli`              | Low-level command runner used by generated app scripts         |
+| `@slidev-react/theme-absolutely` | `packages/theme-absolutely` | The "absolutely" theme package                                 |
+| `@slidev-react/theme-paper`      | `packages/theme-paper`      | The "paper" theme package                                      |
 
 The root `package.json` is `private: true` and wires the Vite dev server and top-level scripts. Publishable packages under `packages/` are released via [Changesets](https://github.com/changesets/changesets).
 
@@ -61,6 +61,16 @@ The root `package.json` is `private: true` and wires the Vite dev server and top
 
 - Node.js `>=22`
 - pnpm `10`
+
+### Zero-install demo
+
+```bash
+# in any directory — auto-scaffolds slides.mdx on first run
+npx @slidev-react/cli@latest
+
+# pass a file explicitly
+npx @slidev-react/cli@latest slides.mdx --port 4000
+```
 
 ### Create a deck
 
@@ -76,6 +86,7 @@ Open the viewer at `http://localhost:5173/1` or the presenter at `http://localho
 The generated app includes:
 
 - `slides.mdx` with a minimal starter deck
+- built-in `moonlit` theme
 - built-in `g2 + mermaid` examples
 - `pnpm dev`, `pnpm build`, `pnpm export`, and `pnpm lint` scripts
 
@@ -237,11 +248,14 @@ Set the theme in slides-level frontmatter:
 ```mdx
 ---
 title: Client Review
-theme: paper
+theme: moonlit
 ---
 ```
 
-Themes are distributed as workspace packages. The built-in non-default theme is **paper** (`packages/theme-paper`), published as `@slidev-react/theme-paper`.
+Themes can come from two places:
+
+- built-in themes shipped by `@slidev-react/client`, such as **moonlit**
+- external theme packages such as `@slidev-react/theme-paper` and `@slidev-react/theme-absolutely`
 
 A theme package exports a `SlideThemeDefinition` from its entry point, with support for:
 
@@ -251,7 +265,7 @@ A theme package exports a `SlideThemeDefinition` from its entry point, with supp
 - `mdxComponents` — override MDX helpers such as `Badge`
 - `provider` — theme-scoped React context when needed
 
-Theme CSS files (e.g. `style.css`) are auto-loaded. CSS custom properties are derived from `tokens` at runtime, so CSS is a consumer of theme tokens rather than the source of truth. If a requested theme is missing, the runtime falls back to the default theme.
+Built-in theme CSS files are auto-loaded in the same way as external theme CSS. CSS custom properties are derived from `tokens` at runtime, so CSS is a consumer of theme tokens rather than the source of truth. If a requested theme is missing, the runtime falls back to the default theme.
 
 ## Addons
 
@@ -313,7 +327,6 @@ layout: spotlight
 | `CourseCover`            | Course cover page helper                                              |
 | `MagicMoveDemo`          | Shiki Magic Move code animations                                      |
 | `MinimaxReactVisualizer` | Minimax tree visualizer                                               |
-| `PlantUmlDiagram`        | PlantUML diagram rendering                                            |
 | `Reveal`                 | Step-based reveal for click-triggered content                         |
 | `RevealGroup`            | Auto-numbered reveal container                                        |
 

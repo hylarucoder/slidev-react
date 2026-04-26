@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { Command, CommanderError } from "@commander-js/extra-typings";
-import { runSlidesBuild, runSlidesDev, runSlidesExport, runSlidesLint } from "@slidev-react/node";
+import { normalizeArgv } from "./normalizeArgv.ts";
 
 interface CommandResult {
   code: number;
@@ -12,10 +14,13 @@ type CommandRunner = (argv: string[]) => Promise<void>;
 
 const ROOT_HELP_TEXT = `
 Run \`slidev-react <command> --help\` for command-specific options.
+When no command is given, \`dev\` is assumed — a bare \`slidev-react\` or
+\`slidev-react slides.mdx\` is equivalent to \`slidev-react dev [slides.mdx]\`.
 
 Examples:
-  slidev-react dev
-  slidev-react dev slides-ar-3-4.mdx --host 0.0.0.0 --port 5174
+  slidev-react                                         # dev on ./slides.mdx
+  slidev-react slides-ar-3-4.mdx --host 0.0.0.0        # dev with a file
+  slidev-react dev slides-ar-3-4.mdx --port 5174
   slidev-react build slides-ar-3-4.mdx
   slidev-react export slides-ar-3-4.mdx --format png --slides 3-7
   slidev-react lint slides-ar-3-4.mdx --strict
@@ -25,6 +30,7 @@ const DEV_HELP_TEXT = `
 Supported options:
   --file <path>, --host <host>, --port <port>, --open, --open=false
   --strictPort, --strictPort=false, --base <path>, --mode <mode>
+  --no-scaffold  (do not auto-generate slides.mdx when missing)
 
 Examples:
   slidev-react dev
@@ -81,6 +87,15 @@ function exitWithCommandResult(result: CommandResult) {
   process.exit(result.code);
 }
 
+async function loadNodeCommands() {
+  const localNodeEntry = new URL("../../node/src/index.ts", import.meta.url);
+  if (existsSync(fileURLToPath(localNodeEntry))) {
+    return await import(localNodeEntry.href);
+  }
+
+  return await import("@slidev-react/node");
+}
+
 async function runWithViteArgs(
   argv: string[],
   runner: (options: { appRoot: string; viteArgs: string[] }) => Promise<CommandResult>,
@@ -126,8 +141,8 @@ function createPassThroughCommand(
 
 const program = new Command()
   .name("slidev-react")
-  .description("CLI entrypoint for slidev-react authoring and build workflows")
-  .usage("<command> [file] [options...]")
+  .description("Run, build, and export MDX slide decks.")
+  .usage("[command|file] [options...]")
   .showHelpAfterError()
   .showSuggestionAfterError()
   .addHelpText("after", ROOT_HELP_TEXT)
@@ -136,16 +151,22 @@ const program = new Command()
 createPassThroughCommand(
   program,
   "dev",
-  "Start the Vite dev server for a slides source file",
-  (argv) => runWithViteArgs(argv, runSlidesDev),
+  "Start the dev server for your slides",
+  async (argv) => {
+    const { runSlidesDev } = await loadNodeCommands();
+    await runWithViteArgs(argv, runSlidesDev);
+  },
   DEV_HELP_TEXT,
 );
 
 createPassThroughCommand(
   program,
   "build",
-  "Build the current slides app for production",
-  (argv) => runWithViteArgs(argv, runSlidesBuild),
+  "Build slides for production",
+  async (argv) => {
+    const { runSlidesBuild } = await loadNodeCommands();
+    await runWithViteArgs(argv, runSlidesBuild);
+  },
   BUILD_HELP_TEXT,
 );
 
@@ -153,20 +174,27 @@ createPassThroughCommand(
   program,
   "export",
   "Export PDF / PNG artifacts through Playwright",
-  (argv) => runWithCliArgs(argv, runSlidesExport),
+  async (argv) => {
+    const { runSlidesExport } = await loadNodeCommands();
+    await runWithCliArgs(argv, runSlidesExport);
+  },
   EXPORT_HELP_TEXT,
 );
 
 createPassThroughCommand(
   program,
   "lint",
-  "Validate slides authoring warnings",
-  (argv) => runWithCliArgs(argv, runSlidesLint),
+  "Lint slides for authoring warnings",
+  async (argv) => {
+    const { runSlidesLint } = await loadNodeCommands();
+    await runWithCliArgs(argv, runSlidesLint);
+  },
   LINT_HELP_TEXT,
 );
 
 try {
-  await program.parseAsync(process.argv);
+  const normalized = normalizeArgv(process.argv.slice(2));
+  await program.parseAsync(normalized, { from: "user" });
 } catch (error) {
   if (error instanceof CommanderError) {
     if (error.code === "commander.helpDisplayed") {

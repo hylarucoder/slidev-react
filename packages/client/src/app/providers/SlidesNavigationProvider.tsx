@@ -5,7 +5,7 @@ import {
   normalizePathname,
   resolveSlidesLocationState,
   type PresentationRouteMode,
-} from "../../features/presentation/location";
+} from "../../features/presentation/session/location";
 
 interface SlidesContextValue {
   currentIndex: number;

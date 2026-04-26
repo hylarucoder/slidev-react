@@ -119,8 +119,8 @@ export function useSyncReplicationRuntime({
     }
 
     const hasPageChange = previous.page !== current.page
-    const hasCueChange = previous.cue !== current.cue
-    const hasCueTotalChange = previous.cueTotal !== current.cueTotal
+    const hasStepChange = previous.step !== current.step
+    const hasStepTotalChange = previous.stepTotal !== current.stepTotal
     const hasTimerChange = previous.timer !== current.timer
     const hasDrawingsChange =
       previous.drawingsRevision !== current.drawingsRevision
@@ -128,8 +128,8 @@ export function useSyncReplicationRuntime({
 
     if (
       !hasPageChange &&
-      !hasCueChange &&
-      !hasCueTotalChange &&
+      !hasStepChange &&
+      !hasStepTotalChange &&
       !hasTimerChange &&
       !hasDrawingsChange &&
       !hasCursorChange
@@ -139,8 +139,8 @@ export function useSyncReplicationRuntime({
 
     if (
       hasPageChange ||
-      hasCueChange ||
-      hasCueTotalChange ||
+      hasStepChange ||
+      hasStepTotalChange ||
       hasTimerChange ||
       hasDrawingsChange
     ) {
@@ -149,8 +149,8 @@ export function useSyncReplicationRuntime({
         payload: {
           state: {
             ...(hasPageChange ? { page: current.page } : {}),
-            ...(hasCueChange ? { cue: current.cue } : {}),
-            ...(hasCueTotalChange ? { cueTotal: current.cueTotal } : {}),
+            ...(hasStepChange ? { step: current.step } : {}),
+            ...(hasStepTotalChange ? { stepTotal: current.stepTotal } : {}),
             ...(hasTimerChange ? { timer: current.timer } : {}),
             ...(hasDrawingsChange
               ? {

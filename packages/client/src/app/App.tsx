@@ -3,8 +3,8 @@ import compiledSlides from "@generated/slides";
 import { useMemo } from "react";
 import { SlidesNavigationProvider } from "./providers/SlidesNavigationProvider";
 import { AddonProvider, useSlideAddons } from "../addons/AddonProvider";
-import { PrintSlidesView } from "../features/presentation/PrintSlidesView";
-import { PresenterShell } from "../features/presentation/presenter/PresenterShell";
+import { PrintSlidesView } from "../features/presentation/modes/PrintMode";
+import { PresentationRoot } from "../features/presentation/PresentationRoot";
 import { buildSlidesUrl } from "@slidev-react/core/presentation/export/urls";
 import { type PresentationSession } from "../features/presentation/session";
 import type { PresentationSyncMode } from "../features/presentation/types";
@@ -17,7 +17,6 @@ function ThemeBoundApp({
   exportWithClicks,
   exportBaseName,
   slidesDocument,
-  drawStorageKey,
   presentationSession,
   handleSyncModeChange,
 }: {
@@ -25,7 +24,6 @@ function ThemeBoundApp({
   exportWithClicks: boolean;
   exportBaseName: string;
   slidesDocument: typeof compiledSlides;
-  drawStorageKey: string;
   presentationSession: PresentationSession;
   handleSyncModeChange: (mode: PresentationSyncMode) => void;
 }) {
@@ -62,18 +60,8 @@ function ThemeBoundApp({
       />
     ) : (
       <SlidesNavigationProvider total={slidesDocument.slides.length}>
-        <PresenterShell
-          slides={slidesDocument.slides}
-          slidesTitle={slidesDocument.meta.title}
-          slidesConfig={{
-            slidesViewport: slidesDocument.meta.viewport,
-            slidesLayout: slidesDocument.meta.layout,
-            slidesBackground: slidesDocument.meta.background,
-            slidesTransition: slidesDocument.meta.transition,
-          }}
-          slidesExportFilename={slidesDocument.meta.exportFilename}
-          slidesSessionSeed={slidesDocument.sourceHash}
-          drawStorageKey={drawStorageKey}
+        <PresentationRoot
+          slidesDocument={slidesDocument}
           session={presentationSession}
           onSyncModeChange={handleSyncModeChange}
         />
@@ -98,7 +86,6 @@ export default function App() {
     exportMode,
     exportWithClicks,
     exportBaseName,
-    drawStorageKey,
     presentationSession,
     handleSyncModeChange,
   } = usePresentationBootstrap({
@@ -115,7 +102,6 @@ export default function App() {
           exportWithClicks={exportWithClicks}
           exportBaseName={exportBaseName}
           slidesDocument={slidesDocument}
-          drawStorageKey={drawStorageKey}
           presentationSession={presentationSession}
           handleSyncModeChange={handleSyncModeChange}
         />

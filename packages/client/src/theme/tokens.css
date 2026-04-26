@@ -132,6 +132,41 @@
   --slide-surface-padding-block-end: 3.5rem;
 }
 
+/*
+ * Chrome UI tokens (status bar, presenter panels, overlays). Deliberately
+ * distinct from the --slide-* content tokens above: content colours
+ * follow the active deck theme, chrome follows the OS colour scheme.
+ */
+:root {
+  --chrome-surface: rgba(255, 255, 255, 0.82);
+  --chrome-surface-raised: rgba(255, 255, 255, 0.95);
+  --chrome-surface-sunken: rgba(248, 250, 252, 0.72);
+  --chrome-backdrop: #f8fafc;
+  --chrome-border: rgba(226, 232, 240, 0.8);
+  --chrome-divider: #e2e8f0;
+  --chrome-fg: #0f172a;
+  --chrome-fg-muted: #475569;
+  --chrome-fg-subtle: #94a3b8;
+  --chrome-scrim-soft: rgba(241, 245, 249, 0.84);
+  --chrome-scrim-strong: rgba(2, 6, 23, 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --chrome-surface: rgba(30, 41, 59, 0.78);
+    --chrome-surface-raised: rgba(30, 41, 59, 0.92);
+    --chrome-surface-sunken: rgba(15, 23, 42, 0.72);
+    --chrome-backdrop: #0f172a;
+    --chrome-border: rgba(71, 85, 105, 0.5);
+    --chrome-divider: rgba(71, 85, 105, 0.5);
+    --chrome-fg: #e2e8f0;
+    --chrome-fg-muted: #94a3b8;
+    --chrome-fg-subtle: #64748b;
+    --chrome-scrim-soft: rgba(15, 23, 42, 0.72);
+    --chrome-scrim-strong: rgba(2, 6, 23, 0.65);
+  }
+}
+
 :root[data-slide-viewport-orientation="portrait"] {
   --slide-font-size-body: clamp(1.58rem, 2.28vw, 2.18rem);
   --slide-line-height-body: 1.56;

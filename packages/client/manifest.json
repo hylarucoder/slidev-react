@@ -16,5 +16,12 @@
       "module": "@slidev-react/client/addons/insight",
       "style": "@slidev-react/client/addons/insight/style.css"
     }
+  ],
+  "themes": [
+    {
+      "id": "moonlit",
+      "module": "@slidev-react/client/themes/moonlit",
+      "style": "@slidev-react/client/themes/moonlit/style.css"
+    }
   ]
 }

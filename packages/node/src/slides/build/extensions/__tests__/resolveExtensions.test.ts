@@ -57,6 +57,21 @@ afterEach(async () => {
 });
 
 describe("resolveThemeExtension", () => {
+  it("resolves built-in themes from the client runtime manifest before checking packages", async () => {
+    const appRoot = await createTempAppRoot();
+
+    const theme = resolveThemeExtension(appRoot, "moonlit");
+
+    expect(theme).toMatchObject({
+      id: "moonlit",
+      source: "builtin",
+      importPath: expect.stringContaining("/dist/themes/moonlit.js"),
+      styleImportPath: expect.stringContaining("/dist/themes/moonlit/style.css"),
+    });
+    expect(theme?.importPath.startsWith("file://")).toBe(true);
+    expect(theme?.styleImportPath?.startsWith("file://")).toBe(true);
+  });
+
   it("resolves installed theme packages that only expose import exports", async () => {
     await createThemeFixture("export-only");
     const appRoot = await createTempAppRoot();

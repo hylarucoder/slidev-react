@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { G2Spec } from "@antv/g2";
 
-import { useSlideThemeTokens } from "../../../theme/ThemeProvider";
+import { DiagramFrame } from "../../../ui/diagrams/DiagramFrame";
+import { useSlideTheme, useSlideThemeTokens } from "../../../theme/ThemeProvider";
 import {
   buildSlideTheme,
   resolveHeatmapPalette,
   sizePresets,
   type ChartSize,
 } from "./chartThemeTokens";
+import { resolveChartFrameStyle } from "./chartFrame";
 import { chartPresets, type PresetName } from "./chartPresets";
 
 type G2RuntimeModule = typeof import("@antv/g2");
@@ -71,11 +73,13 @@ type ChartProps = G2Spec & {
 
 export function Chart({ width, height, size, preset, ...spec }: ChartProps) {
   const resolved = resolveSize(width, height, size);
+  const slideThemeDefinition = useSlideTheme().definition;
   const themeTokens = useSlideThemeTokens();
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<G2ChartInstance | null>(null);
   const [error, setError] = useState<string | null>(null);
   const userTheme = useMemo(() => (typeof spec.theme === "object" ? spec.theme : {}), [spec.theme]);
+  const baseThemeType = slideThemeDefinition.colorScheme === "dark" ? "dark" : "classic";
   const themeSignature = useMemo(() => JSON.stringify(themeTokens), [themeTokens]);
   const slideTheme = useMemo(() => buildSlideTheme(themeTokens), [themeSignature, themeTokens]);
   const specSignature = useMemo(() => JSON.stringify(spec), [spec]);
@@ -115,7 +119,7 @@ export function Chart({ width, height, size, preset, ...spec }: ChartProps) {
           ...spec,
           width: resolved.width,
           height: resolved.height,
-          theme: { type: "classic", ...slideTheme, ...userTheme },
+          theme: { type: baseThemeType, ...slideTheme, ...userTheme },
         } as any);
 
         if (cancelled) {
@@ -151,17 +155,21 @@ export function Chart({ width, height, size, preset, ...spec }: ChartProps) {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resolved.width, resolved.height, preset, slideTheme, specSignature, userTheme]);
+  }, [baseThemeType, resolved.width, resolved.height, preset, slideTheme, specSignature, userTheme]);
 
   if (error) {
     return (
-      <div className="my-3 rounded-xl border border-rose-300 bg-rose-50 p-3 text-sm text-rose-900">
-        Chart render error: {error}
+      <div className="my-3">
+        <DiagramFrame state="error" errorMessage={`Chart render error: ${error}`} />
       </div>
     );
   }
 
-  return <div ref={containerRef} style={{ width: resolved.width, height: resolved.height }} />;
+  return (
+    <div className="my-3" style={resolveChartFrameStyle(themeTokens, resolved)}>
+      <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
+    </div>
+  );
 }
 
 // ---------------------------------------------------------------------------

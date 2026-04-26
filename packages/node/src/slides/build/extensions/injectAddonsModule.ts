@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { Plugin } from "vite";
 import { readSlidesDeckExtensions } from "./deckExtensions.ts";
 import { resolveAddonExtension } from "./resolveExtensions.ts";
@@ -5,10 +6,7 @@ import { resolveAddonExtension } from "./resolveExtensions.ts";
 const VIRTUAL_ADDONS = "virtual:slidev-react/active-addons";
 const RESOLVED_VIRTUAL_ADDONS = "\0" + VIRTUAL_ADDONS;
 
-function generateAddonsModuleCode(options: {
-  appRoot: string;
-  slidesSourceFile: string;
-}) {
+function generateAddonsModuleCode(options: { appRoot: string; slidesSourceFile: string }) {
   const { appRoot, slidesSourceFile } = options;
   const { addonIds } = readSlidesDeckExtensions(slidesSourceFile);
 
@@ -56,10 +54,9 @@ function generateAddonsModuleCode(options: {
   ].join("\n");
 }
 
-export function pluginAddonsModule(options: {
-  appRoot: string;
-  slidesSourceFile: string;
-}): Plugin {
+export function pluginAddonsModule(options: { appRoot: string; slidesSourceFile: string }): Plugin {
+  const slidesSourceFile = path.resolve(options.slidesSourceFile);
+
   return {
     name: "slidev-react:addons",
     enforce: "pre",
@@ -71,6 +68,18 @@ export function pluginAddonsModule(options: {
     load(id) {
       if (id !== RESOLVED_VIRTUAL_ADDONS) return;
       return generateAddonsModuleCode(options);
+    },
+
+    configureServer(server) {
+      server.watcher.add(slidesSourceFile);
+      const handleChange = (filePath: string) => {
+        if (path.resolve(filePath) !== slidesSourceFile) return;
+        const mod = server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_ADDONS);
+        if (mod) server.moduleGraph.invalidateModule(mod);
+      };
+
+      server.watcher.on("change", handleChange);
+      server.watcher.on("add", handleChange);
     },
   };
 }

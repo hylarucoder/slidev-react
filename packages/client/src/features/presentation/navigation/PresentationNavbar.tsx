@@ -18,7 +18,7 @@ function DrawControls() {
   return (
     <ChromeIconButton
       onClick={draw.toggleEnabled}
-      title="Toggle draw (D)"
+      tooltip={{ label: "Toggle draw", shortcut: "D" }}
       aria-label="Toggle draw mode"
       tone={draw.enabled ? "active" : "default"}
       size="sm"
@@ -76,11 +76,11 @@ export function PresentationNavbar({
     >
       <div aria-hidden className="h-14 w-20 rounded-t-2xl" />
       <nav
-        className={`absolute bottom-0 left-0 flex items-center gap-1 rounded-t-xl border border-b-0 border-slate-200 bg-white/95 px-2 py-1.5 text-slate-800  ring-1 ring-black/5 backdrop-blur-md transition-[opacity,transform] ${open ? "pointer-events-auto translate-y-0 opacity-100 duration-0" : "pointer-events-none translate-y-2 opacity-0 duration-180"}`}
+        className={`absolute bottom-0 left-0 flex items-center gap-1 rounded-t-xl border border-b-0 chrome-border chrome-surface-raised chrome-fg px-2 py-1.5 ring-1 ring-black/5 backdrop-blur-md transition-[opacity,transform] ease-out ${open ? "pointer-events-auto translate-y-0 opacity-100 duration-0" : "pointer-events-none translate-y-2 opacity-0 duration-180"}`}
         aria-label="Presentation navbar"
       >
         <ChromeIconButton
-          title={`${slideTitle ?? "Slide"} (${currentIndex + 1}/${total})`}
+          tooltip={`${slideTitle ?? "Slide"} (${currentIndex + 1}/${total})`}
           aria-label="Current slide info"
           size="sm"
           radius="soft"
@@ -89,7 +89,7 @@ export function PresentationNavbar({
         </ChromeIconButton>
         <ChromeIconButton
           onClick={onToggleShortcuts}
-          title="Keyboard shortcuts (?)"
+          tooltip={{ label: "Keyboard shortcuts", shortcut: "?" }}
           aria-label="Toggle keyboard shortcuts"
           tone={shortcutsOpen ? "active" : "default"}
           size="sm"
@@ -99,8 +99,8 @@ export function PresentationNavbar({
         </ChromeIconButton>
         <ChromeIconButton
           onClick={onToggleNotes}
-          title="Notes Workspace (N)"
-          aria-label="Toggle notes workspace"
+          tooltip={{ label: "Speaker Notes", shortcut: "N" }}
+          aria-label="Toggle speaker notes"
           tone={notesOpen ? "active" : "default"}
           size="sm"
           radius="soft"
@@ -110,7 +110,7 @@ export function PresentationNavbar({
         </ChromeIconButton>
         <ChromeIconButton
           onClick={onToggleOverview}
-          title="Quick Overview (O)"
+          tooltip={{ label: "Quick Overview", shortcut: "O" }}
           aria-label="Toggle quick overview"
           tone={overviewOpen ? "active" : "default"}
           size="sm"
@@ -122,7 +122,7 @@ export function PresentationNavbar({
         {showPresenterModeButton && (
           <ChromeIconButton
             onClick={onEnterPresenterMode}
-            title="Enter presenter mode"
+            tooltip="Enter presenter mode"
             aria-label="Enter presenter mode"
             size="sm"
             radius="soft"
@@ -135,7 +135,7 @@ export function PresentationNavbar({
             <ChromeIconButton
               onClick={onPrev}
               disabled={!canPrev}
-              title="Previous slide"
+              tooltip="Previous slide"
               aria-label="Previous slide"
               size="sm"
               radius="soft"
@@ -145,14 +145,14 @@ export function PresentationNavbar({
             <ChromeIconButton
               onClick={onNext}
               disabled={!canNext}
-              title="Next slide"
+              tooltip="Next slide"
               aria-label="Next slide"
               size="sm"
               radius="soft"
             >
               <ChevronRight size={16} />
             </ChromeIconButton>
-            <div className="mx-1 h-5 w-px bg-slate-200" aria-hidden />
+            <div className="mx-1 h-5 w-px chrome-divider" aria-hidden />
             <DrawControls />
           </>
         )}

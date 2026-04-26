@@ -19,9 +19,6 @@ const sharedAlias = {
 };
 
 export default defineConfig({
-  optimizeDeps: {
-    include: ['plantuml-encoder/dist/plantuml-encoder.js'],
-  },
   test: {
     projects: [
       {

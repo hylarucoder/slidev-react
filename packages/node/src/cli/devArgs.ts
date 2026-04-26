@@ -9,6 +9,7 @@ export interface DevCliArgs {
   strictPort?: boolean;
   base?: string;
   mode?: string;
+  noScaffold?: boolean;
 }
 
 export function parseDevArgs(argv: string[]): DevCliArgs {
@@ -19,6 +20,7 @@ export function parseDevArgs(argv: string[]): DevCliArgs {
   let strictPort;
   let base;
   let mode;
+  let noScaffold;
 
   for (let index = 0; index < argv.length; index += 1) {
     const entry = argv[index];
@@ -86,6 +88,16 @@ export function parseDevArgs(argv: string[]): DevCliArgs {
       continue;
     }
 
+    if (entry === "--no-scaffold") {
+      noScaffold = true;
+      continue;
+    }
+
+    if (entry === "--no-scaffold=false" || entry === "--no-scaffold=true") {
+      noScaffold = parseBooleanFlag(entry.slice("--no-scaffold=".length));
+      continue;
+    }
+
     throw new Error(`Unknown dev option "${entry}".`);
   }
 
@@ -97,5 +109,6 @@ export function parseDevArgs(argv: string[]): DevCliArgs {
     strictPort,
     base,
     mode,
+    noScaffold,
   };
 }

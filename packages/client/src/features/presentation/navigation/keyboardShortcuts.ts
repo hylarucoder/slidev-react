@@ -2,6 +2,45 @@ export const SHORTCUT_HELP_DOUBLE_SHIFT_MS = 400;
 
 export type NavigationShortcutAction = "advance" | "retreat" | "first" | "last";
 
+export type DrawShortcutAction =
+  | "toggle"
+  | "exit"
+  | "tool-pen"
+  | "tool-eraser"
+  | "tool-circle"
+  | "tool-rectangle"
+  | "clear"
+  | "undo";
+
+export function resolveDrawShortcutAction({
+  key,
+  metaKey,
+  ctrlKey,
+  altKey,
+  drawEnabled,
+}: {
+  key: string;
+  metaKey: boolean;
+  ctrlKey: boolean;
+  altKey: boolean;
+  drawEnabled: boolean;
+}): DrawShortcutAction | null {
+  if ((metaKey || ctrlKey) && !altKey && key.toLowerCase() === "z") return "undo";
+  if (metaKey || ctrlKey || altKey) return null;
+
+  const lowered = key.toLowerCase();
+
+  if (lowered === "d") return "toggle";
+  if (lowered === "escape" && drawEnabled) return "exit";
+  if (lowered === "p") return "tool-pen";
+  if (lowered === "e") return "tool-eraser";
+  if (lowered === "b") return "tool-circle";
+  if (lowered === "r") return "tool-rectangle";
+  if (lowered === "c" && drawEnabled) return "clear";
+
+  return null;
+}
+
 export type ShortcutHelpItem = {
   keys: string;
   action: string;
@@ -128,11 +167,11 @@ export function buildShortcutHelpSections({
       items: [
         {
           keys: "Right / Space / PageDown",
-          action: "Next cue or next slide",
+          action: "Next step or next slide",
         },
         {
           keys: "Left / Shift + Space / PageUp",
-          action: "Previous cue or previous slide",
+          action: "Previous step or previous slide",
         },
         {
           keys: "Home",

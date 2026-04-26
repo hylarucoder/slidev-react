@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./tokens.css";
+@import "./chrome.css";
 @import "./base.css";
 @import "./prose.css";
 @import "./components.css";

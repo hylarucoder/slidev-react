@@ -1,0 +1,58 @@
+/*
+ * Chrome UI utility classes.
+ * These wrap the --chrome-* tokens declared in tokens.css so that UI shell
+ * components can stay dark-mode neutral without littering inline style={}.
+ *
+ * Naming:
+ *   chrome-surface         main panel background (light/dark adaptive)
+ *   chrome-surface-raised  modal / dropdown surface
+ *   chrome-surface-sunken  inset area / muted background
+ *   chrome-backdrop        full-bleed app background
+ *   chrome-border          default 1px subtle border colour
+ *   chrome-divider         inline horizontal/vertical divider colour
+ *   chrome-fg              primary text
+ *   chrome-fg-muted        supporting text
+ *   chrome-fg-subtle       footnote / placeholder text
+ *   chrome-scrim-soft      overlay scrim (used by OverlayShell)
+ *   chrome-scrim-strong    dialog scrim
+ */
+
+.chrome-surface {
+  background-color: var(--chrome-surface);
+}
+.chrome-surface-raised {
+  background-color: var(--chrome-surface-raised);
+}
+.chrome-surface-sunken {
+  background-color: var(--chrome-surface-sunken);
+}
+.chrome-backdrop {
+  background-color: var(--chrome-backdrop);
+}
+.chrome-border {
+  border-color: var(--chrome-border);
+}
+.chrome-divider {
+  background-color: var(--chrome-divider);
+}
+.chrome-fg {
+  color: var(--chrome-fg);
+}
+.chrome-fg-muted {
+  color: var(--chrome-fg-muted);
+}
+.chrome-fg-subtle {
+  color: var(--chrome-fg-subtle);
+}
+.chrome-fg-hover:hover {
+  color: var(--chrome-fg);
+}
+.chrome-border-strong {
+  border-color: var(--chrome-fg);
+}
+.chrome-scrim-soft {
+  background-color: var(--chrome-scrim-soft);
+}
+.chrome-scrim-strong {
+  background-color: var(--chrome-scrim-strong);
+}

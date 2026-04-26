@@ -1,7 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import type { SlidesViewport } from "@slidev-react/core/slides/viewport";
 
 type SlideScaleAlignment = "center" | "top-left";
+
+interface SlideScaleTransform {
+  scale: number;
+  offset: { x: number; y: number };
+  ready: boolean;
+}
+
+const INITIAL_TRANSFORM: SlideScaleTransform = {
+  scale: 1,
+  offset: { x: 0, y: 0 },
+  ready: false,
+};
 
 export function useSlideScale(
   scaleMultiplier: number,
@@ -9,14 +21,13 @@ export function useSlideScale(
   viewport: SlidesViewport,
 ) {
   const viewportRef = useRef<HTMLDivElement | null>(null);
-  const [scale, setScale] = useState(1);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [transform, setTransform] = useState<SlideScaleTransform>(INITIAL_TRANSFORM);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const element = viewportRef.current;
-    if (!element || typeof ResizeObserver === "undefined") return;
+    if (!element) return;
 
-    const updateScale = () => {
+    const measure = () => {
       const { width, height } = element.getBoundingClientRect();
       if (!width || !height) return;
 
@@ -25,16 +36,20 @@ export function useSlideScale(
       const scaledWidth = viewport.width * nextScale;
       const scaledHeight = viewport.height * nextScale;
 
-      setScale(nextScale);
-      setOffset({
-        x: alignment === "top-left" ? 0 : (width - scaledWidth) / 2,
-        y: alignment === "top-left" ? 0 : (height - scaledHeight) / 2,
+      setTransform({
+        scale: nextScale,
+        offset: {
+          x: alignment === "top-left" ? 0 : (width - scaledWidth) / 2,
+          y: alignment === "top-left" ? 0 : (height - scaledHeight) / 2,
+        },
+        ready: true,
       });
     };
 
-    updateScale();
+    measure();
 
-    const observer = new ResizeObserver(updateScale);
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
     observer.observe(element);
 
     return () => {
@@ -42,6 +57,10 @@ export function useSlideScale(
     };
   }, [alignment, scaleMultiplier, viewport.height, viewport.width]);
 
-  return { viewportRef, scale, offset };
+  return {
+    viewportRef,
+    scale: transform.scale,
+    offset: transform.offset,
+    ready: transform.ready,
+  };
 }
-

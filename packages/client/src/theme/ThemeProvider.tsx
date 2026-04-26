@@ -12,6 +12,7 @@ export function resolveThemeRootAttributes(
 ) {
   return {
     ...theme.rootAttributes,
+    "data-slide-color-scheme": theme.definition.colorScheme ?? "light",
     ...(slidesViewport
       ? {
           "data-slide-viewport-orientation": isPortraitViewport(slidesViewport)

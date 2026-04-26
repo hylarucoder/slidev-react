@@ -38,29 +38,26 @@ describe("compileMdx", () => {
     expect(capturedCode).toBe("graph TD\nA-->B");
   });
 
-  it("compiles startuml code fences into MDX components", async () => {
-    const source = `# PlantUML\n\n\`\`\`startuml\n@startuml\nAlice -> Bob: hi\n@enduml\n\`\`\``;
+  it("keeps startuml code fences as regular code blocks", async () => {
+    const source = `# Unsupported Diagram\n\n\`\`\`startuml\n@startuml\nAlice -> Bob: hi\n@enduml\n\`\`\``;
 
     const component = await compileMdx(source);
     expect(component).toBeTypeOf("function");
 
-    let capturedCode = "";
-    renderToStaticMarkup(
-      createElement(component, {
-        components: {
-          PlantUmlDiagram: ({ children }: { children?: ReactNode }) => {
-            capturedCode =
-              typeof children === "string"
-                ? children
-                : Array.isArray(children)
-                  ? children.join("")
-                  : "";
-            return null;
-          },
-        },
-      }),
-    );
+    const html = renderToStaticMarkup(createElement(component));
 
-    expect(capturedCode).toBe("@startuml\nAlice -> Bob: hi\n@enduml");
+    expect(html).toContain("startuml");
+    expect(html).toContain("Alice -&gt; Bob: hi");
+    expect(html).not.toContain("PlantUmlDiagram");
+  });
+
+  it("emits dual-theme Shiki variables for fenced code blocks", async () => {
+    const source = `\`\`\`ts\nconst theme = 'moonlit'\n\`\`\``;
+
+    const component = await compileMdx(source);
+    const html = renderToStaticMarkup(createElement(component));
+
+    expect(html).toContain("shiki-themes");
+    expect(html).toContain("--shiki-dark:");
   });
 });

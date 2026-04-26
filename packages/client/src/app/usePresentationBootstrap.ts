@@ -1,6 +1,6 @@
 import type compiledSlides from "@generated/slides";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { resolvePresentationFileNameBase } from "../features/presentation/recordingFilename";
+import { resolvePresentationFileNameBase } from "../features/presentation/recording/filename";
 import {
   createPrintExportSession,
   resolvePresentationSession,

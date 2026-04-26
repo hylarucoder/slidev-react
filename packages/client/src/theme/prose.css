@@ -67,18 +67,22 @@
   list-style: none;
 }
 
+.slide-prose ul > li {
+  padding-left: 1.2em;
+}
+
 .slide-prose ul > li::before {
-  content: "";
+  content: "●";
   position: absolute;
   left: 0;
-  top: calc(var(--slide-li-line-height) * 0.5em);
-  width: 0.82rem;
-  height: 0.82rem;
-  border-radius: 0.2rem;
-  background: var(--slide-list-bullet-bg, linear-gradient(135deg, #86efac 0%, #22c55e 55%, #15803d 100%));
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  box-shadow: var(--slide-list-bullet-shadow, 0 0 0 2px rgba(34, 197, 94, 0.14), 0 4px 10px rgba(22, 163, 74, 0.2));
-  transform: translateY(-50%) rotate(45deg);
+  top: 0;
+  width: auto;
+  height: auto;
+  color: var(--slide-list-bullet-color, #22c55e);
+  font-size: 0.72em;
+  line-height: inherit;
+  /* baseline-aligned via inline metrics — no calc(em)+translate drift in PDF export */
+  transform: translateY(0.35em);
 }
 
 .slide-prose ol {
@@ -252,8 +256,48 @@
   border-radius: 0.75rem;
 }
 
+:root[data-slide-color-scheme="dark"] pre.shiki {
+  color: var(--shiki-dark) !important;
+  background: var(--shiki-dark-bg) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+:root[data-slide-color-scheme="dark"] pre.shiki span {
+  color: var(--shiki-dark) !important;
+}
+
 .slide-prose pre.shiki .line {
   min-height: var(--slide-code-line-min-height, 1.35em);
+}
+
+.slide-prose .magic-move-demo-loading {
+  border: 1px solid var(--slide-ui-border-strong);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--slide-ui-surface-strong) 82%, transparent);
+  color: var(--slide-ui-muted);
+  padding: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.slide-prose .magic-move-demo-shell {
+  overflow: hidden;
+  border: 1px solid var(--slide-ui-border);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--slide-ui-surface) 85%, transparent);
+  padding: 0.75rem 1rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+:root[data-slide-color-scheme="dark"] .slide-prose .magic-move-demo-loading {
+  border-color: var(--slide-ui-border-strong);
+  background: color-mix(in srgb, var(--slide-ui-surface-strong) 94%, black 6%);
+  color: color-mix(in srgb, var(--slide-ui-text) 88%, white 12%);
+}
+
+:root[data-slide-color-scheme="dark"] .slide-prose .magic-move-demo-shell {
+  border-color: var(--slide-ui-border-strong);
+  background: color-mix(in srgb, var(--slide-ui-surface-strong) 94%, black 6%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .slide-prose .magic-move-demo pre.shiki-magic-move-container.magic-move-demo-pre {

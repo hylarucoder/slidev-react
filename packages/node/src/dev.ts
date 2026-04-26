@@ -1,6 +1,7 @@
 import { createServer, mergeConfig, type ViteDevServer } from "vite";
 import { parseDevArgs } from "./cli/devArgs.ts";
 import { createSlidesViteConfig } from "./slides/build/config/createSlidesViteConfig.ts";
+import { preflightSlidesSource } from "./slides/build/config/preflightSlidesSource.ts";
 import {
   createSuccessResult,
   resolveSlidesCommandContext,
@@ -13,13 +14,18 @@ export interface DevSlidesOptions extends SlidesCommandOptions {
   printUrls?: boolean;
 }
 
-export async function startSlidesDevServer(
-  options: DevSlidesOptions = {},
-): Promise<ViteDevServer> {
+export async function startSlidesDevServer(options: DevSlidesOptions = {}): Promise<ViteDevServer> {
   const parsedArgs = parseDevArgs(options.viteArgs ?? []);
+  const explicitSlidesFile = options.slidesFile ?? parsedArgs.slidesFile;
   const context = resolveSlidesCommandContext({
     ...options,
-    slidesFile: options.slidesFile ?? parsedArgs.slidesFile,
+    slidesFile: explicitSlidesFile,
+  });
+  preflightSlidesSource({
+    appRoot: context.appRoot,
+    slidesSourceFile: context.slidesSourceFile,
+    explicit: Boolean(explicitSlidesFile),
+    allowScaffold: !parsedArgs.noScaffold,
   });
   const server = await createServer(
     mergeConfig(createSlidesViteConfig(context), {

@@ -22,7 +22,7 @@
 - 编译期解析 slides 并生成可运行的 slides artifact
 - 内置多种布局：`default`、`center`、`cover`、`section`、`two-cols`、`image-right`、`statement`
 - React 风格的 MDX 组件：`Badge`、`Callout`、`Annotate`、`Reveal`、`RevealGroup` 等
-- 支持 Mermaid、PlantUML、G2 图表（通过 addon 启用）
+- 支持 Mermaid、G2 图表（通过 addon 启用）
 - 基于 KaTeX 的数学公式渲染
 - 支持 presenter / viewer 路由和同步状态管理
 - 基于 `BroadcastChannel` 的多标签页同步
@@ -37,15 +37,15 @@
 
 这是一个 pnpm workspace monorepo，包含以下包：
 
-| 包名                        | 路径                   | 说明                                     |
-| --------------------------- | ---------------------- | ---------------------------------------- |
-| `create-slidev-react`       | `packages/create-app`  | starter app 脚手架与推荐入口             |
-| `@slidev-react/core`        | `packages/core`        | 纯演示模型、flow 逻辑、共享契约          |
-| `@slidev-react/client`      | `packages/client`      | React 应用装配、UI、主题、addons         |
-| `@slidev-react/node`        | `packages/node`        | Node 侧 dev/build/export/lint 入口和服务 |
-| `@slidev-react/cli`         | `packages/cli`         | 模板项目 scripts 背后的底层命令层        |
-| `@slidev-react/theme-absolutely` | `packages/theme-absolutely` | "absolutely" 主题包                |
-| `@slidev-react/theme-paper` | `packages/theme-paper` | "paper" 主题包                           |
+| 包名                             | 路径                        | 说明                                     |
+| -------------------------------- | --------------------------- | ---------------------------------------- |
+| `create-slidev-react`            | `packages/create-app`       | starter app 脚手架与推荐入口             |
+| `@slidev-react/core`             | `packages/core`             | 纯演示模型、flow 逻辑、共享契约          |
+| `@slidev-react/client`           | `packages/client`           | React 应用装配、UI、主题、addons         |
+| `@slidev-react/node`             | `packages/node`             | Node 侧 dev/build/export/lint 入口和服务 |
+| `@slidev-react/cli`              | `packages/cli`              | 模板项目 scripts 背后的底层命令层        |
+| `@slidev-react/theme-absolutely` | `packages/theme-absolutely` | "absolutely" 主题包                      |
+| `@slidev-react/theme-paper`      | `packages/theme-paper`      | "paper" 主题包                           |
 
 根目录 `package.json` 设为 `private: true`，承载 Vite 开发服务器和顶层脚本。`packages/` 下的可发布子包通过 [Changesets](https://github.com/changesets/changesets) 统一发布到 npm。
 
@@ -55,6 +55,16 @@
 
 - Node.js `>=22`
 - pnpm `10`
+
+### 零安装 Demo
+
+```bash
+# 在任意目录运行 — 首次会自动生成 slides.mdx
+npx @slidev-react/cli@latest
+
+# 也可以显式指定文件 / 端口
+npx @slidev-react/cli@latest slides.mdx --port 4000
+```
 
 ### 创建一个 deck app
 
@@ -70,6 +80,7 @@ pnpm dev
 生成出来的 app 默认包含：
 
 - 一个最小可跑的 `slides.mdx`
+- 内置的 `moonlit` 主题
 - 内置 `g2 + mermaid` 示例
 - `pnpm dev`、`pnpm build`、`pnpm export`、`pnpm lint` scripts
 
@@ -231,11 +242,14 @@ notes: |
 ```mdx
 ---
 title: Client Review
-theme: paper
+theme: moonlit
 ---
 ```
 
-主题以 workspace 包的形式分发。当前内置的非默认主题是 **paper**（`packages/theme-paper`），包名为 `@slidev-react/theme-paper`。
+主题现在有两类来源：
+
+- 由 `@slidev-react/client` 内置提供的主题，例如 **moonlit**
+- 通过包分发的外部主题，例如 `@slidev-react/theme-paper` 和 `@slidev-react/theme-absolutely`
 
 主题包从入口文件导出 `SlideThemeDefinition`，支持以下能力：
 
@@ -245,7 +259,7 @@ theme: paper
 - `mdxComponents` — 覆盖 `Badge` 等 MDX helper
 - `provider` — 注入主题级 React context
 
-主题 CSS 文件（如 `style.css`）会自动加载。运行时会根据 `tokens` 派生 CSS custom properties，所以 CSS 是 token 的消费层，而不是主题真源。如果请求的主题不存在，运行时会安全回退到默认主题。
+内置主题和外部主题的 CSS 文件（如 `style.css`）都会自动加载。运行时会根据 `tokens` 派生 CSS custom properties，所以 CSS 是 token 的消费层，而不是主题真源。如果请求的主题不存在，运行时会安全回退到默认主题。
 
 ## Addons
 
@@ -307,7 +321,6 @@ layout: spotlight
 | `CourseCover`            | 课程封面辅助组件                                      |
 | `MagicMoveDemo`          | Shiki Magic Move 代码动画                             |
 | `MinimaxReactVisualizer` | Minimax 博弈树可视化                                  |
-| `PlantUmlDiagram`        | PlantUML 图表渲染                                     |
 | `Reveal`                 | 基于步骤的渐进揭示                                    |
 | `RevealGroup`            | 自动编号的 reveal 容器                                |
 

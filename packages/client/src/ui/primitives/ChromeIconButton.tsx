@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { ChromeTooltip, type ChromeTooltipSide } from "./ChromeTooltip";
 
 function joinClassNames(...classNames: Array<string | false | null | undefined>) {
   return classNames.filter(Boolean).join(" ");
@@ -6,7 +7,7 @@ function joinClassNames(...classNames: Array<string | false | null | undefined>)
 
 const toneClassNames = {
   default:
-    "border-slate-200/80 bg-white/88 text-slate-700 hover:bg-white disabled:cursor-not-allowed disabled:opacity-45",
+    "chrome-border chrome-surface chrome-fg hover:chrome-surface-raised disabled:cursor-not-allowed disabled:opacity-45",
   active: "border-emerald-200/80 bg-emerald-50 text-emerald-700",
   danger:
     "border-rose-300/80 bg-rose-50 text-rose-700 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-45",
@@ -27,20 +28,28 @@ const radiusClassNames = {
   chrome: "rounded-md",
 } as const;
 
+export type ChromeIconButtonTooltip =
+  | ReactNode
+  | { label: ReactNode; shortcut?: ReactNode };
+
 export function ChromeIconButton({
   children,
   className,
   tone = "default",
   size = "md",
   radius = "chrome",
+  tooltip,
+  tooltipSide,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode;
   tone?: keyof typeof toneClassNames;
   size?: keyof typeof sizeClassNames;
   radius?: keyof typeof radiusClassNames;
+  tooltip?: ChromeIconButtonTooltip;
+  tooltipSide?: ChromeTooltipSide;
 }) {
-  return (
+  const button = (
     <button
       {...props}
       type={props.type ?? "button"}
@@ -54,5 +63,27 @@ export function ChromeIconButton({
     >
       {children}
     </button>
+  );
+
+  if (tooltip === undefined || tooltip === null || tooltip === false) return button;
+
+  const isTooltipObject =
+    typeof tooltip === "object" &&
+    tooltip !== null &&
+    !Array.isArray(tooltip) &&
+    "label" in (tooltip as Record<string, unknown>);
+
+  const tooltipContent = isTooltipObject
+    ? (tooltip as { label: ReactNode; shortcut?: ReactNode })
+    : { label: tooltip as ReactNode };
+
+  return (
+    <ChromeTooltip
+      label={tooltipContent.label}
+      shortcut={tooltipContent.shortcut}
+      side={tooltipSide}
+    >
+      {button}
+    </ChromeTooltip>
   );
 }

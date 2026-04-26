@@ -1,7 +1,11 @@
-import type { HighlighterCore } from "shiki";
 import { useEffect, useMemo, useState } from "react";
+import type { HighlighterCore } from "shiki";
 import { createHighlighter } from "shiki";
 import { ShikiMagicMove } from "shiki-magic-move/react";
+import { useSlideTheme } from "../../theme/ThemeProvider";
+
+const SHIKI_LIGHT_THEME = "vitesse-light";
+const SHIKI_DARK_THEME = "vitesse-dark";
 
 const DEFAULT_STEPS = [
   `const message = 'Hello'
@@ -24,7 +28,7 @@ let highlighterPromise: Promise<HighlighterCore> | null = null;
 function getHighlighter() {
   if (!highlighterPromise) {
     highlighterPromise = createHighlighter({
-      themes: ["vitesse-light"],
+      themes: [SHIKI_LIGHT_THEME, SHIKI_DARK_THEME],
       langs: ["javascript", "typescript"],
     });
   }
@@ -32,8 +36,14 @@ function getHighlighter() {
   return highlighterPromise;
 }
 
+export function resolveMagicMoveTheme(colorScheme?: string) {
+  return colorScheme === "dark" ? SHIKI_DARK_THEME : SHIKI_LIGHT_THEME;
+}
+
 export function CodeMagicMove({ steps }: { steps?: string[] }) {
   const resolvedSteps = steps && steps.length > 0 ? steps : DEFAULT_STEPS;
+  const theme = useSlideTheme();
+  const shikiTheme = resolveMagicMoveTheme(theme.definition.colorScheme);
   const [stepIndex, setStepIndex] = useState(0);
   const [highlighter, setHighlighter] = useState<HighlighterCore>();
 
@@ -55,19 +65,15 @@ export function CodeMagicMove({ steps }: { steps?: string[] }) {
   const code = useMemo(() => resolvedSteps[stepIndex], [resolvedSteps, stepIndex]);
 
   if (!highlighter) {
-    return (
-      <div className="rounded-xl border border-slate-300/70 bg-white/70 p-3 text-sm text-slate-700">
-        Preparing highlighter...
-      </div>
-    );
+    return <div className="magic-move-demo-loading">Preparing highlighter...</div>;
   }
 
   return (
     <div className="magic-move-demo grid gap-4">
-      <div className="magic-move-demo-shell overflow-hidden rounded-xl border border-slate-200/80 bg-white/85 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+      <div className="magic-move-demo-shell">
         <ShikiMagicMove
           lang="ts"
-          theme="vitesse-light"
+          theme={shikiTheme}
           highlighter={highlighter}
           code={code}
           className="magic-move-demo-pre"

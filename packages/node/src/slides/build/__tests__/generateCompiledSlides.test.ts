@@ -28,6 +28,82 @@ afterEach(async () => {
 });
 
 describe("generateCompiledSlidesArtifacts", () => {
+  it("rewrites relative imports in inline slides to the generated module location", async () => {
+    const appRoot = await createTempAppRoot();
+    tempDirs.push(appRoot);
+    await writeSupportFile(
+      appRoot,
+      "components/CharacterCard.tsx",
+      "export default function CharacterCard() { return <div>Character</div> }",
+    );
+    const slidesSourceFile = await writeSlidesSource(
+      appRoot,
+      [
+        "---",
+        "title: Demo Deck",
+        "---",
+        "",
+        'import CharacterCard from "./components/CharacterCard"',
+        "",
+        "<CharacterCard />",
+      ].join("\n"),
+    );
+
+    await generateCompiledSlidesArtifacts({
+      appRoot,
+      slidesSourceFile,
+    });
+
+    const firstSlide = await readFile(
+      path.join(appRoot, ".slidev-react/slides/slides/slide-1.tsx"),
+      "utf8",
+    );
+
+    expect(firstSlide).toContain('import CharacterCard from "../../../components/CharacterCard";');
+  });
+
+  it("rewrites relative imports in src-loaded slides to the generated module location", async () => {
+    const appRoot = await createTempAppRoot();
+    tempDirs.push(appRoot);
+    await writeSupportFile(
+      appRoot,
+      "components/CharacterCard.tsx",
+      "export default function CharacterCard() { return <div>Character</div> }",
+    );
+    await writeSupportFile(
+      appRoot,
+      "slides/intro.mdx",
+      ['import CharacterCard from "../components/CharacterCard"', "", "<CharacterCard />"].join(
+        "\n",
+      ),
+    );
+    const slidesSourceFile = await writeSlidesSource(
+      appRoot,
+      [
+        "---",
+        "title: Demo Deck",
+        "---",
+        "",
+        "---",
+        "title: Intro",
+        "src: ./slides/intro.mdx",
+        "---",
+      ].join("\n"),
+    );
+
+    await generateCompiledSlidesArtifacts({
+      appRoot,
+      slidesSourceFile,
+    });
+
+    const firstSlide = await readFile(
+      path.join(appRoot, ".slidev-react/slides/slides/slide-1.tsx"),
+      "utf8",
+    );
+
+    expect(firstSlide).toContain('import CharacterCard from "../../../components/CharacterCard";');
+  });
+
   it("generates a manifest and per-slide modules", async () => {
     const appRoot = await createTempAppRoot();
     tempDirs.push(appRoot);
@@ -352,7 +428,7 @@ describe("generateCompiledSlidesArtifacts", () => {
     });
 
     expect(result.warnings).toContain(
-      'Unknown theme "missing-theme". Add packages/theme-missing-theme/index.ts or install @slidev-react/theme-missing-theme.',
+      'Unknown theme "missing-theme". Use a built-in theme, add packages/theme-missing-theme/index.ts, or install @slidev-react/theme-missing-theme.',
     );
     expect(result.warnings).toContain(
       'Unknown addon "missing-addon". Add packages/addon-missing-addon/index.ts or install @slidev-react/addon-missing-addon.',
@@ -384,11 +460,9 @@ describe("generateCompiledSlidesArtifacts", () => {
       slidesSourceFile,
     });
 
+    expect(result.warnings).toContain('Unknown layout "nebula". Falling back to the default.');
     expect(result.warnings).toContain(
-      'Unknown slides layout "nebula". The runtime will fall back to the default layout.',
-    );
-    expect(result.warnings).toContain(
-      'Unknown layout "orbit" in slide 1 (Intro). The runtime will fall back to the default layout.',
+      'Unknown layout "orbit" in slide 1 (Intro). Falling back to the default.',
     );
   });
 

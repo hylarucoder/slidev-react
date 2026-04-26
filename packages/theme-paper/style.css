@@ -14,3 +14,239 @@
 :root[data-slide-theme="paper"] .slide-prose strong {
   color: var(--slide-ui-heading);
 }
+
+/* Shared components ------------------------------------------------------ */
+
+:root[data-slide-theme="paper"] .slide-badge {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--slide-ui-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--slide-ui-accent-soft) 88%, var(--slide-ui-surface) 12%);
+  color: var(--slide-ui-accent-strong);
+  padding: 0.22rem 0.78rem;
+  font-family: var(--font-sans);
+  font-size: 0.78em;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+:root[data-slide-theme="paper"] .slide-eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--slide-ui-accent-strong);
+  font-size: clamp(0.92rem, 0.96vw, 1.06rem);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+:root[data-slide-theme="paper"] .slide-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 2.2rem;
+  height: 1px;
+  background: color-mix(in srgb, var(--slide-ui-accent) 62%, white 38%);
+}
+
+:root[data-slide-theme="paper"] .slide-callout {
+  position: relative;
+  margin: 1.1rem 0 1.2rem;
+  border: 1px solid var(--slide-ui-border);
+  border-left: 0;
+  border-radius: 1.2rem;
+  background: color-mix(in srgb, var(--slide-ui-surface) 84%, var(--slide-ui-accent-soft) 16%);
+  padding: 1rem 1.2rem 1rem 1.35rem;
+  box-shadow: 0 12px 30px rgba(120, 53, 15, 0.06);
+}
+
+:root[data-slide-theme="paper"] .slide-callout::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0.32rem;
+  border-radius: 1.2rem 0 0 1.2rem;
+}
+
+:root[data-slide-theme="paper"] .slide-callout--info::before {
+  background: var(--slide-ui-accent);
+}
+
+:root[data-slide-theme="paper"] .slide-callout--warn::before {
+  background: var(--slide-ui-accent-strong);
+}
+
+:root[data-slide-theme="paper"] .slide-callout--success::before {
+  background: var(--slide-feedback-positive);
+}
+
+:root[data-slide-theme="paper"] .slide-callout-title {
+  display: block;
+  margin-bottom: 0.32rem;
+  color: var(--slide-ui-heading);
+  font-family: var(--font-serif);
+  font-size: 1em;
+  font-weight: 700;
+}
+
+:root[data-slide-theme="paper"] .slide-callout-body {
+  color: var(--slide-ui-text);
+}
+
+:root[data-slide-theme="paper"] .slide-callout-body > :last-child {
+  margin-bottom: 0;
+}
+
+:root[data-slide-theme="paper"] .slide-key-stat {
+  display: grid;
+  gap: 0.8rem;
+  width: min(100%, 20rem);
+  margin: 0;
+  padding: 0.95rem 0 0;
+  border-top: 1px solid var(--slide-ui-border-strong);
+}
+
+:root[data-slide-theme="paper"] .slide-key-stat-value {
+  color: var(--slide-ui-heading);
+  font-family: var(--font-serif);
+  font-size: clamp(2.8rem, 4.2vw, 4.4rem);
+  line-height: 0.94;
+  letter-spacing: -0.04em;
+}
+
+:root[data-slide-theme="paper"] .slide-key-stat-copy {
+  display: grid;
+  gap: 0.28rem;
+}
+
+:root[data-slide-theme="paper"] .slide-key-stat-label {
+  color: var(--slide-ui-heading);
+  font-size: 0.94rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+:root[data-slide-theme="paper"] .slide-key-stat-detail {
+  color: var(--slide-ui-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+:root[data-slide-theme="paper"] .slide-pull-quote {
+  display: grid;
+  gap: 1rem;
+  width: min(100%, 42rem);
+  margin: 1rem 0;
+}
+
+:root[data-slide-theme="paper"] .slide-pull-quote-body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--slide-ui-heading);
+  font-family: var(--font-serif);
+  font-size: clamp(1.9rem, 2.8vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+:root[data-slide-theme="paper"] .slide-pull-quote-body > :first-child {
+  margin-top: 0;
+}
+
+:root[data-slide-theme="paper"] .slide-pull-quote-body > :last-child {
+  margin-bottom: 0;
+}
+
+:root[data-slide-theme="paper"] .slide-pull-quote-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  align-items: center;
+  color: var(--slide-ui-muted);
+  font-size: 0.94rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+:root[data-slide-theme="paper"] .slide-pull-quote-by {
+  color: var(--slide-ui-heading);
+  font-weight: 700;
+}
+
+:root[data-slide-theme="paper"] .slide-pull-quote-extra::before {
+  content: "/";
+  margin-right: 0.65rem;
+  color: var(--slide-ui-mutedSoft, var(--slide-ui-muted));
+}
+
+/* Plain section / statement shells -------------------------------------- */
+
+:root[data-slide-theme="paper"] .slide-section-shell,
+:root[data-slide-theme="paper"] .slide-statement-shell {
+  display: grid;
+  align-content: center;
+  gap: clamp(1rem, 1.8vw, 1.8rem);
+  width: min(100%, 1500px);
+  margin: 0 auto;
+  padding: clamp(2.4rem, 4vw, 4rem);
+  border-radius: 32px;
+  border: 1px solid var(--slide-ui-border);
+  background: color-mix(in srgb, var(--slide-ui-surface) 88%, var(--slide-ui-surface-strong) 12%);
+  box-shadow: 0 24px 70px rgba(146, 64, 14, 0.08);
+}
+
+:root[data-slide-theme="paper"] .slide-section-shell {
+  grid-template-columns: 0.2rem 1fr;
+  align-items: start;
+}
+
+:root[data-slide-theme="paper"] .slide-section-shell::before {
+  content: "";
+  display: block;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    var(--slide-ui-accent-strong) 0%,
+    var(--slide-ui-accent) 100%
+  );
+}
+
+:root[data-slide-theme="paper"] .slide-statement-shell {
+  text-align: center;
+  place-items: center;
+}
+
+:root[data-slide-theme="paper"] .slide-chapter-shell {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: clamp(1rem, 1.6vw, 1.6rem);
+  width: min(100%, 1500px);
+  margin: 0 auto;
+  padding: clamp(3rem, 5vw, 5rem);
+  border-radius: 36px;
+  border: 1px solid var(--slide-ui-border);
+  background: color-mix(in srgb, var(--slide-ui-surface) 92%, var(--slide-ui-accent-soft) 8%);
+  box-shadow: 0 30px 90px rgba(146, 64, 14, 0.1);
+}
+
+:root[data-slide-theme="paper"] .slide-chapter-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: clamp(6rem, 10vw, 10rem);
+  height: 0.4rem;
+  border-radius: 36px 0 12px 0;
+  background: linear-gradient(90deg, var(--slide-ui-accent-strong) 0%, var(--slide-ui-accent) 100%);
+}

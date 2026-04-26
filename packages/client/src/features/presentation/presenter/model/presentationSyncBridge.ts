@@ -3,8 +3,8 @@ import type { PresentationCursorState, PresentationSharedState } from "../../typ
 
 export interface LocalPresentationSyncState {
   page: number;
-  cue: number;
-  cueTotal: number;
+  step: number;
+  stepTotal: number;
   timer: number;
   cursor: PresentationCursorState | null;
   drawings: Record<string, DrawStroke[]>;
@@ -14,13 +14,13 @@ export interface LocalPresentationSyncState {
 export interface RemotePresentationPatchEffects {
   remoteTimer?: number;
   remoteCursor?: PresentationCursorState | null;
-  slideClicks?: {
+  slideStep?: {
     slideId: string;
-    clicks: number;
+    step: number;
   };
-  slideClicksTotal?: {
+  slideStepTotal?: {
     slideId: string;
-    clicksTotal: number;
+    stepTotal: number;
   };
   remoteDrawings?: {
     revision: number;
@@ -57,17 +57,17 @@ export function mapRemotePresentationPatch({
     effects.remoteCursor = remotePage === currentPage ? (patch.cursor ?? null) : null;
   }
 
-  if (remoteSlideId && typeof patch.cueTotal === "number") {
-    effects.slideClicksTotal = {
+  if (remoteSlideId && typeof patch.stepTotal === "number") {
+    effects.slideStepTotal = {
       slideId: remoteSlideId,
-      clicksTotal: patch.cueTotal,
+      stepTotal: patch.stepTotal,
     };
   }
 
-  if (remoteSlideId && typeof patch.cue === "number") {
-    effects.slideClicks = {
+  if (remoteSlideId && typeof patch.step === "number") {
+    effects.slideStep = {
       slideId: remoteSlideId,
-      clicks: patch.cue,
+      step: patch.step,
     };
   }
 

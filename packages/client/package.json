@@ -1,6 +1,6 @@
 {
   "name": "@slidev-react/client",
-  "version": "0.4.14",
+  "version": "0.5.0",
   "description": "Browser-side React app and presentation UI for slidev-react",
   "license": "MIT",
   "files": [
@@ -44,6 +44,17 @@
       "default": "./dist/addons/insight.js"
     },
     "./addons/insight/style.css": "./dist/addons/insight/style.css",
+    "./themes/moonlit": {
+      "types": "./dist/src/theme/builtin/moonlit/index.d.ts",
+      "import": "./dist/themes/moonlit.js",
+      "default": "./dist/themes/moonlit.js"
+    },
+    "./themes/moonlit/style.css": "./dist/themes/moonlit/style.css",
+    "./theme-shared": {
+      "types": "./dist/src/theme/shared/index.d.ts",
+      "import": "./dist/theme-shared.js",
+      "default": "./dist/theme-shared.js"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -57,11 +68,11 @@
   "dependencies": {
     "@antv/g-svg": "^2.1.1",
     "@antv/g2": "^5.4.8",
-    "@slidev-react/core": "0.4.14",
+    "@slidev-react/core": "workspace:*",
     "katex": "0.16.33",
     "lucide-react": "0.568.0",
     "mermaid": "11.12.3",
-    "plantuml-encoder": "1.4.0",
+    "motion": "^12.37.0",
     "shiki": "4.0.1",
     "shiki-magic-move": "1.2.1",
     "zod": "4.3.6"

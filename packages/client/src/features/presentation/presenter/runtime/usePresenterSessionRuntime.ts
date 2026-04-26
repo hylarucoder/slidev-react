@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { DrawStroke } from "../../draw/DrawProvider"
-import { usePresentationSync } from "../../sync"
-import { usePresentationRecorder } from "../../usePresentationRecorder"
+import { usePresentationSyncRuntime } from "../../sync"
+import { useRecorderRuntime } from "../../recording/useRecorderRuntime"
 import type {
   PresentationCursorState,
   PresentationSharedState,
@@ -23,8 +23,8 @@ export interface PresenterSessionState {
     revision: number
     strokesBySlideId: Record<string, DrawStroke[]>
   } | null
-  sync: ReturnType<typeof usePresentationSync>
-  recorder: ReturnType<typeof usePresentationRecorder>
+  sync: ReturnType<typeof usePresentationSyncRuntime>
+  recorder: ReturnType<typeof useRecorderRuntime>
   onStrokesChange: (nextStrokes: Record<string, DrawStroke[]>) => void
   setLocalCursor: (cursor: PresentationCursorState | null) => void
   setRemoteCursor: (cursor: PresentationCursorState | null) => void
@@ -99,16 +99,16 @@ export function usePresenterSessionRuntime({
     () =>
       buildPresentationSharedState({
         page: navigation.currentIndex,
-        cue: flow.currentClicks,
-        cueTotal: flow.currentClicksTotal,
+        step: flow.currentStep,
+        stepTotal: flow.currentStepTotal,
         timer: localTimer,
         cursor: localCursor,
         drawings,
         drawingsRevision,
       }),
     [
-      flow.currentClicks,
-      flow.currentClicksTotal,
+      flow.currentStep,
+      flow.currentStepTotal,
       drawings,
       drawingsRevision,
       localCursor,
@@ -117,7 +117,7 @@ export function usePresenterSessionRuntime({
     ],
   )
 
-  const sync = usePresentationSync({
+  const sync = usePresentationSyncRuntime({
     session,
     currentIndex: navigation.currentIndex,
     total: navigation.total,
@@ -137,20 +137,20 @@ export function usePresenterSessionRuntime({
 
       if ("remoteCursor" in effects) setRemoteCursor(effects.remoteCursor ?? null)
 
-      if (effects.slideClicksTotal)
-        flow.setSlideClicksTotal(
-          effects.slideClicksTotal.slideId,
-          effects.slideClicksTotal.clicksTotal,
+      if (effects.slideStepTotal)
+        flow.setSlideStepTotal(
+          effects.slideStepTotal.slideId,
+          effects.slideStepTotal.stepTotal,
         )
 
-      if (effects.slideClicks)
-        flow.setSlideClicks(effects.slideClicks.slideId, effects.slideClicks.clicks)
+      if (effects.slideStep)
+        flow.setSlideStep(effects.slideStep.slideId, effects.slideStep.step)
 
       if (effects.remoteDrawings) setRemoteDrawings(effects.remoteDrawings)
     },
   })
 
-  const recorder = usePresentationRecorder({
+  const recorder = useRecorderRuntime({
     enabled: canControl,
     exportFilename: slidesExportFilename,
     slidesTitle,

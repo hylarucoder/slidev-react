@@ -20,11 +20,11 @@ function rectFromPoints(start: DrawPoint, end: DrawPoint) {
 }
 
 function drawHintByTool(tool: ReturnType<typeof useDraw>["tool"]) {
-  if (tool === "eraser") return "Eraser ON";
-  if (tool === "circle") return "Circle ON";
-  if (tool === "rectangle") return "Rectangle ON";
+  if (tool === "eraser") return "Eraser";
+  if (tool === "circle") return "Circle";
+  if (tool === "rectangle") return "Rectangle";
 
-  return "Pen ON";
+  return "Pen";
 }
 
 function ShapeStroke({ stroke }: { stroke: DrawStroke }) {

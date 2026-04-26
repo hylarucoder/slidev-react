@@ -3,4 +3,7 @@ import { createSlidesViteConfig } from "@slidev-react/node/slides/build/createSl
 
 const appRoot = process.cwd();
 
-export default defineConfig(createSlidesViteConfig({ appRoot }));
+export default defineConfig({
+  ...createSlidesViteConfig({ appRoot }),
+  staged: { "*": "vp check --fix" },
+});
