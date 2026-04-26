@@ -15,6 +15,7 @@
     "dev:packages": "pnpm -r --parallel --filter @slidev-react/core --filter @slidev-react/client --filter @slidev-react/theme-paper --filter @slidev-react/theme-absolutely --filter @slidev-react/node --filter @slidev-react/cli --filter create-slidev-react run dev:pkg",
     "dev": "vp dev",
     "dev:e2e": "vp dev --host 127.0.0.1 --port 4173",
+    "dev:deepseek": "node --import tsx ./packages/cli/bin/slidev-react.ts dev examples/deepseek-v4-explain/slides.mdx",
     "build": "pnpm run build:packages && vp build",
     "make": "pnpm run build",
     "preview": "vp preview",
