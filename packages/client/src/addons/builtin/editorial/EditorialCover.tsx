@@ -97,9 +97,9 @@ export function EditorialCover({
                 marginBottom: "28px",
               }}
             >
-              <span style={{ color: "var(--ed-ds)", fontWeight: 600, display: "block" }}>DeepSeek V4 Pro</span>
+              <span style={{ color: "var(--ed-ds)", fontWeight: 600, display: "block" }}>Claude Opus</span>
               <span style={{ color: "var(--ed-muted)", fontWeight: 400, fontStyle: "italic", display: "block", fontSize: "72px", margin: "16px 0" }}>vs.</span>
-              <span style={{ color: "var(--ed-gl)", fontWeight: 600, display: "block" }}>GLM 5.1</span>
+              <span style={{ color: "var(--ed-gl)", fontWeight: 600, display: "block" }}>GPT-5.5</span>
             </div>
           )}
 

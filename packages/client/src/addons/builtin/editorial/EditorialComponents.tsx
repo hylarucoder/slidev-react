@@ -94,7 +94,7 @@ export function EdVsRow({ children }: { children: ReactNode }) {
 }
 
 export function EdVsCol({ side, name, children }: { side: "ds" | "gl"; name: string; children: ReactNode }) {
-  const label = side === "ds" ? "DS" : "GLM";
+  const label = side === "ds" ? "Opus" : "GPT";
   return (
     <div className="flex flex-col gap-[18px]">
       <div className="flex items-center gap-[14px] text-[36px] font-semibold text-[var(--ed-text)]">
@@ -138,7 +138,7 @@ export function EdWin({ side }: { side: "ds" | "gl" | "tie" }) {
     gl: "bg-[var(--ed-gl-bg)] text-[var(--ed-gl)] border-[var(--ed-gl-stroke)]",
     tie: "bg-[rgba(22,24,29,0.06)] text-[var(--ed-muted)] border-[var(--ed-border)]",
   };
-  const labels = { ds: "DS", gl: "GLM", tie: "TIE" };
+  const labels = { ds: "Opus", gl: "GPT", tie: "TIE" };
   return (
     <span className={cn("inline-block rounded-full border px-[10px] py-1 font-mono text-[18px] uppercase tracking-[.08em]", variants[side])}>
       {labels[side]}

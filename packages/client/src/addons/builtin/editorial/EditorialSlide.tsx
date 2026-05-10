@@ -84,7 +84,7 @@ export function EditorialSlide({
             paddingTop: "24px",
           }}
         >
-          <span>{footer || "DeepSeek V4 Pro  ×  GLM 5.1"}</span>
+          <span>{footer || "Claude Opus  ×  GPT-5.5"}</span>
           {context && <span>{context}</span>}
         </div>
       </div>
