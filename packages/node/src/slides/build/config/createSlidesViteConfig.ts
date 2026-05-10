@@ -14,11 +14,14 @@ import { pluginPresentationConfigModule } from "../runtime/injectPresentationCon
 import { loadClientRuntimeManifest } from "../runtime/runtimeManifest.ts";
 import { pluginThemeModule } from "../extensions/injectThemeModule.ts";
 import { pluginVirtualEntry } from "../runtime/virtualEntryPlugin.ts";
+import { pluginImageUpload } from "../runtime/imageUploadPlugin.ts";
 import { resolveSlidesSourceFile } from "./slidesSourceFile.ts";
 
 const require = createRequire(import.meta.url);
 
-const clientRuntimeRequire = createRequire(resolvePackageImport("@slidev-react/client/package.json"));
+const clientRuntimeRequire = createRequire(
+  resolvePackageImport("@slidev-react/client/package.json"),
+);
 
 function resolvePackageImport(specifier: string) {
   return require.resolve(specifier);
@@ -103,6 +106,7 @@ export function createSlidesViteConfig(options: {
         slidesSourceFile,
       }),
       pluginPresentationConfigModule(),
+      pluginImageUpload({ appRoot, slidesSourceFile }),
       react(),
     ],
     resolve: {

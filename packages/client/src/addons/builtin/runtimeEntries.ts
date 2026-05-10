@@ -19,4 +19,9 @@ export const builtinAddonRuntimeEntries: BuiltinAddonRuntimeEntry[] = [
     module: '@slidev-react/client/addons/insight',
     style: '@slidev-react/client/addons/insight/style.css',
   },
+  {
+    id: 'editorial',
+    module: '@slidev-react/client/addons/editorial',
+    style: '@slidev-react/client/addons/editorial/style.css',
+  },
 ]

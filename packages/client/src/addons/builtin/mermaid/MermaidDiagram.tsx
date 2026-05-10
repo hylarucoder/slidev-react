@@ -493,31 +493,14 @@ export function MermaidDiagram({ code, children }: { code?: string; children?: R
             onClick={() => setZoomed(false)}
           >
             <div
-              className="relative flex h-[min(92vh,1200px)] w-[min(96vw,1600px)] flex-col overflow-hidden rounded-3xl border"
+              className="relative flex max-h-[92vh] w-[min(96vw,1600px)] flex-col overflow-hidden rounded-3xl border"
               style={{
                 borderColor: tokens.ui.border,
                 background: tokens.diagram.surface,
               }}
               onClick={(event) => event.stopPropagation()}
             >
-              <div
-                className="flex items-center justify-between border-b px-5 py-3 text-sm"
-                style={{
-                  borderColor: tokens.ui.border,
-                  color: tokens.ui.muted,
-                }}
-              >
-                <div>
-                  <div
-                    className="font-semibold tracking-[0.16em] uppercase"
-                    style={{ color: tokens.ui.heading }}
-                  >
-                    Mermaid
-                  </div>
-                  <div className="mt-1 text-xs" style={{ color: tokens.ui.muted }}>
-                    Esc or click outside to close
-                  </div>
-                </div>
+              <div className="absolute top-4 right-4 z-10">
                 <ChromeIconButton
                   onClick={() => setZoomed(false)}
                   aria-label="Close Mermaid zoom preview"

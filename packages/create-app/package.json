@@ -26,9 +26,9 @@
     "access": "public"
   },
   "scripts": {
-    "build:pkg": "pnpm exec tsdown",
-    "dev:pkg": "pnpm exec tsdown --watch",
-    "prepack": "pnpm run build:pkg"
+    "build": "pnpm exec tsdown",
+    "dev": "pnpm exec tsdown --watch",
+    "prepack": "pnpm run build"
   },
   "engines": {
     "node": ">=22"

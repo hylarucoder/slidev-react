@@ -6,4 +6,9 @@ const appRoot = process.cwd();
 export default defineConfig({
   ...createSlidesViteConfig({ appRoot }),
   staged: { "*": "vp check --fix" },
+  run: {
+    cache: {
+      scripts: true,
+    },
+  },
 });

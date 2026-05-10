@@ -25,9 +25,9 @@
     "access": "public"
   },
   "scripts": {
-    "build:pkg": "pnpm exec tsdown",
-    "dev:pkg": "pnpm exec tsdown --watch",
-    "prepack": "pnpm run build:pkg"
+    "build": "pnpm exec tsdown",
+    "dev": "pnpm exec tsdown --watch",
+    "prepack": "pnpm run build"
   },
   "dependencies": {
     "@commander-js/extra-typings": "^14.0.0",

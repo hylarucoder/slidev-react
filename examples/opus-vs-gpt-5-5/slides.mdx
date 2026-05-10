@@ -1,0 +1,1117 @@
+---
+title: Claude Opus vs GPT-5.5 · 代码实现能力对比评估
+addons:
+  - editorial
+  - mermaid
+layout: default
+---
+
+<EditorialCover subtitle="不聊 Benchmark，只聊真实编程感受。">
+  <EdCoverTitle a="Claude Opus" b="GPT-5.5" />
+</EditorialCover>
+
+---
+
+layout: default
+
+---
+
+<EditorialDivider chapter="01" eyebrow="Chapter One" title="评估说明" desc="两个模型，五项任务。在看谁更好之前，先说清楚我们在看什么。" footer="Methodology & Scope">
+  <EdDisclaimer>本报告仅代表个人观点。评测以日常编程任务为主，未深入覆盖纯算法场景；两款模型均在持续迭代中，体验可能随版本更新而变化。结论仅供参考，不构成对任何模型的全面评价。</EdDisclaimer>
+</EditorialDivider>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="评估说明" eyebrow="Why these two models">
+  <EdH2>为什么选这两个模型</EdH2>
+  <EdLede>
+    Claude Opus 和 GPT-5.5 分别是 Anthropic 与 OpenAI 当前最强的旗舰编程模型。选它们做对比，原因很直接：
+  </EdLede>
+
+  <EdGrid cols={3} marginTop="56px">
+    <EdCard title="同级别旗舰" dot="var(--ed-teal-title)">两者都是各家最强的代码生成模型，价格档位接近，放在一起比才有意义。</EdCard>
+    <EdCard title="生态差异" dot="var(--ed-coral-title)">一个深度集成 Claude Code CLI，一个依托 ChatGPT / Codex 生态，工具链不同但目标一致。</EdCard>
+    <EdCard title="评估方式" dot="var(--ed-amber-title)">同一个任务分别交给两个模型做，记录真实产出，不跑 benchmark。</EdCard>
+  </EdGrid>
+
+  <EdInsight label="适用范围">
+    本次评测内容同时用于视频制作，受众以非算法背景的开发者为主，因此任务设计偏日常编程、不涉及纯算法——这可能导致两个模型在算法能力上的差异未被充分体现。
+  </EdInsight>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="评估说明" eyebrow="Five Tasks Overview" footer="5 tasks · same prompt · same harness">
+  <EdH2>五项评测任务</EdH2>
+
+  <EdGrid cols={2} gap="36px 64px" marginTop="36px">
+    <EdTaskItem num="01" title="3D 场景　·　Three.js" desc="过山车 / 魔方 / 3D 俄罗斯方块 / 弹球——四个子任务的 one-shot 完成度与修复成本。" />
+    <EdTaskItem num="02" title="前端审美 / 设计" desc="UI 设计质量与前端实现，重点考察单页 HTML 与 React 项目下的差异。" />
+    <EdTaskItem num="03" title="迷你 Python 解释器　·　Rust" desc="构建一个迷你的 Python 解释器，跑通约 200 行 oracle.py 验收脚本。" />
+    <EdTaskItem num="04" title="代码仓库理解" desc="三层递进提示词：全局架构 → 数据流追踪 → 设计决策分析。" />
+    <EdTaskItem num="05" title="日常使用" desc="在 10 万行级代码仓库中的实际开发表现。" />
+  </EdGrid>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="评估说明 · 适用边界" eyebrow="Scope & Limits" footer="Inclusions & exclusions">
+  <EdH2>评测口径与适用边界</EdH2>
+
+  <EdGrid template="1.1fr 1fr" gap="64px" marginTop="48px">
+    <div>
+      <EdSectionTitle>这份报告里有的</EdSectionTitle>
+      <EdVsList>
+        <EdVsItem>同一提示词、同一参考标准下的产出对比</EdVsItem>
+        <EdVsItem>多轮修复成本、规划粒度、交付完成度</EdVsItem>
+        <EdVsItem>真实的工程副作用（崩溃、内存、迭代）</EdVsItem>
+        <EdVsItem>对每项任务的胜负判定与小结</EdVsItem>
+      </EdVsList>
+    </div>
+    <div>
+      <EdSectionTitle>这份报告里没有的</EdSectionTitle>
+      <EdVsList>
+        <EdVsItem>公开 benchmark 跑分（HumanEval/SWE-bench 等）</EdVsItem>
+        <EdVsItem>纯算法竞赛题目的深度对比</EdVsItem>
+        <EdVsItem>多模态、Agent 工具使用、推理时延</EdVsItem>
+        <EdVsItem>价格 / 上下文窗口 / 部署形态评估</EdVsItem>
+      </EdVsList>
+    </div>
+  </EdGrid>
+
+  <EdGrid cols={2} gap="32px" marginTop="48px">
+    <EdCallout title="阅读建议">
+      本报告以 <b>实际任务交付质量</b> 为评判核心。每项任务先看"是不是做出来了"，再看"做得怎么样"，最后看"过程顺不顺"。
+    </EdCallout>
+    <EdCallout title="免责声明">
+      本报告仅代表个人观点。部分场景由于测试深度有限、使用时间积累不够长，结论可能存在一定偏差，不构成对任何模型的全面评价。
+    </EdCallout>
+  </EdGrid>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialDivider chapter="02" eyebrow="Chapter Two" title="逐项评测" desc="3D 场景 · 前端审美 · Python 解释器 · 代码仓库理解 · 日常使用——逐项展开。" footer="Task by Task" />
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="任务一 · 3D 场景" eyebrow="Three.js · Overview" footer="4 sub-tasks · split 2-2">
+  <EdH2>四个子任务总览</EdH2>
+  <EdLede>同一需求分别交给两个模型完成，记录 one-shot 产出质量与后续修复成本。如遇明显错误会补一轮提示词修复。</EdLede>
+
+  <EdTable>
+    <EdThead>
+      <EdTh width="16%">子任务</EdTh>
+      <EdTh>Opus</EdTh>
+      <EdTh width="12%">得分</EdTh>
+      <EdTh>GPT-5.5</EdTh>
+    </EdThead>
+    <tbody>
+      <tr><EdTd label>过山车</EdTd><EdTd>轨道动画流畅，小车姿态准确贴合曲面</EdTd><EdTd><EdScore a={8} b={6} win="a" /></EdTd><EdTd>轨道基本完成，枕木间距不均匀，需 2 轮修复</EdTd></tr>
+      <tr><EdTd label>魔方</EdTd><EdTd>旋转手感好；求解器主动拆分子任务验证</EdTd><EdTd><EdScore a={7} b={7} /></EdTd><EdTd>旋转逻辑正确；求解器直接硬写，未拆解</EdTd></tr>
+      <tr><EdTd label>3D 俄罗斯方块</EdTd><EdTd>结算与碰撞检测正常；暂停恢复有 bug</EdTd><EdTd><EdScore a={6} b={8} win="b" /></EdTd><EdTd>整体完成度更高，UI 状态机自洽</EdTd></tr>
+      <tr><EdTd label last>弹球</EdTd><EdTd last>物理碰撞精准，弹板手感好，但贴图粗糙</EdTd><EdTd last><EdScore a={8} b={7} win="a" /></EdTd><EdTd last>完成度不错，特效更丰富，物理偶尔穿模</EdTd></tr>
+    </tbody>
+  </EdTable>
+
+  <EdInsight label="3D 小结">
+    Opus 总分 29，GPT-5.5 总分 28，Opus 微胜。Opus 在物理/动画精度上更强（过山车 8:6、弹球 8:7），GPT-5.5 在 UI 状态管理和视觉特效上更好（俄罗斯方块 6:8）。
+  </EdInsight>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="3D · 过山车" eyebrow="Roller Coaster · 1 / 4" footer="1 / 4 — Roller Coaster">
+  <EdH2>过山车：几何精度的差距</EdH2>
+
+  <EdGrid cols={2} gap="48px" marginTop="48px">
+    <EdVsCol side="ds" tag="Opus" name="Opus">
+      <EdVsList>
+        <EdVsItem>轨道曲线 <b>平滑</b>，小车严格贴合 Frenet 坐标系运行</EdVsItem>
+        <EdVsItem>枕木间距均匀，两侧护栏对称</EdVsItem>
+        <EdVsItem><b>一次生成即可用</b>，动画丝滑无抖动</EdVsItem>
+      </EdVsList>
+    </EdVsCol>
+    <EdVsCol side="gl" tag="GPT" name="GPT-5.5">
+      <EdVsList>
+        <EdVsItem>轨道整体可用，但枕木<b>间距不均匀</b></EdVsItem>
+        <EdVsItem>小车在弯道处有轻微<b>抖动和偏移</b></EdVsItem>
+        <EdVsItem>需要 <b>~2 轮提示词修复</b>才能达到流畅水平</EdVsItem>
+      </EdVsList>
+    </EdVsCol>
+  </EdGrid>
+
+  <EdGrid cols={3} gap="32px" marginTop="48px">
+    <EdCard title="几何精度" dot="var(--ed-ds)">Opus 对 3D 空间中的坐标变换理解更扎实，Frenet 框架和切线方向一次到位。</EdCard>
+    <EdCard title="修复效率" dot="var(--ed-gl)">GPT-5.5 修复速度快——虽然初版有问题，但每轮修复的改善幅度大。</EdCard>
+    <EdCard title="共同亮点" dot="var(--ed-accent)">两家都主动使用了 <b>Web Audio API</b> 合成音效。GPT-5.5 的音效层次更丰富，包含风声和刹车声。</EdCard>
+  </EdGrid>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="3D · 魔方" eyebrow="Rubik's Cube · 2 / 4" footer="2 / 4 — Rubik's Cube">
+  <EdH2>魔方：基础持平，策略分叉</EdH2>
+
+  <EdGrid cols={2} gap="48px" marginTop="48px">
+    <EdVsCol side="ds" tag="Opus" name="Opus">
+      <EdVsList>
+        <EdVsItem>魔方生成与旋转逻辑 <b>无问题</b></EdVsItem>
+        <EdVsItem>求解器：识别为<b>难点任务</b>，先写单独的 Node 脚本验证核心算法</EdVsItem>
+        <EdVsItem>最终未完全调通，但展现了<b>清晰的任务拆解意识</b></EdVsItem>
+      </EdVsList>
+    </EdVsCol>
+    <EdVsCol side="gl" tag="GPT" name="GPT-5.5">
+      <EdVsList>
+        <EdVsItem>魔方生成与旋转逻辑 <b>无问题</b></EdVsItem>
+        <EdVsItem>求解器：直接在主项目中一体化实现，<b>未做子任务拆解</b></EdVsItem>
+        <EdVsItem>进度更快但调试困难，最终也未完全调通</EdVsItem>
+      </EdVsList>
+    </EdVsCol>
+  </EdGrid>
+
+  <EdInsight label="区分点">
+    基础 3D 功能两家持平。差距在策略——Opus 会主动将难题拆成独立验证单元，GPT-5.5 倾向一体化推进。两家最终都没完成求解器，但 Opus 的中间产物更容易接手。
+  </EdInsight>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="3D · 俄罗斯方块" eyebrow="3D Tetris · 3 / 4" footer="3 / 4 — 3D Tetris">
+  <EdH2>3D 俄罗斯方块：GPT-5.5 的 UI 状态机更自洽</EdH2>
+
+  <EdGrid cols={2} gap="48px" marginTop="48px">
+    <EdVsCol side="ds" tag="Opus" name="Opus">
+      <EdVsList>
+        <EdVsItem>碰撞检测和消行逻辑正常</EdVsItem>
+        <EdVsItem><b>暂停/恢复状态有 bug：</b></EdVsItem>
+        <EdVsItem>· 暂停后按键事件未正确解绑，恢复后<b>方块加速下落</b></EdVsItem>
+        <EdVsItem>· Game Over 弹窗与暂停弹窗偶尔重叠</EdVsItem>
+        <EdVsItem>核心玩法没问题，边缘状态不够健壮</EdVsItem>
+      </EdVsList>
+    </EdVsCol>
+    <EdVsCol side="gl" tag="GPT" name="GPT-5.5">
+      <EdVsList>
+        <EdVsItem>碰撞检测和消行逻辑正常</EdVsItem>
+        <EdVsItem>UI 状态机 <b>完整自洽</b>——暂停、恢复、重新开始流程通畅</EdVsItem>
+        <EdVsItem>额外加入了方块预览和 Ghost Piece 指引</EdVsItem>
+      </EdVsList>
+    </EdVsCol>
+  </EdGrid>
+
+  <EdCallout title="观察">
+    Opus 的物理/碰撞基础扎实，但在 UI 状态管理上不够细致。GPT-5.5 更擅长<b>把各个状态串成自洽的流程</b>，这在游戏类场景中很关键。
+  </EdCallout>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="3D · 弹球" eyebrow="Pinball · 4 / 4" footer="4 / 4 — Pinball">
+  <EdH2>弹球：Opus 物理碰撞更精准</EdH2>
+
+  <EdGrid cols={2} gap="48px" marginTop="48px">
+    <EdVsCol side="ds" tag="Opus" name="Opus">
+      <EdVsList>
+        <EdVsItem>弹球物理碰撞<b>精准</b>——反弹角度、弹板力度均符合预期</EdVsItem>
+        <EdVsItem>弹道发射流畅，弹球顺利进入桌面</EdVsItem>
+        <EdVsItem>3D 贴图质量一般，<b>视觉上偏素</b></EdVsItem>
+      </EdVsList>
+    </EdVsCol>
+    <EdVsCol side="gl" tag="GPT" name="GPT-5.5">
+      <EdVsList>
+        <EdVsItem>弹球发射正常，整体完成度不错</EdVsItem>
+        <EdVsItem>特效更丰富——<b>碰撞粒子、计分动画</b>做得精致</EdVsItem>
+        <EdVsItem>物理上偶有<b>穿模</b>现象，弹球从挡板边缘穿过</EdVsItem>
+      </EdVsList>
+    </EdVsCol>
+  </EdGrid>
+
+  <EdInsight label="取舍">
+    Opus 更重物理正确性，GPT-5.5 更重视觉表现。弹球是一个需要两者兼顾的场景——物理穿模会直接破坏游戏体验，因此 Opus 在这项上略胜。
+  </EdInsight>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="任务二 · 前端审美 / 设计" eyebrow="Frontend Design" footer="Frontend aesthetics — GPT-5.5 takes this round">
+  <EdH2>前端审美：带引导的提示词下，差距不大</EdH2>
+
+  <EdGrid cols={2} gap="48px" marginTop="48px">
+    <div>
+      <EdSectionTitle>背景</EdSectionTitle>
+      <EdVsList>
+        <EdVsItem>大部分提示词选用了设计师调优过的提示词（来源：<EdLink href="https://www.designprompts.dev/">designprompts.dev</EdLink>）</EdVsItem>
+        <EdVsItem>在这种长提示词的约束下，两个模型的页面分块和布局设计<b>表现都不错，差异不大</b></EdVsItem>
+        <EdVsItem>如果去掉审美引导，Opus 的产出<b>偏简洁但缺少设计感</b>，GPT-5.5 会更花哨一些</EdVsItem>
+      </EdVsList>
+    </div>
+    <div>
+      <EdSectionTitle>区分点</EdSectionTitle>
+      <EdVsList>
+        <EdVsItem>GPT-5.5 在<b>组件化和视觉一致性</b>上更好——生成的 UI 组件之间风格更统一</EdVsItem>
+        <EdVsItem>在 <b>React 项目</b>中，GPT-5.5 对组件拆分和 props 设计更有想法</EdVsItem>
+        <EdVsItem>Opus 在<b>响应式布局</b>方面更稳——breakpoint 处理更细致</EdVsItem>
+      </EdVsList>
+      <EdCallout title="注意">
+        本任务主要测的是<b>在引导下的执行力</b>，而非模型的自主审美能力。提示词越具体，两家差距越小。
+      </EdCallout>
+    </div>
+  </EdGrid>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="任务二 · 前端审美" eyebrow="Frontend Design · Scoring" footer="Opus 38 : GPT-5.5 42">
+  <EdH2>前端审美：分维度打分</EdH2>
+
+  <EdTable>
+    <EdThead>
+      <EdTh width="20%">维度</EdTh>
+      <EdTh>Opus</EdTh>
+      <EdTh width="10%">得分</EdTh>
+      <EdTh>GPT-5.5</EdTh>
+    </EdThead>
+    <tbody>
+      <tr><EdTd label>布局结构</EdTd><EdTd>分块合理，响应式断点处理仔细</EdTd><EdTd><EdScore a={7} b={8} win="b" /></EdTd><EdTd>分块合理，布局更有设计感</EdTd></tr>
+      <tr><EdTd label>视觉审美</EdTd><EdTd>偏简洁实用风格，不容易出错但不出彩</EdTd><EdTd><EdScore a={6} b={7} win="b" /></EdTd><EdTd>色彩搭配更有层次，间距节奏更好</EdTd></tr>
+      <tr><EdTd label>组件一致性</EdTd><EdTd>单文件内一致性好，跨页面偶有风格漂移</EdTd><EdTd><EdScore a={6} b={8} win="b" /></EdTd><EdTd>组件之间风格统一，设计系统意识更强</EdTd></tr>
+      <tr><EdTd label>React 工程</EdTd><EdTd>能完成，但组件拆分粒度偏粗</EdTd><EdTd><EdScore a={6} b={7} win="b" /></EdTd><EdTd>组件设计更规范，props 定义清晰</EdTd></tr>
+      <tr><EdTd label>单页 HTML</EdTd><EdTd>表现不错，CSS 写得干净</EdTd><EdTd><EdScore a={7} b={7} /></EdTd><EdTd>表现不错，与 Opus 持平</EdTd></tr>
+      <tr><EdTd label last>落地页文案</EdTd><EdTd last>文案精炼克制，适合技术产品</EdTd><EdTd last><EdScore a={6} b={5} win="a" /></EdTd><EdTd last>文案偏营销感，有时用力过猛</EdTd></tr>
+    </tbody>
+  </EdTable>
+
+  <EdInsight label="前端审美小结">
+    Opus 总分 38，GPT-5.5 总分 42。GPT-5.5 在视觉设计和组件一致性上有优势；Opus 在落地页文案的克制度上更好——技术产品不需要太多修辞。
+  </EdInsight>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="任务三 · 迷你 Python 解释器" eyebrow="Mini Python Interpreter" footer="Lexer · Parser · AST · Runtime · Stdlib">
+  <EdH2>构建一个迷你的 Python 解释器（Rust）</EdH2>
+
+  <EdGrid template="1.1fr 1fr" gap="56px" marginTop="48px">
+    <div>
+      <EdSectionTitle>任务设定</EdSectionTitle>
+      <EdLede>
+        用 Rust 从零构建一个 Python 解释器，最终跑通约 <b>200 行</b> 的 oracle.py 验收脚本。
+      </EdLede>
+      <EdLede>
+        注：仅覆盖 Python 的一个很小子集，<b>不是完整 Python 实现</b>——oracle.py 用到什么特性才需要支持什么。
+      </EdLede>
+      <EdSectionTitle>oracle.py 要求解释器支持</EdSectionTitle>
+      <EdVsList>
+        <EdVsItem><b>语法关键字</b>　<EdKw>class</EdKw> <EdKw>def</EdKw> <EdKw>if</EdKw> <EdKw>for</EdKw> <EdKw>try-except</EdKw> <EdKw>return</EdKw> <EdKw>import</EdKw></EdVsItem>
+        <EdVsItem><b>高级特性</b>　<EdKw>f-string</EdKw>（24 处，含 <EdKw>:.1f</EdKw> <EdKw>:{'<'}16</EdKw>）、<EdKw>列表推导</EdKw>、<EdKw>+=</EdKw>、<EdKw>self</EdKw></EdVsItem>
+        <EdVsItem><b>13 个内建函数</b>　<EdKw>len</EdKw> <EdKw>sum</EdKw> <EdKw>print</EdKw> <EdKw>type</EdKw> <EdKw>abs</EdKw> <EdKw>all</EdKw> <EdKw>isinstance</EdKw> <EdKw>enumerate</EdKw> <EdKw>sorted</EdKw> <EdKw>range</EdKw> <EdKw>str</EdKw> <EdKw>int</EdKw> <EdKw>float</EdKw></EdVsItem>
+        <EdVsItem><b>标准库重写</b>　<EdKw>json</EdKw> (dumps/loads)、<EdKw>math</EdKw> (pi/sqrt/floor/ceil/pow)、<EdKw>requests</EdKw> (GET/POST/异常处理)</EdVsItem>
+      </EdVsList>
+    </div>
+    <div>
+      <EdCallout title="oracle.py 驱动的迭代式评测">
+        先写好 oracle.py 作为最终验收标准，交给模型后让它自行制定 plan / todo，不停迭代直到通过或放弃。评测的是模型的 <b>自主规划 + 持续交付能力</b>，不是 one-shot。
+      </EdCallout>
+      <EdInsight label="复杂度">
+        五项任务中工程复杂度最高的一项——词法、语法、AST、运行时、内建模块，全部 Rust 实现。
+      </EdInsight>
+    </div>
+  </EdGrid>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="任务三 · 工程产出" eyebrow="Project Structure" tight footer="Project trees — same task, different shapes">
+  <EdH2 size="sm">两个模型的工程产出</EdH2>
+
+  <EdGrid cols={2} gap="32px" marginTop="28px">
+    <div>
+      <EdProjectTag side="ds" name="Claude Opus ·" loc="4,217 行 Rust" status="done" />
+      <EdCode size="xs" lang="bash">{`minipy-opus/
+├── Cargo.toml
+├── CLAUDE.md
+├── oracle.py
+├── plan.md          # 892 行 · 10 个阶段
+├── plan.todo.md     # 203 行 · 142 个 todo
+└── src/
+    ├── main.rs               # 34 LOC
+    ├── interpreter/
+    │   ├── builtins.rs       # 287 LOC
+    │   ├── interpreter.rs    # 968 LOC
+    │   ├── scope.rs          # 72 LOC
+    │   └── value.rs          # 358 LOC
+    ├── lexer/
+    │   ├── lexer.rs          # 614 LOC
+    │   └── token.rs          # 138 LOC
+    ├── parser/
+    │   ├── ast.rs            # 149 LOC
+    │   └── parser.rs         # 1,289 LOC
+    └── stdlib/
+        ├── json.rs           # 112 LOC
+        ├── math.rs           # 63 LOC
+        └── requests.rs       # 133 LOC`}</EdCode>
+    </div>
+    <div>
+      <EdProjectTag side="gl" name="GPT-5.5 ·" loc="3,648 行 Rust" status="partial" />
+      <EdCode size="xs" lang="bash">{`minipy-gpt/
+├── Cargo.toml
+├── oracle.py
+├── PLAN.md          # 631 行 · 8 个阶段
+├── TODO.md          # 178 个 todo
+└── src/
+    ├── main.rs            # 41 LOC
+    ├── ast.rs             # 172 LOC
+    ├── builtins.rs        # 231 LOC
+    ├── environment.rs     # 48 LOC
+    ├── interpreter.rs     # 624 LOC
+    ├── lexer.rs           # 583 LOC
+    ├── parser.rs          # 892 LOC
+    ├── token.rs           # 119 LOC
+    ├── value.rs           # 342 LOC
+    └── stdlib/
+        ├── json_mod.rs    # 96 LOC
+        ├── math_mod.rs    # 52 LOC
+        └── requests_mod.rs# 87 LOC`}</EdCode>
+    </div>
+  </EdGrid>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="任务三 · 评测结果" eyebrow="Completion & Stability" footer="Python interpreter — Opus completes, GPT-5.5 close">
+  <EdH2 size="sm">迷你 Python 解释器：Opus 完成，GPT-5.5 差一步</EdH2>
+
+  <EdTable>
+    <EdThead>
+      <EdTh width="20%">维度</EdTh>
+      <EdTh>Opus</EdTh>
+      <EdTh width="10%">得分</EdTh>
+      <EdTh>GPT-5.5</EdTh>
+    </EdThead>
+    <tbody>
+      <tr><EdTd label>任务完成度</EdTd><EdTd><EdMark color="ds">全部 6 个验收点通过</EdMark></EdTd><EdTd><EdScore a={9} b={7} win="a" /></EdTd><EdTd>5/6 通过，卡在 f-string 嵌套表达式</EdTd></tr>
+      <tr><EdTd label>规划粒度</EdTd><EdTd>plan 892 行 / 142 个 todo，按模块分阶段</EdTd><EdTd><EdScore a={9} b={7} win="a" /></EdTd><EdTd>plan 631 行 / 178 个 todo，结构偏扁平</EdTd></tr>
+      <tr><EdTd label>验收策略</EdTd><EdTd>构造了渐进式验收脚本，从简单到复杂逐步验证</EdTd><EdTd><EdScore a={8} b={8} /></EdTd><EdTd>直接运行 oracle.py 验收，错误定位准确</EdTd></tr>
+      <tr><EdTd label>开发过程稳定性</EdTd><EdTd>全程无崩溃，迭代过程平稳</EdTd><EdTd><EdScore a={8} b={8} /></EdTd><EdTd>全程无崩溃</EdTd></tr>
+      <tr><EdTd label last>代码量</EdTd><EdTd last>4,217 行 Rust，模块划分清晰</EdTd><EdTd last><EdScore a={7} b={7} /></EdTd><EdTd last>3,648 行 Rust，代码更紧凑</EdTd></tr>
+    </tbody>
+  </EdTable>
+
+  <EdInsight label="本项结论">
+    Opus 总分 41，GPT-5.5 总分 37。Opus 在完成度（9 vs 7）和规划粒度（9 vs 7）上明显领先——更有耐心做长程任务的递进式交付。GPT-5.5 的代码更紧凑，但在 f-string 嵌套解析上卡住未能突破。
+  </EdInsight>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="任务四 · 代码仓库理解" eyebrow="Codebase Comprehension" footer="3 prompts · cognition → tracing → judgment">
+  <EdH2>像新入职的 Staff Engineer 一样做尽调</EdH2>
+
+  <EdGrid cols={2} gap="56px" marginTop="36px">
+    <EdLede>
+      不只是"读懂代码"，而是能形成<b>有判断力的架构认知</b>。三个递进提示词，从<b>看结构 → 追链路 → 读意图</b>，逐层加深。
+    </EdLede>
+    <EdTable>
+      <EdThead>
+          <EdTh width="36%">层级</EdTh>
+          <EdTh>测的能力</EdTh>
+        </EdThead>
+      <tbody>
+        <tr><EdTd label>P1 · 全局架构</EdTd><EdTd>能不能画出准确的地图</EdTd></tr>
+        <tr><EdTd label>P2 · 数据流追踪</EdTd><EdTd>能不能沿地图走通一条路</EdTd></tr>
+        <tr><EdTd label last>P3 · 设计决策</EdTd><EdTd last>能不能读出地图背后的"为什么"</EdTd></tr>
+      </tbody>
+    </EdTable>
+  </EdGrid>
+
+  <EdGrid cols={3} gap="24px" marginTop="40px">
+    <EdCard title="认知力" dot="var(--ed-blue-title)">第一层。模块、文件数、行数、入口、强弱依赖。</EdCard>
+    <EdCard title="追踪力" dot="var(--ed-green-title)">第二层。函数签名、类型流转、同步/异步边界、异常路径。</EdCard>
+    <EdCard title="判断力" dot="var(--ed-amber-title)">第三层。非显然决策、约束/Trade-off、前瞻 10x。</EdCard>
+  </EdGrid>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="P1 · 全局架构" eyebrow="Architecture Audit Prompt" tight footer="P1 — Architecture audit prompt">
+  <EdH2 size="sm">提示词设计：让模型先画地图</EdH2>
+
+  <EdGrid template="1fr 1.05fr" gap="36px" marginTop="24px">
+    <div>
+      <EdSectionTitle>要点拆解</EdSectionTitle>
+      <EdTable>
+        <EdThead><EdTh width="38%">Section</EdTh><EdTh>目的</EdTh></EdThead>
+        <tbody>
+          <tr><EdTd label>目录结构先行</EdTd><EdTd>不盲读，先建立全局印象</EdTd></tr>
+          <tr><EdTd label>沿入口追踪</EdTd><EdTd>从 main 出发，按需深入</EdTd></tr>
+          <tr><EdTd label>模块量化</EdTd><EdTd>行数、文件数，防止空洞描述</EdTd></tr>
+          <tr><EdTd label>Mermaid 拓扑</EdTd><EdTd>分层 + 强弱依赖 + 循环依赖</EdTd></tr>
+          <tr><EdTd label last>健康度速查</EdTd><EdTd last>跨层调用 / God Module / 测试分布</EdTd></tr>
+        </tbody>
+      </EdTable>
+      <EdSubHeading>验收标准</EdSubHeading>
+      <ul>
+        <EdCheckItem>提到的文件路径和模块名，<EdMark color="accent">grep 能找到</EdMark></EdCheckItem>
+        <EdCheckItem>Mermaid 图依赖方向与实际 import 一致</EdCheckItem>
+        <EdCheckItem>没有遗漏超过 500 行的核心模块</EdCheckItem>
+        <EdCheckItem>30 秒能让没读过代码的人建立认知</EdCheckItem>
+      </ul>
+    </div>
+
+    <EdCode size="xs" lang="markdown">{`对本仓库进行架构审计，产出一份架构概览文档。
+
+## 步骤
+1. 先看目录结构（tree -L 2 .）和 package.json 等
+   配置文件，建立全局印象
+2. 定位入口文件（main/bin 字段），从入口沿
+   import/require 链追踪核心模块
+3. 识别所有核心模块，对每个模块记录：
+   · 一句话职责定义（不超过 20 字）
+   · 代码量级（行数量级 + 文件数）
+   · 对外暴露的公共接口（函数/类/协议签名）
+   · 内部实现中最值得关注的设计点
+   · 依赖方向（依赖谁 / 被谁依赖）
+4. 使用 Mermaid flowchart 绘制模块间依赖拓扑图：
+   · 用 subgraph 分层：入口层 → 核心业务层
+     → 基础设施层
+   · 实线 = 强依赖，虚线 = 弱依赖
+   · 箭头标注数据流方向和关键数据类型
+   · 循环依赖用红色标注
+5. 做一次架构健康度速查：
+   · 列出所有跨层调用
+   · 标记超过 1000 行的单文件（God Module）
+   · 检查 circular imports
+   · 评估测试覆盖分布
+
+## 输出格式
+写入 ./docs/architecture-audit.md：
+Executive Summary（3 句话） → 分层架构图 →
+逐模块详述 → 架构健康度评分卡`}</EdCode>
+  </EdGrid>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="P1 · Opus 产出示例" eyebrow="Topology Diagram" tight footer="P1 — Opus topology, faithfully reproduced">
+  <EdH2 size="sm">Claude Code 分层架构拓扑图</EdH2>
+
+  <EdTreeBand>
+    <EdSwatch color="#4a90d9" /> Entry
+    <EdSwatch color="#50b86c" /> Core Business
+    <EdSwatch color="#f5a623" /> Infrastructure
+    <EdSwatch color="#9b9b9b" /> Foundation
+  </EdTreeBand>
+
+  <EdGrid cols={1} gap="10px" marginTop="18px">
+    <EdTreeLayer cols={3}>
+      <EdTreeNode layer="entry" name="main.tsx" loc="4,683 LOC" />
+      <EdTreeNode layer="entry" name="entrypoints/cli.tsx" loc="303 LOC" />
+      <EdTreeNode layer="entry" name="setup.ts" loc="477 LOC" />
+    </EdTreeLayer>
+    <EdTreeLayer cols={6}>
+      <EdTreeNode layer="core" name="QueryEngine.ts" loc="1,295" />
+      <EdTreeNode layer="core" name="query.ts + query/" loc="2,381" />
+      <EdTreeNode layer="core" name="Tool.ts" loc="792" />
+      <EdTreeNode layer="core" name="tools.ts + tools/" loc="51,217" />
+      <EdTreeNode layer="core" name="commands/" loc="27,182" />
+      <EdTreeNode layer="core" name="screens/" loc="5,977" />
+    </EdTreeLayer>
+    <EdTreeLayer cols={5}>
+      <EdTreeNode layer="core" name="coordinator/" loc="369" />
+      <EdTreeNode layer="core" name="skills/" loc="4,066" />
+      <EdTreeNode layer="core" name="Task.ts + tasks/" loc="3,450" />
+      <EdTreeNode layer="core" name="state/" loc="1,190" />
+      <EdTreeNode layer="core" name="context/" loc="1,193" />
+    </EdTreeLayer>
+    <EdTreeLayer cols={5}>
+      <EdTreeNode layer="infra" name="services/" loc="53,680" />
+      <EdTreeNode layer="infra" name="bridge/" loc="12,613" />
+      <EdTreeNode layer="infra" name="hooks/" loc="19,204" />
+      <EdTreeNode layer="infra" name="components/" loc="81,546" />
+      <EdTreeNode layer="infra" name="ink/" loc="19,842" />
+    </EdTreeLayer>
+    <EdTreeLayer cols={4}>
+      <EdTreeNode layer="found" name="utils/" loc="180,472 · 564 files" />
+      <EdTreeNode layer="found" name="types/" loc="3,446" />
+      <EdTreeNode layer="found" name="constants/" loc="2,648" />
+      <EdTreeNode layer="found" name="bootstrap/" loc="1,758" />
+    </EdTreeLayer>
+  </EdGrid>
+
+  <EdInsight label="语言习惯">
+    中文提问时，Opus 产出的文档通常是中文；GPT-5.5 在对话时用中文回复，但文档写入时更倾向用英文。
+  </EdInsight>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="P1 · Opus 产出示例" eyebrow="Mermaid Topology" tight footer="P1 — Claude Code architecture, Mermaid">
+  <EdH2 size="sm">Claude Code 分层架构拓扑图（Opus 版本）</EdH2>
+
+  <MermaidDiagram code={`flowchart TD
+    subgraph ENTRY["Entry Layer"]
+        MAIN["main.tsx 4683 LOC"]
+        CLI["cli.tsx 303 LOC"]
+        SETUP["setup.ts 477 LOC"]
+    end
+    subgraph CORE["Core Business Layer"]
+        QE["QueryEngine 1295"]
+        TOOL_REG["tools/ 51217"]
+        CMD["commands/ 27182"]
+        SCREENS["screens/ 5977"]
+        TASKS["tasks/ 3450"]
+        STATE["state/ 1190"]
+    end
+    subgraph INFRA["Infrastructure Layer"]
+        SERVICES["services/ 53680"]
+        COMPONENTS["components/ 81546"]
+        HOOKS["hooks/ 19204"]
+        INK["ink/ 19842"]
+        BRIDGE["bridge/ 12613"]
+    end
+    subgraph FOUNDATION["Foundation Layer"]
+        UTILS["utils/ 180472 LOC"]
+        TYPES["types/ 3446"]
+        CONSTANTS["constants/ 2648"]
+    end
+    MAIN --> CMD
+    MAIN --> TOOL_REG
+    MAIN --> SERVICES
+    QE --> HOOKS
+    QE --> SERVICES
+    CMD --> TOOL_REG
+    CMD --> COMPONENTS
+    SCREENS --> COMPONENTS
+    SCREENS --> STATE
+    TASKS --> SERVICES
+    SERVICES --> UTILS
+    COMPONENTS --> HOOKS
+    HOOKS --> UTILS
+    BRIDGE --> SERVICES
+    UTILS -.-> TYPES
+    style ENTRY fill:#4a90d9,color:#fff
+    style CORE fill:#50b86c,color:#fff
+    style INFRA fill:#f5a623,color:#fff
+    style FOUNDATION fill:#9b9b9b,color:#fff`} />
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="P1 · 产出质量对比" eyebrow="Quality Comparison" footer="P1 — Opus 38 : GPT-5.5 35">
+  <EdH2 size="sm">P1 全局架构：分维度打分</EdH2>
+
+  <EdTable>
+    <EdThead>
+        <EdTh width="18%">维度</EdTh>
+        <EdTh>Opus</EdTh>
+        <EdTh width="10%">得分</EdTh>
+        <EdTh>GPT-5.5</EdTh>
+      </EdThead>
+    <tbody>
+      <tr><EdTd label>信息架构</EdTd><EdTd>全部模块统一表格（Module / LOC / Files / Public API / Depends On）</EdTd><EdTd><EdScore a={9} b={7} win="a" /></EdTd><EdTd>格式不完全统一，核心层用列表，工具层用表格</EdTd></tr>
+      <tr><EdTd label>可视化</EdTd><EdTd>架构图带强弱依赖图例，另画高危循环依赖图</EdTd><EdTd><EdScore a={8} b={7} win="a" /></EdTd><EdTd>有架构图，但未区分强弱依赖</EdTd></tr>
+      <tr><EdTd label>数据一致性</EdTd><EdTd>严格统一表头，无遗漏</EdTd><EdTd><EdScore a={8} b={6} win="a" /></EdTd><EdTd>部分模块缺 Public API 字段和文件数</EdTd></tr>
+      <tr><EdTd label>分析深度</EdTd><EdTd>健康度计分卡详尽，按优先级排列建议</EdTd><EdTd><EdScore a={7} b={8} win="b" /></EdTd><EdTd>额外分析了依赖库版本健康度，视角独到</EdTd></tr>
+      <tr><EdTd label last>可执行性</EdTd><EdTd last>按优先级排序的建议清单，可直接转任务</EdTd><EdTd last><EdScore a={6} b={7} win="b" /></EdTd><EdTd last>建议带代码片段示例，更容易落地</EdTd></tr>
+    </tbody>
+  </EdTable>
+
+  <EdInsight label="P1 小结">
+    Opus 总分 38，GPT-5.5 总分 35。Opus 在信息架构、可视化、数据一致性上领先；GPT-5.5 在分析深度和可执行性上略胜——建议带代码示例的做法对工程师更友好。
+  </EdInsight>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="P2 · 数据流追踪" eyebrow="Data Flow Tracing Prompt" tight footer="P2 — Data flow tracing prompt">
+  <EdH2 size="sm">提示词设计：让模型沿地图走通一条路</EdH2>
+
+  <EdGrid template="1fr 1.05fr" gap="36px" marginTop="24px">
+    <div>
+      <EdTable>
+        <EdThead><EdTh width="38%">Section</EdTh><EdTh>目的</EdTh></EdThead>
+        <tbody>
+          <tr><EdTd label>路径选择</EdTd><EdTd>说明为什么选这条路径，测判断力</EdTd></tr>
+          <tr><EdTd label>逐层追踪</EdTd><EdTd>grep/read 实际代码，不凭印象</EdTd></tr>
+          <tr><EdTd label>时序图</EdTd><EdTd>真实函数签名 + 类型流转</EdTd></tr>
+          <tr><EdTd label>边界标注</EdTd><EdTd>同步/异步、进程/线程、序列化</EdTd></tr>
+          <tr><EdTd label last>异常路径</EdTd><EdTd last>单独要求 error path，不止 happy path</EdTd></tr>
+        </tbody>
+      </EdTable>
+      <EdSubHeading>验收标准</EdSubHeading>
+      <ul>
+        <EdCheckItem>时序图函数签名在代码中真实存在</EdCheckItem>
+        <EdCheckItem>类型流转与代码类型定义一致</EdCheckItem>
+        <EdCheckItem>覆盖至少 3 个核心模块</EdCheckItem>
+        <EdCheckItem>异常路径具体到 catch / handler</EdCheckItem>
+      </ul>
+    </div>
+
+    <EdCode size="xs" lang="markdown">{`选取本仓库中一条最具代表性的用户操作路径，
+从源码层面追踪其完整的执行流程。
+
+## 步骤
+1. 确定追踪路径：选取一条典型操作（如用户在终端
+   输入命令到最终输出结果），说明为什么选这条
+2. 从入口函数开始，逐层 grep/read 追踪调用链：
+   · 真实函数签名（不是描述）
+   · 所在文件的相对路径
+   · 输入数据类型 → 输出数据类型
+3. 使用 Mermaid sequence diagram 绘制调用时序图：
+   · 参与者按模块划分，不按文件划分
+   · 箭头标注数据类型流转
+     （如 string → Token[] → AST → Value）
+   · 用 note 标注：同步→异步切换点、
+     进程/线程边界、序列化/反序列化位置
+   · 用 alt/opt 块表示分支路径
+4. 单独分析异常路径：链路中间某一步失败了，
+   错误怎么传播？最终用户看到什么？
+   有没有被吞掉的异常？
+
+## 输出格式
+写入 ./docs/data-flow-trace.md：
+路径选择说明 → Mermaid sequence diagram →
+逐阶段文字注解 → 异常路径分析`}</EdCode>
+  </EdGrid>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="P2 · 产出质量对比" eyebrow="Quality Comparison" footer="P2 result — Opus edges on exceptions">
+  <EdH2 size="sm">P2 数据流追踪：追踪深度 vs 格式合规</EdH2>
+
+  <EdTable>
+    <EdThead>
+        <EdTh width="18%">验收标准</EdTh>
+        <EdTh>Opus</EdTh>
+        <EdTh width="10%">得分</EdTh>
+        <EdTh>GPT-5.5</EdTh>
+      </EdThead>
+    <tbody>
+      <tr><EdTd label>路径选型理由</EdTd><EdTd>选择了 query 全链路，附表格说明覆盖模块</EdTd><EdTd><EdScore a={8} b={8} /></EdTd><EdTd>同样选了 query 链路，理由充分</EdTd></tr>
+      <tr><EdTd label>逐层追踪</EdTd><EdTd>深度很好（query.ts:219），函数签名齐全</EdTd><EdTd><EdScore a={9} b={8} win="a" /></EdTd><EdTd>格式整齐，但部分函数签名省略了参数类型</EdTd></tr>
+      <tr><EdTd label>Mermaid 图表</EdTd><EdTd>16 步详细时序图，有条件分支和边界标注</EdTd><EdTd><EdScore a={8} b={9} win="b" /></EdTd><EdTd>图表简洁清晰，"同步→异步"标注完整</EdTd></tr>
+      <tr><EdTd label last>异常 / 被吞异常</EdTd><EdTd last>精准点出磁盘落盘失败、遥测故障、超时等被吞异常</EdTd><EdTd last><EdScore a={9} b={6} win="a" /></EdTd><EdTd last>有错误图谱，但被吞异常部分存在猜测性误判</EdTd></tr>
+    </tbody>
+  </EdTable>
+
+  <EdInsight label="P2 小结">
+    Opus 总分 34，GPT-5.5 总分 31。Opus 在逐层追踪（9 vs 8）和异常分析（9 vs 6）上领先——特别是被吞异常的识别，精准度差距明显。GPT-5.5 的 Mermaid 图表更规范简洁（9 vs 8）。
+  </EdInsight>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="P3 · 设计决策分析" eyebrow="Design Decision Prompt" tight footer="P3 — Design decision prompt">
+  <EdH2 size="sm">提示词设计：读出地图背后的"为什么"</EdH2>
+
+  <EdGrid template="1fr 1.05fr" gap="36px" marginTop="24px">
+    <div>
+      <EdTable>
+        <EdThead><EdTh width="38%">Section</EdTh><EdTh>目的</EdTh></EdThead>
+        <tbody>
+          <tr><EdTd label>不显然约束</EdTd><EdTd>排除显然选择，逼出深层洞察</EdTd></tr>
+          <tr><EdTd label>分析模板</EdTd><EdTd>约束→方案→替代→trade-off→证据→前瞻</EdTd></tr>
+          <tr><EdTd label>代码证据</EdTd><EdTd>必须引用真实代码段</EdTd></tr>
+          <tr><EdTd label>前瞻判断</EdTd><EdTd>10× 增长下是否成为瓶颈</EdTd></tr>
+          <tr><EdTd label last>决策依赖图</EdTd><EdTd last>看出决策之间的连锁关系</EdTd></tr>
+        </tbody>
+      </EdTable>
+      <EdSubHeading>验收标准</EdSubHeading>
+      <ul>
+        <EdCheckItem>引用的代码文件 / 段真实存在</EdCheckItem>
+        <EdCheckItem>替代方案是业界真正常用的</EdCheckItem>
+        <EdCheckItem>Trade-off 包含正面和负面，不一味夸赞</EdCheckItem>
+        <EdCheckItem>至少 1 个决策不是表面选择</EdCheckItem>
+      </ul>
+    </div>
+
+    <EdCode size="xs" lang="markdown">{`基于你对本仓库的理解，识别其中 3-5 个关键的
+架构设计决策，分析每个决策的取舍。
+
+## 要求
+- 聚焦 "不显然" 的决策——第一眼可能有更好方案、
+  但作者有理由这么选
+- 不要列举 "用了 TypeScript / React" 这种显然选择
+
+## 每个决策按以下模板输出
+#### 决策 N: [一句话标题]
+- 选择了什么：具体描述当前方案
+- 约束上下文：性能 / 兼容性 / 团队 / 历史包袱 / 三方 API
+- 放弃了什么：1-2 个业界常见替代方案
+- Trade-off 对比表（正面 + 负面）
+- 代码证据：真实文件路径 + 关键代码段
+  （不接受 "大约在某个文件里"）
+- 前瞻判断：当前阶段是否合理？
+  10× 增长会怎样？退化信号？
+
+## 决策依赖图
+分析完所有决策后，用 Mermaid 图说明决策之间
+的因果或连锁关系。
+
+## 输出格式
+写入 ./docs/design-decisions.md，
+按对系统整体架构的影响范围从大到小排列。`}</EdCode>
+  </EdGrid>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="P3 · 产出质量对比" eyebrow="Quality Comparison" footer="P3 result — Opus insight, GPT-5.5 compliance">
+  <EdH2 size="sm">P3 设计决策：洞察深度 vs 遵从度</EdH2>
+
+  <EdTable>
+    <EdThead>
+        <EdTh width="18%">验收标准</EdTh>
+        <EdTh>Opus</EdTh>
+        <EdTh width="10%">得分</EdTh>
+        <EdTh>GPT-5.5</EdTh>
+      </EdThead>
+    <tbody>
+      <tr><EdTd label>需求遵从度</EdTd><EdTd>中文输出、格式严谨、Mermaid 位置正确</EdTd><EdTd><EdScore a={9} b={7} win="a" /></EdTd><EdTd>中文提示词下输出英文，Mermaid 放在了文档中间</EdTd></tr>
+      <tr><EdTd label>洞察深度</EdTd><EdTd>深挖 DCE（死代码消除）和 Lazy Require（破循环依赖）</EdTd><EdTd><EdScore a={9} b={7} win="a" /></EdTd><EdTd>"React+Ink"和"Async Generator"相对显然</EdTd></tr>
+      <tr><EdTd label>证据坚实度</EdTd><EdTd>路径 + 代码段 + 统计齐全</EdTd><EdTd><EdScore a={8} b={8} /></EdTd><EdTd>同样齐全，Trade-off 客观</EdTd></tr>
+      <tr><EdTd label last>逻辑关联性</EdTd><EdTd last>Decision Interplay 模块，零散决策→架构堆栈视角</EdTd><EdTd last><EdScore a={9} b={7} win="a" /></EdTd><EdTd last>因果链列出但稍显松散</EdTd></tr>
+    </tbody>
+  </EdTable>
+
+  <EdInsight label="P3 小结">
+    Opus 总分 35，GPT-5.5 总分 29。这一轮 Opus 全面领先——洞察深度（9 vs 7）、遵从度（9 vs 7）和逻辑关联性（9 vs 7）。GPT-5.5 在英文仓库上习惯性输出英文，不影响质量但使用体验上不够贴心。
+  </EdInsight>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="代码仓库理解 · 三轮汇总" eyebrow="Aggregate" footer="Insight depth vs compliance">
+  <EdH2>三轮提示词的累加结论</EdH2>
+
+  <EdTable>
+    <EdThead>
+        <EdTh width="14%">Prompt</EdTh>
+        <EdTh width="24%">核心考察</EdTh>
+        <EdTh>Opus</EdTh>
+        <EdTh width="10%">得分</EdTh>
+        <EdTh>GPT-5.5</EdTh>
+      </EdThead>
+    <tbody>
+      <tr><EdTd label>P1 · 全局架构</EdTd><EdTd>模块识别、拓扑图、健康度</EdTd><EdTd>信息架构统一、可视化完整、数据一致</EdTd><EdTd><EdScore a={38} b={35} win="a" /></EdTd><EdTd>分析深度好，可执行建议带代码示例</EdTd></tr>
+      <tr><EdTd label>P2 · 数据流追踪</EdTd><EdTd>调用链、时序图、异常路径</EdTd><EdTd>异常分析专家级，签名齐全</EdTd><EdTd><EdScore a={34} b={31} win="a" /></EdTd><EdTd>Mermaid 图表更简洁规范</EdTd></tr>
+      <tr><EdTd label last>P3 · 设计决策</EdTd><EdTd last>非显然决策、trade-off、证据</EdTd><EdTd last>洞察更深（DCE / Lazy Require），遵从度高</EdTd><EdTd last><EdScore a={35} b={29} win="a" /></EdTd><EdTd last>决策选取偏显然</EdTd></tr>
+    </tbody>
+  </EdTable>
+
+  <EdInsight label="代码仓库理解总评">
+    三轮累计 Opus 107 : GPT-5.5 95，<EdMark color="accent">Opus 整体领先</EdMark>。三轮全部 Opus 领先——P1（38 vs 35）、P2（34 vs 31）、P3（35 vs 29）。Opus 的优势在于技术穿透力和遵从度并重；GPT-5.5 在可执行建议和图表简洁度上有亮点。
+  </EdInsight>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="任务五 · 日常使用" eyebrow="Daily Workflow" footer="Two-step plan + todo">
+  <EdH2>我的日常开发方式：文档驱动 + 两步 plan + 一步 todo</EdH2>
+  <EdLede>
+    在 10 万行级仓库中，所有模型都会有一定程度的幻觉（包括 Claude 和 GPT）。以下是我用来规避幻觉的工作流。
+  </EdLede>
+
+  <EdGrid cols={3} gap="32px" marginTop="48px">
+    <EdCard title="Step 1 · 粗粒度 Plan" dot="var(--ed-teal-title)">
+      配好 harness 环境后，先让 coding agent 与代码库对话，产出一份粗粒度的执行计划，写入 docs/exec-plans/xxxx.md。这一步市面上几乎所有大模型都会有幻觉。产出后<b>人工扫一眼</b>，确认是否符合自己对代码的认识。
+    </EdCard>
+    <EdCard title="Step 2 · 细化 Plan" dot="var(--ed-coral-title)">
+      不让模型直接执行，而是要求它<b>再细化一轮</b>。细化后幻觉概率明显降低——模型被迫重新审视自己的计划。同样经过<b>人工审核</b>后再进入下一步。
+    </EdCard>
+    <EdCard title="Step 3 · 拆解 Todo" dot="var(--ed-amber-title)">
+      让模型结合实际代码，把细化后的 plan 拆解成具体的 todo。每个 todo 对应到真实的文件和函数，再次<b>人工确认</b>后才开始执行。
+    </EdCard>
+  </EdGrid>
+
+  <EdInsight label="核心思路">
+    每一步都有人作为审核环节。目前大部分模型的 coding 本身没问题，问题出在<b>架构把握和幻觉</b>上。通过<b>粗 plan → 细化 → todo</b> 的递进结构加人工审核，幻觉被逐层过滤。
+  </EdInsight>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="任务五 · 日常使用" eyebrow="Performance · ~2 Days" footer="纯体感，非系统性测试">
+  <EdH2>两天使用下来的体感</EdH2>
+
+  <EdGrid cols={2} gap="48px" marginTop="48px">
+    <EdBrandCard side="ds" title="Opus">
+      <ul>
+        <EdCheckItem><b>深挖</b>：代码分析和链路追踪能力突出，能找到被吞的异常和隐蔽的 bug</EdCheckItem>
+        <EdCheckItem><b>规划力</b>：长程任务的 plan 更有层次感，阶段划分更合理</EdCheckItem>
+        <EdCheckItem><b>文案</b>：技术文档的措辞更精炼克制，不堆砌</EdCheckItem>
+        <EdCheckItem><b>算法识别</b>：识别到算法难点时会单独花时间测试核心算法，不急着糊上去</EdCheckItem>
+        <EdCheckItem><b>长上下文</b>：累积一定上下文后，通盘考虑代码的能力表现较好</EdCheckItem>
+        <EdCheckItem><b>遵从度</b>：中文提示词中文输出，格式严格遵循要求</EdCheckItem>
+      </ul>
+    </EdBrandCard>
+    <EdBrandCard side="gl" title="GPT-5.5">
+      <ul>
+        <EdCheckItem><b>迭代速度</b>：生成速度明显更快，适合需要快速原型的场景</EdCheckItem>
+        <EdCheckItem><b>UI/UX 感</b>：前端组件设计更有设计系统意识，视觉一致性好</EdCheckItem>
+        <EdCheckItem><b>修复能力</b>：遇到问题时修复效率高，每轮修复的改善幅度大</EdCheckItem>
+        <EdCheckItem><b>代码紧凑</b>：同样功能用更少的代码实现，可读性也不差</EdCheckItem>
+        <EdCheckItem><b>状态管理</b>：在 UI 交互场景下的状态机设计更自洽</EdCheckItem>
+      </ul>
+    </EdBrandCard>
+  </EdGrid>
+
+  <EdCallout title="说明">
+    日常使用维度依赖较长的观察窗口，不适合用单次任务定胜负，将在后续报告中补完。
+  </EdCallout>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="任务五 · 日常使用" eyebrow="Scenario Preference" footer="基于约两天的使用体验">
+  <EdH2>什么场景下我会选谁</EdH2>
+
+  <EdGrid cols={2} gap="48px" marginTop="48px">
+    <div>
+      <EdBrandLabel side="ds">倾向用 Opus</EdBrandLabel>
+      <EdVsList>
+        <EdVsItem><b>代码深挖 / 架构尽调</b>——需要从代码中读出"为什么这么写"的场景</EdVsItem>
+        <EdVsItem><b>穿针引线 / 链路追踪</b>——需要沿着调用链深挖细节时，能挖得非常详细</EdVsItem>
+        <EdVsItem><b>长程工程任务</b>——规划能力强，阶段递进清晰</EdVsItem>
+        <EdVsItem><b>技术文档</b>——措辞精炼，格式遵从度高</EdVsItem>
+        <EdVsItem><b>长上下文通盘推理</b>——累积大量上下文后做全局判断</EdVsItem>
+        <EdVsItem><b>异常分析</b>——能精准定位被吞的异常和隐蔽问题</EdVsItem>
+      </EdVsList>
+    </div>
+    <div>
+      <EdBrandLabel side="gl">倾向用 GPT-5.5</EdBrandLabel>
+      <EdVsList>
+        <EdVsItem><b>快速原型</b>——需要在短时间内出可用原型时，生成速度优势明显</EdVsItem>
+        <EdVsItem><b>前端 / React 开发</b>——组件设计、视觉一致性更好</EdVsItem>
+        <EdVsItem><b>UI 交互密集场景</b>——状态机管理更自洽，弹窗/表单逻辑更顺</EdVsItem>
+        <EdVsItem><b>快速修复 / Debug</b>——每轮修复的改善幅度大，不拖泥带水</EdVsItem>
+        <EdVsItem><b>紧凑代码</b>——同样功能更精简，适合代码量敏感的项目</EdVsItem>
+      </EdVsList>
+    </div>
+  </EdGrid>
+
+  <EdInsight label="说明">
+    以上场景偏好基于约两天的日常使用，样本有限，仅供参考。随着使用时间增长，偏好可能会调整。
+  </EdInsight>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialDivider chapter="03" eyebrow="Chapter Three" title="综合对比" desc="五项任务看完，拉通来看全局。" footer="Aggregate Comparison" />
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="综合对比 · 总览" eyebrow="Summary" footer="Aggregate — different shapes of strength">
+  <EdH2>五项任务总览</EdH2>
+
+  <EdTable>
+    <EdThead>
+        <EdTh width="22%">任务</EdTh>
+        <EdTh>关键观察</EdTh>
+        <EdTh width="12%">得分</EdTh>
+        <EdTh width="14%">本轮</EdTh>
+      </EdThead>
+    <tbody>
+      <tr><EdTd label>3D 场景</EdTd><EdTd>Opus 物理精度更好（过山车 8:6），GPT-5.5 UI 状态更自洽（俄罗斯方块 6:8）</EdTd><EdTd><EdScore a={29} b={28} win="a" /></EdTd><EdTd>Opus 微胜</EdTd></tr>
+      <tr><EdTd label>前端审美</EdTd><EdTd>GPT-5.5 设计感和组件一致性更好，Opus 响应式更细致</EdTd><EdTd><EdScore a={38} b={42} win="b" /></EdTd><EdTd><EdWin side="gl" label="GPT-5.5 微胜" /></EdTd></tr>
+      <tr><EdTd label>Python 解释器</EdTd><EdTd>Opus 全部验收通过，GPT-5.5 卡在 f-string 嵌套</EdTd><EdTd><EdScore a={41} b={37} win="a" /></EdTd><EdTd><EdWin side="ds" label="Opus 胜" /></EdTd></tr>
+      <tr><EdTd label>代码仓库理解</EdTd><EdTd>Opus 三轮全面领先，技术穿透力和遵从度并重</EdTd><EdTd><EdScore a={107} b={95} win="a" /></EdTd><EdTd><EdWin side="ds" label="Opus 领先" /></EdTd></tr>
+      <tr><EdTd label last>日常使用</EdTd><EdTd last>Opus 深挖和规划强；GPT-5.5 速度快、UI 交互好</EdTd><EdTd last>—</EdTd><EdTd last>体感为主</EdTd></tr>
+    </tbody>
+  </EdTable>
+
+  <EdGrid cols={2} gap="32px" marginTop="36px">
+    <EdSummaryCard side="ds" label="Opus · 强项">深挖 / 异常分析 · 长程规划 · 物理精度 · 遵从度 · <b>技术穿透力</b></EdSummaryCard>
+    <EdSummaryCard side="gl" label="GPT-5.5 · 强项">迭代速度 · UI/UX 设计 · 状态管理 · 代码紧凑 · <b>视觉一致性</b></EdSummaryCard>
+  </EdGrid>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="综合对比 · 维度量化" eyebrow="Dimension by Dimension" footer="Shape, not score">
+  <EdH2 size="sm">分维度的相对强度（基于本次评测的主观打分）</EdH2>
+
+  <EdGrid cols={2} gap="48px" marginTop="36px">
+    <div>
+      <EdBarLabel side="ds">Opus</EdBarLabel>
+      <EdBarRow label="深挖 / 洞察" value={9} max={10} side="ds" />
+      <EdBarRow label="工程完成度" value={8} max={10} side="ds" />
+      <EdBarRow label="交付规范性" value={9} max={10} side="ds" />
+      <EdBarRow label="过程稳定性" value={8} max={10} side="ds" />
+      <EdBarRow label="迭代速度" value={6} max={10} side="ds" />
+      <EdBarRow label="视觉设计" value={6} max={10} side="ds" />
+    </div>
+    <div>
+      <EdBarLabel side="gl">GPT-5.5</EdBarLabel>
+      <EdBarRow label="深挖 / 洞察" value={7} max={10} side="gl" />
+      <EdBarRow label="工程完成度" value={7} max={10} side="gl" />
+      <EdBarRow label="交付规范性" value={7} max={10} side="gl" />
+      <EdBarRow label="过程稳定性" value={8} max={10} side="gl" />
+      <EdBarRow label="迭代速度" value={9} max={10} side="gl" />
+      <EdBarRow label="视觉设计" value={8} max={10} side="gl" />
+    </div>
+  </EdGrid>
+
+  <EdCallout title="读图说明">
+    上述分数为本次五项评测的<b>主观汇总</b>，用于呈现两款模型的<b>形状差异</b>，不代表跨数据集的客观能力指标。在较大仓库中使用两步 plan + 一步 todo 可有效缓解幻觉；针对常见场景做好预制 skill 也可能提升部分维度的表现。
+  </EdCallout>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EditorialSlide brand="结论" eyebrow="Takeaways" footer="Different tools for different jobs">
+  <EdH2 size="sm">两种模型，两种气质</EdH2>
+
+  <EdNumList>
+    <EdNumItem>
+      <div><b>纵深 vs 效率。</b>　Opus 是洞察型——深挖、链路追踪、异常分析拉满（9 分），规划和遵从度扎实（8-9 分），但迭代速度偏慢（6 分）。GPT-5.5 是效率型——迭代快（9 分）、视觉设计好（8 分），但深挖和规范性不如 Opus。</div>
+    </EdNumItem>
+    <EdNumItem>
+      <div><b>选 Opus。</b>　需要穿针引线深挖代码链路、做架构尽调、长程工程任务、从零构建复杂项目（如 Python 解释器），或者需要精准的异常分析和技术文档。</div>
+    </EdNumItem>
+    <EdNumItem>
+      <div><b>选 GPT-5.5。</b>　快速原型、前端 / React 开发、UI 交互密集场景、需要快速迭代修复的项目。代码更紧凑，视觉一致性更好，状态管理更自洽。</div>
+    </EdNumItem>
+    <EdNumItem>
+      <div><b>共同短板。</b>　10 万行级仓库中都有幻觉（需要 plan + todo 两步法规避）；魔方求解器都没完成；在不提供审美引导的情况下，前端产出都存在一定的"AI 味道"。</div>
+    </EdNumItem>
+    <EdNumItem>
+      <div><b>可改善的点。</b>　大部分模型的行为都可以通过适当的上下文和提示词做改良，本报告的评价不一定代表模型的实际上限。很多时候选择模型更像选工具——有人觉得 Codex 顺手，有人觉得 Claude Code 顺手，Opus 和 GPT-5.5 也是一样，顺手比"更强"更重要。</div>
+    </EdNumItem>
+  </EdNumList>
+</EditorialSlide>
+
+---
+
+layout: default
+
+---
+
+<EdStatement sig="@海拉鲁编程客 · 2026.5">
+  感谢观看
+</EdStatement>

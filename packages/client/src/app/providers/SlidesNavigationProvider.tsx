@@ -80,3 +80,30 @@ export function useSlidesState() {
 
   return context;
 }
+
+const noop = () => {};
+
+export function StaticSlidesStateProvider({
+  currentIndex,
+  total,
+  children,
+}: {
+  currentIndex: number;
+  total: number;
+  children: React.ReactNode;
+}) {
+  const value = useMemo<SlidesContextValue>(
+    () => ({
+      currentIndex,
+      total,
+      next: noop,
+      prev: noop,
+      first: noop,
+      last: noop,
+      goTo: noop,
+    }),
+    [currentIndex, total],
+  );
+
+  return <SlidesContext.Provider value={value}>{children}</SlidesContext.Provider>;
+}

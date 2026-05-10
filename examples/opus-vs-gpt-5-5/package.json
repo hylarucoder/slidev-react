@@ -1,0 +1,11 @@
+{
+  "name": "example-editorial",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "slidev-react dev slides.mdx"
+  },
+  "dependencies": {
+    "@slidev-react/cli": "workspace:*"
+  }
+}
