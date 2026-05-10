@@ -4,7 +4,6 @@ export function EditorialCover({
   eyebrow,
   subEyebrow = "模型评测报告",
   date = "v0.1 · 2026.4",
-  title,
   subtitle,
   bottomLeft = "",
   bottomRight = "@海拉鲁编程客",
@@ -13,7 +12,6 @@ export function EditorialCover({
   eyebrow?: string;
   subEyebrow?: string;
   date?: string;
-  title?: ReactNode;
   subtitle?: string;
   bottomLeft?: string;
   bottomRight?: string;
@@ -33,8 +31,16 @@ export function EditorialCover({
         justifyContent: "space-between",
       }}
     >
-
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
         {/* Top meta */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div style={{ display: "flex", gap: "18px", alignItems: "center" }}>
@@ -49,7 +55,14 @@ export function EditorialCover({
                 justifyContent: "center",
               }}
             >
-              <div style={{ width: "14px", height: "14px", borderRadius: "50%", background: "var(--ed-bg)" }} />
+              <div
+                style={{
+                  width: "14px",
+                  height: "14px",
+                  borderRadius: "50%",
+                  background: "var(--ed-bg)",
+                }}
+              />
             </div>
             <div
               style={{
@@ -79,34 +92,27 @@ export function EditorialCover({
               color: "var(--ed-ink-2)",
             }}
           >
-            <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--ed-accent)" }} />
+            <span
+              style={{
+                width: "6px",
+                height: "6px",
+                borderRadius: "50%",
+                background: "var(--ed-accent)",
+              }}
+            />
             {date}
           </div>
         </div>
 
         {/* Hero */}
         <div>
-          {title || (
-            <div
-              style={{
-                fontFamily: '"Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif',
-                fontSize: "124px",
-                fontWeight: 600,
-                lineHeight: 1.02,
-                letterSpacing: "-3px",
-                marginBottom: "28px",
-              }}
-            >
-              <span style={{ color: "var(--ed-ds)", fontWeight: 600, display: "block" }}>Claude Opus</span>
-              <span style={{ color: "var(--ed-muted)", fontWeight: 400, fontStyle: "italic", display: "block", fontSize: "72px", margin: "16px 0" }}>vs.</span>
-              <span style={{ color: "var(--ed-gl)", fontWeight: 600, display: "block" }}>GPT-5.5</span>
-            </div>
-          )}
+          {children}
 
           {subtitle && (
             <div
               style={{
-                fontFamily: '"Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif',
+                fontFamily:
+                  '"Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif',
                 fontSize: "36px",
                 fontWeight: 500,
                 lineHeight: 1.25,
@@ -134,11 +140,17 @@ export function EditorialCover({
           }}
         >
           <span>{bottomLeft}</span>
-          <span style={{ fontFamily: '"JetBrains Mono", monospace', letterSpacing: "0.5px", marginLeft: "auto" }}>{bottomRight}</span>
+          <span
+            style={{
+              fontFamily: '"JetBrains Mono", monospace',
+              letterSpacing: "0.5px",
+              marginLeft: "auto",
+            }}
+          >
+            {bottomRight}
+          </span>
         </div>
       </div>
-
-      {children}
     </div>
   );
 }

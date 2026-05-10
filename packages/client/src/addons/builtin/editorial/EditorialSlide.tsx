@@ -55,7 +55,15 @@ export function EditorialSlide({
           }}
         >
           <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--ed-accent)", display: "inline-block" }} />
+            <span
+              style={{
+                width: "8px",
+                height: "8px",
+                borderRadius: "50%",
+                background: "var(--ed-accent)",
+                display: "inline-block",
+              }}
+            />
             <span style={{ color: "var(--ed-text)", fontWeight: 600 }}>{brand}</span>
             {eyebrow && (
               <>
@@ -64,7 +72,9 @@ export function EditorialSlide({
               </>
             )}
           </span>
-          <span style={{ fontSize: "18px", color: "var(--ed-ghost)", letterSpacing: "1px" }}>{page || ""}</span>
+          <span style={{ fontSize: "18px", color: "var(--ed-ghost)", letterSpacing: "1px" }}>
+            {page || ""}
+          </span>
         </div>
 
         <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>{children}</div>
@@ -84,7 +94,7 @@ export function EditorialSlide({
             paddingTop: "24px",
           }}
         >
-          <span>{footer || "Claude Opus  ×  GPT-5.5"}</span>
+          <span>{footer || ""}</span>
           {context && <span>{context}</span>}
         </div>
       </div>
