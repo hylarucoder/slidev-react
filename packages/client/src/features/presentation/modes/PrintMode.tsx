@@ -20,6 +20,7 @@ import { SlidePreviewSurface } from "../stage/SlidePreviewSurface";
 import type { CompiledSlide } from "../presenter/model/types";
 import { RevealProvider, type RevealContextValue } from "../reveal/RevealContext";
 import { useResolvedLayout } from "../../../theme/useResolvedLayout";
+import { StaticSlidesStateProvider } from "../../../app/providers/SlidesNavigationProvider";
 
 function noopCleanup() { }
 
@@ -149,7 +150,7 @@ function PrintSlideGroup({
   }, [stepTotal, withClicks]);
 
   return (
-    <>
+    <StaticSlidesStateProvider currentIndex={slideNumber - 1} total={totalSlides}>
       {withClicks && (
         <div aria-hidden className="pointer-events-none absolute h-0 w-0 overflow-hidden opacity-0">
           <PrintSlideSnapshot
@@ -249,7 +250,7 @@ function PrintSlideGroup({
           </section>
         );
       })}
-    </>
+    </StaticSlidesStateProvider>
   );
 }
 

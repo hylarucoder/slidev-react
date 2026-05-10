@@ -1,0 +1,106 @@
+/* Editorial Theme — Light warm paper theme */
+:root {
+  /* Surfaces */
+  --ed-bg: #f4f1e8;
+  --ed-paper: #f4f1e8;
+  --ed-surface: #ffffff;
+  --ed-surface-elevated: #fdfcf9;
+  --ed-surface-high: #f0ede4;
+  --ed-card: #ffffff;
+
+  /* Text */
+  --ed-text: #16181d;
+  --ed-ink: #16181d;
+  --ed-ink-2: #3a3f48;
+  --ed-muted: #6b7280;
+  --ed-ghost: rgba(22, 24, 29, 0.22);
+
+  /* Borders */
+  --ed-border: #d8d4cb;
+  --ed-border-strong: #c8c3b8;
+  --ed-border-subtle: rgba(22, 24, 29, 0.08);
+  --ed-rule: #d8d4cb;
+  --ed-rule-2: #ecead0;
+
+  /* Brand accents */
+  --ed-accent: #b4321a;
+  --ed-accent-2: #1f4d3a;
+  --ed-gold: #a07c2c;
+
+  /* Semantic palette */
+  --ed-purple-fill: rgba(168, 118, 255, 0.08);
+  --ed-purple-stroke: rgba(168, 118, 255, 0.36);
+  --ed-purple-title: #7c4dff;
+  --ed-blue-fill: rgba(59, 130, 246, 0.08);
+  --ed-blue-stroke: rgba(59, 130, 246, 0.36);
+  --ed-blue-title: #2563eb;
+  --ed-teal-title: #0d9488;
+  --ed-coral-title: #e8553a;
+  --ed-pink-title: #d946a8;
+  --ed-amber-title: #b45309;
+  --ed-red-title: #dc2626;
+  --ed-green-title: #16a34a;
+
+  /* DS (DeepSeek) and GLM brand colors */
+  --ed-ds: #b4321a;
+  --ed-ds-bg: rgba(180, 50, 26, 0.10);
+  --ed-ds-stroke: rgba(180, 50, 26, 0.36);
+  --ed-gl: #1f4d3a;
+  --ed-gl-bg: rgba(31, 77, 58, 0.10);
+  --ed-gl-stroke: rgba(31, 77, 58, 0.36);
+}
+
+/* Reduce outer slide container padding for editorial slides */
+.slide-surface-frame:has(.editorial-slide-root) {
+  padding-inline: 1rem !important;
+  padding-block-start: 1rem !important;
+  padding-block-end: 1rem !important;
+}
+
+/* Reset structural defaults. */
+.editorial-slide-root {
+  position: absolute;
+  inset: 0;
+}
+.editorial-slide-root p,
+.editorial-slide-root ul,
+.editorial-slide-root ol,
+.editorial-slide-root li {
+  margin: 0 !important;
+  padding: 0 !important;
+  letter-spacing: 0 !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  font-weight: inherit !important;
+  color: inherit !important;
+}
+.editorial-slide-root h1,
+.editorial-slide-root h2,
+.editorial-slide-root h3,
+.editorial-slide-root h4 {
+  margin: 0 !important;
+  padding: 0 !important;
+  letter-spacing: 0;
+  color: inherit !important;
+}
+.editorial-slide-root pre {
+  margin: 0 !important;
+  padding: 24px 28px;
+}
+.editorial-slide-root ul > li::before,
+.editorial-slide-root ol > li::before {
+  content: none !important;
+  display: none !important;
+}
+/* Lighten mermaid diagram frame inside editorial slides */
+.editorial-slide-root .slide-diagram-frame {
+  border-color: rgba(22, 24, 29, 0.08) !important;
+  box-shadow: none !important;
+  background: var(--ed-surface-elevated) !important;
+}
+
+.editorial-slide-root strong,
+.editorial-slide-root b {
+  font-weight: 600;
+  color: inherit;
+}

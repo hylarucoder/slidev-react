@@ -44,6 +44,12 @@
       "default": "./dist/addons/insight.js"
     },
     "./addons/insight/style.css": "./dist/addons/insight/style.css",
+    "./addons/editorial": {
+      "types": "./dist/src/addons/builtin/editorial/index.d.ts",
+      "import": "./dist/addons/editorial.js",
+      "default": "./dist/addons/editorial.js"
+    },
+    "./addons/editorial/style.css": "./dist/addons/editorial/style.css",
     "./themes/moonlit": {
       "types": "./dist/src/theme/builtin/moonlit/index.d.ts",
       "import": "./dist/themes/moonlit.js",
