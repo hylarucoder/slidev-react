@@ -9,3 +9,4 @@ output
 *.log
 .vitest-attachments
 __screenshots__
+.vite-hooks

@@ -1,64 +1,12 @@
+import { kamiThemeTokens } from "./builtin/kami/tokens";
 import type { SlideThemeTokens } from "./types";
 
-export const defaultSlideThemeTokens: SlideThemeTokens = {
-  fonts: {
-    sans: '"Inter", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif',
-    serif:
-      '"Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Source Han Serif SC", "Songti SC", serif',
-    mono: '"JetBrains Mono", "SFMono-Regular", ui-monospace, "Cascadia Mono", "Fira Code", monospace',
-  },
-  ui: {
-    background: "#ffffff",
-    surface: "#ffffff",
-    surfaceStrong: "#f8fafc",
-    text: "#0f172a",
-    heading: "#0f172a",
-    muted: "#475569",
-    mutedSoft: "#94a3b8",
-    accent: "#22c55e",
-    accentStrong: "#15803d",
-    accentSoft: "#dcfce7",
-    border: "rgba(15, 23, 42, 0.09)",
-    borderStrong: "rgba(15, 23, 42, 0.16)",
-  },
-  feedback: {
-    positive: "#22c55e",
-    negative: "#ef4444",
-    warning: "#f59e0b",
-    info: "#0ea5e9",
-    neutral: "#94a3b8",
-  },
-  chart: {
-    accent: "#22c55e",
-    categorical: ["#60a5fa", "#34d399", "#a78bfa", "#f472b6", "#fbbf24", "#f87171"],
-    positive: "#22c55e",
-    negative: "#ef4444",
-    warning: "#f59e0b",
-    neutral: "#94a3b8",
-    axis: "rgba(15, 23, 42, 0.16)",
-    grid: "#e8ecf1",
-  },
-  diagram: {
-    primary: "#dcfce7",
-    primaryBorder: "#16a34a",
-    line: "#334155",
-    surface: "#ffffff",
-    surfaceAlt: "#f8fafc",
-    text: "#0f172a",
-    note: "#fefce8",
-    categorical: ["#60a5fa", "#34d399", "#a78bfa", "#f472b6", "#fbbf24", "#f87171"],
-    accent: "#22c55e",
-  },
-  addons: {
-    insight: {
-      border: "rgba(14, 116, 144, 0.24)",
-      background: "rgba(236, 254, 255, 0.88)",
-      title: "#155e75",
-      text: "#164e63",
-      shadow: "0 16px 38px rgba(14, 116, 144, 0.08)",
-    },
-  },
-};
+/**
+ * Kami is the default design language, so the fallback tokens are Kami's own.
+ * Keep this an alias rather than a copy — a second palette here would drift.
+ * The matching CSS-level fallbacks live in the `:root` block of `tokens.css`.
+ */
+export const defaultSlideThemeTokens: SlideThemeTokens = kamiThemeTokens;
 
 export function themeTokensToCssVars(tokens: SlideThemeTokens): Record<string, string> {
   return {
@@ -120,16 +68,20 @@ export function themeTokensToCssVars(tokens: SlideThemeTokens): Record<string, s
     "--slide-link-decoration-color": "color-mix(in srgb, var(--slide-ui-accent) 28%, transparent)",
     "--slide-link-decoration-color-hover":
       "color-mix(in srgb, var(--slide-ui-accent) 52%, transparent)",
-    "--slide-list-bullet-bg":
-      "linear-gradient(135deg, color-mix(in srgb, var(--slide-ui-accent-soft) 66%, white 34%) 0%, var(--slide-ui-accent) 100%)",
-    "--slide-list-bullet-shadow":
-      "0 0 0 2px color-mix(in srgb, var(--slide-ui-accent) 10%, transparent), 0 4px 10px color-mix(in srgb, var(--slide-ui-accent-strong) 18%, transparent)",
-    "--slide-ol-badge-bg": "color-mix(in srgb, var(--slide-ui-accent) 13%, transparent)",
-    "--slide-ol-badge-color":
-      "color-mix(in srgb, var(--slide-ui-accent) 86%, var(--slide-ui-heading) 14%)",
+    /*
+     * These derivations land as inline styles on <html>, which no theme stylesheet
+     * rule can outrank at :root. So they must express the default design language
+     * rather than decoration a theme has to fight: Kami wants flat brand markers, an
+     * unfilled quote, and no gradients or glow. A theme that wants ornament back adds
+     * it on a descendant selector (see moonlit's `.slide-prose blockquote`).
+     */
+    "--slide-list-bullet-bg": "none",
+    "--slide-list-bullet-shadow": "none",
+    "--slide-list-bullet-color": "var(--slide-ui-accent)",
+    "--slide-ol-badge-bg": "transparent",
+    "--slide-ol-badge-color": "var(--slide-ui-accent)",
     "--slide-blockquote-border-color": "var(--slide-ui-accent)",
-    "--slide-blockquote-bg":
-      "color-mix(in srgb, var(--slide-ui-accent-soft) 38%, var(--slide-ui-surface) 62%)",
+    "--slide-blockquote-bg": "transparent",
     "--slide-blockquote-color": "var(--slide-ui-text)",
     "--slide-table-head-bg": "color-mix(in srgb, var(--slide-ui-heading) 3.5%, transparent)",
     "--slide-inline-code-bg": "color-mix(in srgb, var(--slide-ui-heading) 6%, transparent)",

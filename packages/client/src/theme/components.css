@@ -11,7 +11,7 @@
   align-items: center;
   border: var(--slide-badge-border, 1px solid rgba(34, 197, 94, 0.16));
   border-radius: 9999px;
-  background: var(--slide-badge-bg, #dcfce7);
+  background: var(--slide-badge-bg, #eef2f7);
   color: var(--slide-badge-color, #166534);
   padding: 0.12rem 0.5rem;
   font-size: var(--slide-badge-font-size, var(--slide-p-font-size));

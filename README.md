@@ -50,8 +50,6 @@ This is a pnpm workspace monorepo with the following packages:
 | `@slidev-react/client`           | `packages/client`           | React app assembly, providers, presentation UI, themes, addons |
 | `@slidev-react/node`             | `packages/node`             | Node-side dev/build/export/lint entry points and servers       |
 | `@slidev-react/cli`              | `packages/cli`              | Low-level command runner used by generated app scripts         |
-| `@slidev-react/theme-absolutely` | `packages/theme-absolutely` | The "absolutely" theme package                                 |
-| `@slidev-react/theme-paper`      | `packages/theme-paper`      | The "paper" theme package                                      |
 
 The root `package.json` is `private: true` and wires the Vite dev server and top-level scripts. Publishable packages under `packages/` are released via [Changesets](https://github.com/changesets/changesets).
 
@@ -175,7 +173,7 @@ Core authoring rules:
 | Field            | Description                                                  |
 | ---------------- | ------------------------------------------------------------ |
 | `title`          | Presentation title                                           |
-| `theme`          | Theme id (e.g. `paper`); falls back to `default`             |
+| `theme`          | Theme id (e.g. `moonlit`); defaults to `kami`                 |
 | `addons`         | List of addon ids to enable (e.g. `[mermaid, g2, insight]`)  |
 | `layout`         | Default layout for all slides                                |
 | `background`     | Default background (color, gradient, or image URL)           |
@@ -202,7 +200,7 @@ Invalid frontmatter reports field-level parser errors, and compile-time generati
 ```mdx
 ---
 title: Demo Slides
-theme: paper
+theme: kami
 addons:
   - mermaid
   - g2
@@ -248,14 +246,14 @@ Set the theme in slides-level frontmatter:
 ```mdx
 ---
 title: Client Review
-theme: moonlit
+theme: kami
 ---
 ```
 
 Themes can come from two places:
 
-- built-in themes shipped by `@slidev-react/client`, such as **moonlit**
-- external theme packages such as `@slidev-react/theme-paper` and `@slidev-react/theme-absolutely`
+- built-in themes shipped by `@slidev-react/client`: **kami** (the default) and **moonlit**
+- external theme packages resolved as `@slidev-react/theme-<id>` or `slidev-react-theme-<id>`, or a local `packages/theme-<id>/`
 
 A theme package exports a `SlideThemeDefinition` from its entry point, with support for:
 
@@ -366,8 +364,6 @@ packages/
       ui/       — reusable components and MDX helpers
   node/         → @slidev-react/node     — dev/build/export/lint
   cli/          → @slidev-react/cli      — low-level command runner
-  theme-absolutely/ → @slidev-react/theme-absolutely — "absolutely" theme
-  theme-paper/  → @slidev-react/theme-paper — "paper" theme
 ```
 
 For per-package details, see [`packages/client/README.md`](./packages/client/README.md) and [`packages/node/README.md`](./packages/node/README.md).

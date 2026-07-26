@@ -4,7 +4,6 @@
   "fixed": [
     ["@slidev-react/core", "@slidev-react/cli", "@slidev-react/node", "@slidev-react/client"]
   ],
-  "ignore": ["@slidev-react/theme-paper", "@slidev-react/theme-absolutely"],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch"

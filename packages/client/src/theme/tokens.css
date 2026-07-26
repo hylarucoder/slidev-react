@@ -1,65 +1,73 @@
+/*
+ * CSS-level fallbacks for the Kami default theme. These mirror
+ * `theme/builtin/kami/tokens.ts` so the first paint is already parchment — without
+ * them the deck flashes a white canvas before the theme's inline vars land.
+ * Keep the two in sync; `tokens.ts` is the source of truth.
+ */
 :root {
   color-scheme: light;
-  --slide-ui-background: #ffffff;
-  --slide-ui-surface: #ffffff;
-  --slide-ui-surface-strong: #f8fafc;
-  --slide-ui-text: #0f172a;
-  --slide-ui-heading: #0f172a;
-  --slide-ui-muted: #475569;
-  --slide-ui-muted-soft: #94a3b8;
-  --slide-ui-accent: #22c55e;
-  --slide-ui-accent-strong: #15803d;
-  --slide-ui-accent-soft: #dcfce7;
-  --slide-ui-border: rgba(15, 23, 42, 0.09);
-  --slide-ui-border-strong: rgba(15, 23, 42, 0.16);
+  --slide-ui-background: #f5f4ed;
+  --slide-ui-surface: #faf9f5;
+  --slide-ui-surface-strong: #efeee5;
+  --slide-ui-text: #3d3d3a;
+  --slide-ui-heading: #141413;
+  --slide-ui-muted: #6b6a64;
+  --slide-ui-muted-soft: #93918a;
+  --slide-ui-accent: #1b365d;
+  --slide-ui-accent-strong: #12243d;
+  --slide-ui-accent-soft: #eef2f7;
+  --slide-ui-border: #e8e6dc;
+  --slide-ui-border-strong: #d8d5c7;
   --font-sans:
-    "Inter", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    "TsangerJinKai02", "Source Han Serif SC", "Source Han Serif CN", "Noto Serif CJK SC",
+    "Noto Serif SC", "Songti SC", "STSong", Charter, Georgia, Palatino, "Times New Roman", serif;
   --font-serif:
-    "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Source Han Serif SC", "Songti SC",
-    serif;
+    "TsangerJinKai02", "Source Han Serif SC", "Source Han Serif CN", "Noto Serif CJK SC",
+    "Noto Serif SC", "Songti SC", "STSong", Charter, Georgia, Palatino, "Times New Roman", serif;
   --font-mono:
-    "JetBrains Mono", "SFMono-Regular", ui-monospace, "Cascadia Mono", "Fira Code", monospace;
-  --slide-feedback-positive: #22c55e;
-  --slide-feedback-negative: #ef4444;
-  --slide-feedback-warning: #f59e0b;
-  --slide-feedback-info: #0ea5e9;
-  --slide-feedback-neutral: #94a3b8;
-  --slide-chart-accent: #22c55e;
-  --slide-chart-category-1: #60a5fa;
-  --slide-chart-category-2: #34d399;
-  --slide-chart-category-3: #a78bfa;
-  --slide-chart-category-4: #f472b6;
-  --slide-chart-category-5: #fbbf24;
-  --slide-chart-category-6: #f87171;
-  --slide-chart-positive: #22c55e;
-  --slide-chart-negative: #ef4444;
-  --slide-chart-warning: #f59e0b;
-  --slide-chart-neutral: #94a3b8;
-  --slide-chart-axis: rgba(15, 23, 42, 0.16);
-  --slide-chart-grid: #e8ecf1;
-  --slide-diagram-primary: #dcfce7;
-  --slide-diagram-primary-border: #16a34a;
-  --slide-diagram-line: #334155;
-  --slide-diagram-surface: #ffffff;
-  --slide-diagram-surface-alt: #f8fafc;
-  --slide-diagram-text: #0f172a;
-  --slide-diagram-note: #fefce8;
-  --slide-diagram-category-1: #60a5fa;
-  --slide-diagram-category-2: #34d399;
-  --slide-diagram-category-3: #a78bfa;
-  --slide-diagram-category-4: #f472b6;
-  --slide-diagram-category-5: #fbbf24;
-  --slide-diagram-category-6: #f87171;
-  --slide-diagram-accent: #22c55e;
-  --slide-insight-border: rgba(14, 116, 144, 0.24);
-  --slide-insight-bg: rgba(236, 254, 255, 0.88);
-  --slide-insight-title: #155e75;
-  --slide-insight-text: #164e63;
-  --slide-insight-shadow: 0 16px 38px rgba(14, 116, 144, 0.08);
+    "JetBrains Mono", "SF Mono", "SFMono-Regular", "Fira Code", Consolas, Monaco, "TsangerJinKai02",
+    "Source Han Serif SC", monospace;
+  --slide-feedback-positive: #4a6b52;
+  --slide-feedback-negative: #8b3a2f;
+  --slide-feedback-warning: #8b4513;
+  --slide-feedback-info: #1b365d;
+  --slide-feedback-neutral: #6b6a64;
+  --slide-chart-accent: #1b365d;
+  --slide-chart-category-1: #1b365d;
+  --slide-chart-category-2: #2d5a8a;
+  --slide-chart-category-3: #4a7ba7;
+  --slide-chart-category-4: #7ba0c0;
+  --slide-chart-category-5: #a9c0d6;
+  --slide-chart-category-6: #6b6a64;
+  --slide-chart-positive: #4a6b52;
+  --slide-chart-negative: #8b3a2f;
+  --slide-chart-warning: #8b4513;
+  --slide-chart-neutral: #6b6a64;
+  --slide-chart-axis: #d8d5c7;
+  --slide-chart-grid: #e8e6dc;
+  --slide-diagram-primary: #eef2f7;
+  --slide-diagram-primary-border: #1b365d;
+  --slide-diagram-line: #6b6a64;
+  --slide-diagram-surface: #faf9f5;
+  --slide-diagram-surface-alt: #efeee5;
+  --slide-diagram-text: #141413;
+  --slide-diagram-note: #f0e0d8;
+  --slide-diagram-category-1: #1b365d;
+  --slide-diagram-category-2: #2d5a8a;
+  --slide-diagram-category-3: #4a7ba7;
+  --slide-diagram-category-4: #7ba0c0;
+  --slide-diagram-category-5: #a9c0d6;
+  --slide-diagram-category-6: #6b6a64;
+  --slide-diagram-accent: #1b365d;
+  --slide-insight-border: rgba(27, 54, 93, 0.16);
+  --slide-insight-bg: #faf9f5;
+  --slide-insight-title: #1b365d;
+  --slide-insight-text: #504e49;
+  --slide-insight-shadow: 0 4px 24px rgba(20, 20, 19, 0.05);
   --slide-color-body: var(--slide-ui-text);
   --slide-color-heading: var(--slide-ui-heading);
   --slide-color-muted: var(--slide-ui-muted);
-  --slide-link-decoration-style: dashed;
+  --slide-link-decoration-style: solid;
   --slide-link-decoration-color: color-mix(in srgb, var(--slide-ui-accent) 28%, transparent);
   --slide-link-decoration-color-hover: color-mix(in srgb, var(--slide-ui-accent) 52%, transparent);
   --slide-font-size-body: clamp(1.4rem, 1.72vw, 1.92rem);

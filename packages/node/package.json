@@ -42,22 +42,22 @@
     "@mdx-js/react": "3.1.1",
     "@slidev-react/client": "workspace:*",
     "@slidev-react/core": "workspace:*",
-    "@tailwindcss/postcss": "^4.1.18",
-    "@vitejs/plugin-react": "^6.0.0",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
     "rehype-katex": "7.0.1",
     "remark-gfm": "4.0.1",
     "remark-math": "6.0.0",
-    "shiki": "4.0.1",
-    "tailwindcss": "4.2.1",
+    "shiki": "4.3.1",
+    "tailwindcss": "4.3.3",
     "vite": "catalog:",
     "vite-plus": "catalog:",
-    "yaml": "2.8.2",
-    "zod": "4.3.6"
+    "yaml": "2.9.0",
+    "zod": "4.4.3"
   },
   "peerDependencies": {
-    "@playwright/test": "^1.58.2"
+    "@playwright/test": "^1.62.0"
   },
   "peerDependenciesMeta": {
     "@playwright/test": {

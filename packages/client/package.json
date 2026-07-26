@@ -44,6 +44,12 @@
       "default": "./dist/addons/insight.js"
     },
     "./addons/insight/style.css": "./dist/addons/insight/style.css",
+    "./themes/kami": {
+      "types": "./dist/src/theme/builtin/kami/index.d.ts",
+      "import": "./dist/themes/kami.js",
+      "default": "./dist/themes/kami.js"
+    },
+    "./themes/kami/style.css": "./dist/themes/kami/style.css",
     "./themes/moonlit": {
       "types": "./dist/src/theme/builtin/moonlit/index.d.ts",
       "import": "./dist/themes/moonlit.js",
@@ -69,13 +75,13 @@
     "@antv/g-svg": "^2.1.1",
     "@antv/g2": "^5.4.8",
     "@slidev-react/core": "workspace:*",
-    "katex": "0.16.33",
+    "katex": "0.16.45",
     "lucide-react": "0.568.0",
-    "mermaid": "11.12.3",
-    "motion": "^12.37.0",
-    "shiki": "4.0.1",
-    "shiki-magic-move": "1.2.1",
-    "zod": "4.3.6"
+    "mermaid": "11.16.0",
+    "motion": "^12.42.2",
+    "shiki": "4.3.1",
+    "shiki-magic-move": "1.4.0",
+    "zod": "4.4.3"
   },
   "peerDependencies": {
     "@mdx-js/react": ">=3.0.0",

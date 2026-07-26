@@ -7,8 +7,13 @@ describe('client runtime manifest', () => {
     expect(manifestJson).toEqual(clientRuntimeManifest)
   })
 
-  it('publishes the built-in moonlit theme in the runtime manifest', () => {
+  it('publishes the built-in themes in the runtime manifest', () => {
     expect(clientRuntimeManifest.themes).toEqual([
+      {
+        id: 'kami',
+        module: '@slidev-react/client/themes/kami',
+        style: '@slidev-react/client/themes/kami/style.css',
+      },
       {
         id: 'moonlit',
         module: '@slidev-react/client/themes/moonlit',

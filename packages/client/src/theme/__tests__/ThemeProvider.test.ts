@@ -13,7 +13,7 @@ describe("ThemeProvider root attributes", () => {
 
     expect(resolveThemeRootAttributes(theme)).toEqual({
       "data-slide-color-scheme": "light",
-      "data-slide-theme": "default",
+      "data-slide-theme": "kami",
     });
   });
 
@@ -23,7 +23,7 @@ describe("ThemeProvider root attributes", () => {
 
     expect(resolveThemeRootAttributes(theme, portraitViewport)).toEqual({
       "data-slide-color-scheme": "light",
-      "data-slide-theme": "default",
+      "data-slide-theme": "kami",
       "data-slide-viewport-orientation": "portrait",
     });
   });
@@ -33,7 +33,7 @@ describe("ThemeProvider root attributes", () => {
 
     expect(resolveThemeRootAttributes(theme, DEFAULT_SLIDES_VIEWPORT)).toEqual({
       "data-slide-color-scheme": "light",
-      "data-slide-theme": "default",
+      "data-slide-theme": "kami",
       "data-slide-viewport-orientation": "landscape",
     });
   });
