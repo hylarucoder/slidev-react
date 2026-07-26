@@ -5,7 +5,7 @@
   --slide-h1-letter-spacing: -0.04em;
   --slide-h2-margin: 0.5rem 0 0.85rem;
   --slide-h2-size: clamp(1.35rem, 2.3vw, 2.35rem);
-  --slide-h2-color: #334155;
+  --slide-h2-color: var(--slide-color-muted);
 }
 
 :root[data-slide-viewport-orientation="portrait"] .slide-layout-cover {
@@ -31,13 +31,13 @@
   --slide-h1-line-height: 1.03;
   --slide-h1-letter-spacing: -0.035em;
   --slide-h2-size: clamp(1.1rem, 1.8vw, 1.8rem);
-  --slide-h2-color: #475569;
-  --slide-color-body: #475569;
+  --slide-h2-color: var(--slide-color-muted);
+  --slide-color-body: var(--slide-color-muted);
   --slide-font-size-body: clamp(1.1rem, 1.8vw, 1.8rem);
-  --slide-p-color: #475569;
+  --slide-p-color: var(--slide-color-muted);
   --slide-p-font-size: clamp(1.1rem, 1.8vw, 1.8rem);
   --slide-p-line-height: 1.48;
-  --slide-li-color: #475569;
+  --slide-li-color: var(--slide-color-muted);
   --slide-li-font-size: clamp(1.1rem, 1.8vw, 1.8rem);
   --slide-li-line-height: 1.48;
   --slide-badge-font-size: clamp(1.1rem, 1.8vw, 1.8rem);
@@ -62,21 +62,21 @@
   --slide-h1-size: clamp(2.2rem, 4.4vw, 4.8rem);
   --slide-h1-line-height: 1.14;
   --slide-h1-letter-spacing: -0.03em;
-  --slide-h1-weight: 760;
+  --slide-h1-weight: var(--slide-display-weight, 760);
   --slide-h2-margin: 0;
   --slide-h2-size: clamp(2.2rem, 4.4vw, 4.8rem);
   --slide-h2-line-height: 1.14;
   --slide-h2-letter-spacing: -0.03em;
-  --slide-h2-weight: 760;
+  --slide-h2-weight: var(--slide-display-weight, 760);
   --slide-h2-color: var(--slide-color-heading);
   --slide-p-margin: 0.9rem 0 0;
-  --slide-color-body: #475569;
+  --slide-color-body: var(--slide-color-muted);
   --slide-font-size-body: clamp(1rem, 1.45vw, 1.55rem);
-  --slide-p-color: #475569;
+  --slide-p-color: var(--slide-color-muted);
   --slide-p-font-size: clamp(1rem, 1.45vw, 1.55rem);
   --slide-p-line-height: 1.42;
   --slide-p-letter-spacing: -0.01em;
-  --slide-li-color: #475569;
+  --slide-li-color: var(--slide-color-muted);
   --slide-li-font-size: clamp(1rem, 1.45vw, 1.55rem);
   --slide-li-line-height: 1.42;
   --slide-li-letter-spacing: -0.01em;
@@ -85,7 +85,7 @@
   --slide-blockquote-font-size: clamp(2.2rem, 4.4vw, 4.8rem);
   --slide-blockquote-line-height: 1.14;
   --slide-blockquote-letter-spacing: -0.03em;
-  --slide-blockquote-font-weight: 760;
+  --slide-blockquote-font-weight: var(--slide-display-weight, 760);
   --slide-blockquote-color: var(--slide-color-heading);
 }
 

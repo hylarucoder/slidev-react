@@ -3,7 +3,7 @@ export interface ResolvedThemeExtension {
   importPath: string
   styleImportPath?: string
   definitionFilePath?: string
-  source: 'local' | 'package'
+  source: 'builtin' | 'local' | 'package'
 }
 
 export interface ResolvedAddonExtension {

@@ -14,6 +14,10 @@ export interface ExportSlidesOptions extends SlidesCommandOptions {
 async function isServerReachable(baseUrl: string) {
   try {
     const response = await fetch(baseUrl, {
+      // The dev server's SPA fallback only answers navigation requests, so it 404s
+      // on Node's default `Accept: */*`. Probe the way a browser would, or the
+      // readiness check never passes and every export times out.
+      headers: { Accept: "text/html" },
       signal: AbortSignal.timeout(2_000),
     });
     return response.ok;

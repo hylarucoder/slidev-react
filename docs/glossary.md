@@ -184,7 +184,6 @@ pnpm workspace 管理的多包仓库结构。
 | `@slidev-react/client`      | `packages/client`      | React UI 层  |
 | `@slidev-react/node`        | `packages/node`        | Node 工具层  |
 | `@slidev-react/cli`         | `packages/cli`         | 命令行入口   |
-| `@slidev-react/theme-paper` | `packages/theme-paper` | Paper 主题包 |
 
 ---
 
@@ -318,7 +317,7 @@ Slide 的渲染舞台区域。Stage 有固定的 viewport 尺寸（默认 1920×
 - 提供 `provider`
 - 自带 `style.css`
 
-内置主题：`default`（默认）、`paper`（`@slidev-react/theme-paper`）。
+内置主题：`kami`（默认）、`moonlit`。
 
 ### Transition
 

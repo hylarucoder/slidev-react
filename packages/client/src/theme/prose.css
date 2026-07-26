@@ -1,5 +1,5 @@
 .slide-prose {
-  color: var(--slide-color-body, #0f172a);
+  color: var(--slide-color-body, #3d3d3a);
   font-size: var(--slide-font-size-body, clamp(1.4rem, 1.72vw, 1.92rem));
   line-height: var(--slide-line-height-body, 1.64);
 }
@@ -7,7 +7,7 @@
 .slide-prose h1 {
   margin: var(--slide-h1-margin, 0 0 1.05rem);
   padding: 0.12em 0 0.18em;
-  color: var(--slide-color-heading, #0f172a);
+  color: var(--slide-color-heading, #141413);
   font-size: var(--slide-h1-size, clamp(3rem, 5.9vw, 5.2rem));
   line-height: var(--slide-h1-line-height, 1.04);
   letter-spacing: var(--slide-h1-letter-spacing, -0.03em);
@@ -27,7 +27,7 @@
 .slide-prose h3 {
   margin: 0 0 0.75rem;
   padding: 0.08em 0 0.12em;
-  color: var(--slide-color-heading, #0f172a);
+  color: var(--slide-color-heading, #141413);
   font-size: clamp(1.7rem, 2.6vw, 2.65rem);
   line-height: 1.16;
   font-weight: 740;
@@ -78,7 +78,7 @@
   top: 0;
   width: auto;
   height: auto;
-  color: var(--slide-list-bullet-color, #22c55e);
+  color: var(--slide-list-bullet-color, #1b365d);
   font-size: 0.72em;
   line-height: inherit;
   /* baseline-aligned via inline metrics — no calc(em)+translate drift in PDF export */
@@ -108,7 +108,7 @@
   padding: 0 0.4rem;
   border-radius: 9999px;
   background: var(--slide-ol-badge-bg, rgba(34, 197, 94, 0.12));
-  color: var(--slide-ol-badge-color, #15803d);
+  color: var(--slide-ol-badge-color, #1b365d);
   font-size: 0.8em;
   font-weight: 700;
   line-height: 1;
@@ -147,8 +147,8 @@
 .slide-prose blockquote {
   margin: 1.05rem 0;
   padding: var(--slide-blockquote-padding, 0.62rem 1rem);
-  border-left: 4px solid var(--slide-blockquote-border-color, #22c55e);
-  background: var(--slide-blockquote-bg, #f0fdf4);
+  border-left: 4px solid var(--slide-blockquote-border-color, #1b365d);
+  background: var(--slide-blockquote-bg, transparent);
   color: var(--slide-blockquote-color, var(--slide-color-body));
 }
 
@@ -181,7 +181,7 @@
 
 .slide-prose th {
   background: var(--slide-table-head-bg, rgba(15, 23, 42, 0.03));
-  color: var(--slide-color-body, #0f172a);
+  color: var(--slide-color-body, #3d3d3a);
   font-size: 1.02em;
   font-weight: 680;
   line-height: 1.35;

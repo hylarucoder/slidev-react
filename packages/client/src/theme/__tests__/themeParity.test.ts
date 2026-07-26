@@ -1,15 +1,13 @@
 import { describe, expect, it } from "vite-plus/test";
+import kami from "../builtin/kami";
 import moonlit from "../builtin/moonlit";
-import absolutely from "../../../../theme-absolutely/index";
-import paper from "../../../../theme-paper/index";
 
 const MDX_COMPONENTS = ["Badge", "Callout", "Eyebrow", "KeyStat", "PullQuote"] as const;
 const CORE_LAYOUTS = ["cover", "section", "statement", "chapter"] as const;
 
 const THEMES = [
+  { name: "kami", theme: kami },
   { name: "moonlit", theme: moonlit },
-  { name: "absolutely", theme: absolutely },
-  { name: "paper", theme: paper },
 ];
 
 describe("theme parity", () => {

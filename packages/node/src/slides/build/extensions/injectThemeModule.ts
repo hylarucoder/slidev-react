@@ -6,18 +6,23 @@ import { resolveThemeExtension } from "./resolveExtensions.ts";
 const VIRTUAL_THEME = "virtual:slidev-react/active-theme";
 const RESOLVED_VIRTUAL = "\0" + VIRTUAL_THEME;
 
+/**
+ * Kami is the design language, so a deck with no `theme:` resolves to it through the
+ * normal extension path. Falling through to `export default undefined` would leave the
+ * client on its Kami token fallback but without `kami/style.css`, which is where the
+ * design system's invariants actually live.
+ */
+const DEFAULT_THEME_ID = "kami";
+
 function generateThemeModuleCode(options: { appRoot: string; slidesSourceFile: string }): string {
   const { appRoot, slidesSourceFile } = options;
   const { themeId } = readSlidesDeckExtensions(slidesSourceFile);
+  const activeThemeId = themeId ?? DEFAULT_THEME_ID;
 
-  if (!themeId) {
-    return "export default undefined;\n";
-  }
-
-  const resolvedTheme = resolveThemeExtension(appRoot, themeId);
+  const resolvedTheme = resolveThemeExtension(appRoot, activeThemeId);
   if (!resolvedTheme) {
     throw new Error(
-      `[slidev-react] Theme "${themeId}" was declared but could not be resolved. Use a built-in theme, add packages/theme-${themeId}/index.ts, or install @slidev-react/theme-${themeId}.`,
+      `[slidev-react] Theme "${activeThemeId}" was declared but could not be resolved. Use a built-in theme, add packages/theme-${activeThemeId}/index.ts, or install @slidev-react/theme-${activeThemeId}.`,
     );
   }
 

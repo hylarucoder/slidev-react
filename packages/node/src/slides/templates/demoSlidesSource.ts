@@ -2,7 +2,7 @@ export const DEMO_SLIDES_FILENAME = "slides.mdx";
 
 export const DEMO_SLIDES_MDX = `---
 title: slidev-react
-theme: moonlit
+theme: kami
 ---
 
 # slidev-react

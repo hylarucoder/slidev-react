@@ -44,8 +44,6 @@
 | `@slidev-react/client`           | `packages/client`           | React 应用装配、UI、主题、addons         |
 | `@slidev-react/node`             | `packages/node`             | Node 侧 dev/build/export/lint 入口和服务 |
 | `@slidev-react/cli`              | `packages/cli`              | 模板项目 scripts 背后的底层命令层        |
-| `@slidev-react/theme-absolutely` | `packages/theme-absolutely` | "absolutely" 主题包                      |
-| `@slidev-react/theme-paper`      | `packages/theme-paper`      | "paper" 主题包                           |
 
 根目录 `package.json` 设为 `private: true`，承载 Vite 开发服务器和顶层脚本。`packages/` 下的可发布子包通过 [Changesets](https://github.com/changesets/changesets) 统一发布到 npm。
 
@@ -80,7 +78,7 @@ pnpm dev
 生成出来的 app 默认包含：
 
 - 一个最小可跑的 `slides.mdx`
-- 内置的 `moonlit` 主题
+- 内置的 `kami`（默认）与 `moonlit` 主题
 - 内置 `g2 + mermaid` 示例
 - `pnpm dev`、`pnpm build`、`pnpm export`、`pnpm lint` scripts
 
@@ -169,7 +167,7 @@ Slides 源文件位于 [`slides.mdx`](./slides.mdx)。
 | 字段             | 说明                                               |
 | ---------------- | -------------------------------------------------- |
 | `title`          | 演示文稿标题                                       |
-| `theme`          | 主题 id（如 `paper`），找不到时回退到 `default`    |
+| `theme`          | 主题 id（如 `moonlit`），默认为 `kami`            |
 | `addons`         | 要启用的 addon 列表（如 `[mermaid, g2, insight]`） |
 | `layout`         | 所有页面的默认布局                                 |
 | `background`     | 默认背景（颜色、渐变或图片 URL）                   |
@@ -196,7 +194,7 @@ Slides 源文件位于 [`slides.mdx`](./slides.mdx)。
 ```mdx
 ---
 title: Demo Slides
-theme: paper
+theme: kami
 addons:
   - mermaid
   - g2
@@ -242,14 +240,14 @@ notes: |
 ```mdx
 ---
 title: Client Review
-theme: moonlit
+theme: kami
 ---
 ```
 
 主题现在有两类来源：
 
-- 由 `@slidev-react/client` 内置提供的主题，例如 **moonlit**
-- 通过包分发的外部主题，例如 `@slidev-react/theme-paper` 和 `@slidev-react/theme-absolutely`
+- 由 `@slidev-react/client` 内置提供的主题：**kami**（默认）与 **moonlit**
+- 外部主题包，按 `@slidev-react/theme-<id>` / `slidev-react-theme-<id>` 解析，或本地 `packages/theme-<id>/`
 
 主题包从入口文件导出 `SlideThemeDefinition`，支持以下能力：
 
@@ -360,8 +358,6 @@ packages/
       ui/       — 可复用展示组件和 MDX helper
   node/         → @slidev-react/node     — dev/build/export/lint
   cli/          → @slidev-react/cli      — 底层命令执行层
-  theme-absolutely/ → @slidev-react/theme-absolutely — "absolutely" 主题
-  theme-paper/  → @slidev-react/theme-paper — "paper" 主题
 ```
 
 更详细的内部结构说明见 [`packages/client/README.md`](./packages/client/README.md) 和 [`packages/node/README.md`](./packages/node/README.md)。

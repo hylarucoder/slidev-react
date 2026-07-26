@@ -1,0 +1,529 @@
+/*
+ * Kami — warm parchment, one ink-blue accent, serif carries hierarchy.
+ * Ported from https://github.com/tw93/Kami (references/design.md).
+ *
+ * The invariants this file exists to hold:
+ *   - flat parchment canvas, never a gradient and never pure white
+ *   - serif weight locked to 400/500; no synthetic bold, no italic
+ *   - depth via whisper shadow only; no hard drop shadows, no rings over borders
+ *   - a lifted surface is carried by its fill (ivory on parchment), not by an outline
+ *   - the brand left rule is the one decorative gesture, in three weights by role
+ *   - print tracking halves at slide scale; body letter-spacing stays at baseline
+ */
+
+/* Canvas ----------------------------------------------------------------- */
+
+/*
+ * Flat fill, not a gradient. Kami's emotional foundation is the parchment itself;
+ * every other theme here paints a radial/linear wash, which is exactly the
+ * "decoration as gradient" anti-pattern Kami forbids.
+ */
+:root[data-slide-theme="kami"] body {
+  background: var(--slide-ui-background);
+}
+
+/* Type scale ------------------------------------------------------------- */
+
+/*
+ * Kami's print ladder x1.6 for slide macro scale (design.md §3), then snapped onto
+ * the ladder's own steps so nothing lands between them. Serif at a tall x-height
+ * already reads larger than sans at the same number, so these sit below the
+ * default theme's sizes on purpose.
+ */
+:root[data-slide-theme="kami"] {
+  --slide-h1-size: clamp(2.9rem, 5.4vw, 4.9rem);
+  --slide-h1-line-height: 1.1;
+  --slide-h2-size: clamp(2rem, 3.6vw, 3.2rem);
+  --slide-h3-size: clamp(1.5rem, 2.2vw, 1.95rem);
+  --slide-font-size-body: clamp(1.4rem, 1.68vw, 1.85rem);
+  --slide-p-font-size: clamp(1.4rem, 1.68vw, 1.85rem);
+  --slide-line-height-body: 1.6;
+
+  /* Kami's list markers are native and brand-colored — no gradient bullet, no shadow. */
+  --slide-list-bullet-color: var(--slide-ui-accent);
+  --slide-list-bullet-bg: none;
+  --slide-list-bullet-shadow: none;
+  --slide-ol-badge-bg: transparent;
+  --slide-ol-badge-color: var(--slide-ui-accent);
+
+  /* Quote: 2pt brand left rule, olive text, no fill. */
+  --slide-blockquote-border-color: var(--slide-ui-accent);
+  --slide-blockquote-bg: transparent;
+  --slide-blockquote-color: #504e49;
+  --slide-blockquote-padding: 0.2rem 0 0.2rem 1.15rem;
+
+  --slide-link-decoration-style: solid;
+  --slide-table-head-bg: transparent;
+  --slide-inline-code-bg: var(--slide-ui-surface);
+}
+
+:root[data-slide-theme="kami"][data-slide-viewport-orientation="portrait"] {
+  --slide-h1-size: clamp(3rem, 5.6vw, 5.2rem);
+  --slide-h2-size: clamp(2.1rem, 3.8vw, 3.4rem);
+  --slide-p-font-size: clamp(1.52rem, 2.1vw, 2rem);
+  --slide-surface-padding-inline: clamp(2.8rem, 5vw, 4rem);
+}
+
+/*
+ * Layout-scoped scale. `layouts.css` sets these vars on the layout element itself,
+ * which is a nearer ancestor than `:root` — so a theme block alone loses the cascade
+ * and has to re-state them at this depth.
+ *
+ * Serif locks to 500 everywhere: Kami's two-weight rule (400 body / 500 heading) means
+ * the 760 display weight the base layouts ask for would be synthetic bold.
+ */
+:root[data-slide-theme="kami"] .slide-layout-cover,
+:root[data-slide-theme="kami"] .slide-layout-section,
+:root[data-slide-theme="kami"] .slide-layout-statement,
+:root[data-slide-theme="kami"] .slide-layout-chapter {
+  --slide-display-weight: 500;
+  --slide-h1-letter-spacing: -0.01em;
+  --slide-p-letter-spacing: 0.01em;
+  --slide-li-letter-spacing: 0.01em;
+}
+
+/*
+ * A section slide's own title is its heading regardless of whether the author reached
+ * for `#` or `##`. The base scale demotes h2 to a caption smaller than body copy,
+ * which inverts the hierarchy; Kami keeps it a heading and lets body stay body.
+ */
+:root[data-slide-theme="kami"] .slide-layout-section {
+  --slide-h2-size: clamp(2rem, 3.6vw, 3.2rem);
+  --slide-h2-color: var(--slide-ui-heading);
+  --slide-h2-margin: 0 0 0.9rem;
+  --slide-color-body: var(--slide-ui-text);
+  --slide-p-color: var(--slide-ui-text);
+  --slide-li-color: var(--slide-ui-text);
+  --slide-font-size-body: clamp(1.4rem, 1.68vw, 1.85rem);
+  --slide-p-font-size: clamp(1.4rem, 1.68vw, 1.85rem);
+  --slide-li-font-size: clamp(1.4rem, 1.68vw, 1.85rem);
+  --slide-p-line-height: 1.6;
+  --slide-li-line-height: 1.6;
+}
+
+/* The cover's subtitle is a lede, not a caption: muted but readable. */
+:root[data-slide-theme="kami"] .slide-layout-cover {
+  --slide-h2-size: clamp(1.5rem, 2.1vw, 2.05rem);
+  --slide-h2-color: var(--slide-ui-muted);
+}
+
+/* A statement is the one place type goes large; nothing else competes with it. */
+:root[data-slide-theme="kami"] .slide-layout-statement {
+  --slide-h1-size: clamp(2.4rem, 4.2vw, 4.2rem);
+  --slide-h2-size: clamp(2.4rem, 4.2vw, 4.2rem);
+  --slide-h1-line-height: 1.2;
+  --slide-h2-line-height: 1.2;
+  --slide-h2-color: var(--slide-ui-heading);
+  --slide-color-body: var(--slide-ui-text);
+  --slide-p-color: var(--slide-ui-text);
+  --slide-li-color: var(--slide-ui-text);
+  --slide-font-size-body: clamp(1.4rem, 1.68vw, 1.85rem);
+  --slide-p-font-size: clamp(1.4rem, 1.68vw, 1.85rem);
+  --slide-li-font-size: clamp(1.4rem, 1.68vw, 1.85rem);
+  --slide-p-line-height: 1.6;
+  --slide-li-line-height: 1.6;
+  --slide-blockquote-font-size: clamp(2rem, 3.2vw, 3.2rem);
+  --slide-blockquote-line-height: 1.25;
+  --slide-blockquote-letter-spacing: 0;
+  --slide-blockquote-font-weight: 500;
+}
+
+/* Prose ------------------------------------------------------------------ */
+
+:root[data-slide-theme="kami"] .slide-prose {
+  text-wrap: pretty;
+}
+
+:root[data-slide-theme="kami"] .slide-prose h1,
+:root[data-slide-theme="kami"] .slide-prose h2,
+:root[data-slide-theme="kami"] .slide-prose h3,
+:root[data-slide-theme="kami"] .slide-prose h4 {
+  font-family: var(--font-serif);
+  /* Serif headings are W05 — 500, never a synthetic 600/700. */
+  font-weight: 500;
+  color: var(--slide-ui-heading);
+}
+
+/*
+ * Display tracking: print would set 0.2–1pt here, but large type at slide scale
+ * scatters at those values, so it halves (design.md §2, slide-specific).
+ */
+:root[data-slide-theme="kami"] .slide-prose h1 {
+  max-width: 20ch;
+  letter-spacing: -0.01em;
+}
+
+:root[data-slide-theme="kami"] .slide-prose h2 {
+  max-width: 24ch;
+  letter-spacing: 0;
+}
+
+/* H3 is the one heading that carries brand color (slides-weasy.html). */
+:root[data-slide-theme="kami"] .slide-prose h3 {
+  color: var(--slide-ui-accent);
+  letter-spacing: 0;
+}
+
+:root[data-slide-theme="kami"] .slide-prose p,
+:root[data-slide-theme="kami"] .slide-prose li {
+  /* CJK body needs 0.3pt to breathe; TsangerJinKai02's baseline in every Kami template. */
+  letter-spacing: 0.01em;
+}
+
+/* Kami forbids italic outright — MDX emphasis becomes a color shift instead. */
+:root[data-slide-theme="kami"] .slide-prose em,
+:root[data-slide-theme="kami"] .slide-prose i {
+  font-style: normal;
+  color: var(--slide-ui-accent);
+}
+
+/* strong locks to 500 so browsers cannot synthesize 700 on top of W05. */
+:root[data-slide-theme="kami"] .slide-prose strong {
+  font-weight: 500;
+  color: var(--slide-ui-heading);
+}
+
+:root[data-slide-theme="kami"] .slide-prose a {
+  color: var(--slide-ui-accent);
+  text-decoration-style: solid;
+}
+
+:root[data-slide-theme="kami"] .slide-prose ol > li::before {
+  /* Numbers carry sequence on their own; a filled pill is one ornament too many. */
+  font-family: var(--font-serif);
+  font-weight: 500;
+  min-width: 0;
+  padding: 0;
+  border-radius: 0;
+}
+
+:root[data-slide-theme="kami"] .slide-prose blockquote {
+  border-left-width: 2.5px;
+  border-radius: 0;
+}
+
+:root[data-slide-theme="kami"] .slide-prose hr {
+  border-top-color: var(--slide-ui-border);
+}
+
+/* Table: Kami's kami-table — horizontal rules only, no outer box, no fill. */
+:root[data-slide-theme="kami"] .slide-prose table {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+:root[data-slide-theme="kami"] .slide-prose th {
+  background: transparent;
+  border-bottom: 1px solid var(--slide-ui-border-strong);
+  color: var(--slide-ui-heading);
+  font-family: var(--font-serif);
+  font-weight: 500;
+  text-align: left;
+}
+
+:root[data-slide-theme="kami"] .slide-prose td {
+  border-bottom: 1px solid var(--slide-ui-border);
+  color: var(--slide-ui-text);
+  vertical-align: top;
+}
+
+:root[data-slide-theme="kami"] .slide-prose th + th,
+:root[data-slide-theme="kami"] .slide-prose td + td {
+  border-left: 0;
+}
+
+:root[data-slide-theme="kami"] .slide-prose tbody tr:nth-child(even) td,
+:root[data-slide-theme="kami"] .slide-prose tbody tr:hover td {
+  background: transparent;
+}
+
+/* Code: fill carries the block, no closed hairline border. */
+:root[data-slide-theme="kami"] .slide-prose pre,
+:root[data-slide-theme="kami"] .slide-prose .magic-move-demo-loading,
+:root[data-slide-theme="kami"] .slide-prose .magic-move-demo-shell {
+  border: 0;
+  border-radius: 4px;
+  background: var(--slide-ui-surface);
+  box-shadow: none;
+}
+
+:root[data-slide-theme="kami"] .slide-prose :not(pre) > code {
+  border: 0;
+  border-radius: 2px;
+  background: var(--slide-ui-surface);
+  color: var(--slide-ui-accent);
+}
+
+:root[data-slide-theme="kami"] .slide-prose kbd {
+  border-color: var(--slide-ui-border);
+  background: var(--slide-ui-surface);
+  box-shadow: none;
+}
+
+/* Shared components ------------------------------------------------------ */
+
+/*
+ * Tag: solid tint, one step lighter than decoration wants. Uppercase mono at the
+ * 12px floor — this is the only place 12px is allowed, never prose.
+ */
+:root[data-slide-theme="kami"] .slide-badge {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 0.35rem;
+  border: 0;
+  border-radius: 4px;
+  background: var(--slide-ui-accent-soft);
+  color: var(--slide-ui-accent);
+  padding: 0.16rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: max(12px, 0.62em);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/*
+ * Eyebrow: uppercase mono led by the 8px x 1.5px brand tick — a short horizontal
+ * bar, not a round bullet, which reads juvenile next to CJK (design.md §4).
+ * Tracking caps at ~3px at slide scale; print's 8px would scatter.
+ */
+:root[data-slide-theme="kami"] .slide-eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--slide-ui-muted);
+  font-family: var(--font-mono);
+  font-size: max(24px, 0.66em);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+:root[data-slide-theme="kami"] .slide-eyebrow::before {
+  content: "";
+  display: inline-block;
+  flex-shrink: 0;
+  width: 1.1rem;
+  height: 1.5px;
+  background: var(--slide-ui-accent);
+}
+
+/*
+ * Callout: a passage lifted out of the reading flow — the 2pt brand left rule tier.
+ * Ivory fill, no closed border, no radius on the ruled edge.
+ */
+:root[data-slide-theme="kami"] .slide-callout {
+  position: relative;
+  margin: 1.1rem 0 1.2rem;
+  border: 0;
+  border-left: 2.5px solid var(--slide-ui-accent);
+  border-radius: 0;
+  background: var(--slide-ui-surface);
+  padding: 0.9rem 1.2rem 0.9rem 1.15rem;
+  box-shadow: none;
+}
+
+:root[data-slide-theme="kami"] .slide-callout--warn {
+  border-left-color: var(--slide-feedback-warning);
+}
+
+:root[data-slide-theme="kami"] .slide-callout--success {
+  border-left-color: var(--slide-feedback-positive);
+}
+
+:root[data-slide-theme="kami"] .slide-callout-title {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--slide-ui-accent);
+  font-family: var(--font-mono);
+  font-size: max(24px, 0.62em);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+:root[data-slide-theme="kami"] .slide-callout-body {
+  color: var(--slide-ui-text);
+}
+
+:root[data-slide-theme="kami"] .slide-callout-body > :last-child {
+  margin-bottom: 0;
+}
+
+/*
+ * KeyStat: Kami's metric, stacked rather than baseline-inline. On screen the label
+ * is translated and read at arbitrary widths, so a baseline-shared inline label
+ * would dangle the moment it wraps (design.md §4, production pitfall #20).
+ */
+:root[data-slide-theme="kami"] .slide-key-stat {
+  display: grid;
+  gap: 0.5rem;
+  width: min(100%, 22rem);
+  margin: 0;
+  padding: 0.9rem 0 0 0.9rem;
+  border-top: 0;
+  border-left: 2px solid var(--slide-ui-accent);
+}
+
+:root[data-slide-theme="kami"] .slide-key-stat-value {
+  color: var(--slide-ui-accent);
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: clamp(2.6rem, 3.8vw, 3.9rem);
+  line-height: 1.1;
+  /* Large digits crowd each other without this; align them in columns. */
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+:root[data-slide-theme="kami"] .slide-key-stat-copy {
+  display: grid;
+  gap: 0.3rem;
+}
+
+:root[data-slide-theme="kami"] .slide-key-stat-label {
+  color: var(--slide-ui-heading);
+  font-family: var(--font-mono);
+  font-size: max(24px, 0.62em);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+:root[data-slide-theme="kami"] .slide-key-stat-detail {
+  color: var(--slide-ui-muted);
+  font-size: max(24px, 0.68em);
+  line-height: 1.5;
+}
+
+/* PullQuote: the structural 2.5pt brand rule tier — no fill, no italic. */
+:root[data-slide-theme="kami"] .slide-pull-quote {
+  display: grid;
+  gap: 1rem;
+  width: min(100%, 46rem);
+  margin: 1rem 0;
+  padding-left: 1.4rem;
+  border-left: 2.5px solid var(--slide-ui-accent);
+}
+
+:root[data-slide-theme="kami"] .slide-pull-quote-body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--slide-ui-heading);
+  font-family: var(--font-serif);
+  font-style: normal;
+  font-weight: 500;
+  font-size: clamp(1.9rem, 2.6vw, 2.8rem);
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+:root[data-slide-theme="kami"] .slide-pull-quote-body > :first-child {
+  margin-top: 0;
+}
+
+:root[data-slide-theme="kami"] .slide-pull-quote-body > :last-child {
+  margin-bottom: 0;
+}
+
+:root[data-slide-theme="kami"] .slide-pull-quote-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.9rem;
+  align-items: center;
+  color: var(--slide-ui-muted);
+  font-family: var(--font-mono);
+  font-size: max(24px, 0.62em);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+:root[data-slide-theme="kami"] .slide-pull-quote-by {
+  color: var(--slide-ui-heading);
+  font-weight: 500;
+}
+
+:root[data-slide-theme="kami"] .slide-pull-quote-extra::before {
+  content: "·";
+  margin-right: 0.6rem;
+  color: var(--slide-ui-muted-soft);
+}
+
+/* Layout shells ---------------------------------------------------------- */
+
+/*
+ * Every shell is left-aligned and unboxed. Kami's page is content plus editorial
+ * whitespace: no card frame, no radius, no border, no shadow. The full-height
+ * brand left bar reads heavy and crude as a page frame, so it stays a
+ * section-level and pull-quote device only.
+ */
+:root[data-slide-theme="kami"] .kami-cover-shell,
+:root[data-slide-theme="kami"] .kami-section-shell,
+:root[data-slide-theme="kami"] .kami-statement-shell,
+:root[data-slide-theme="kami"] .kami-chapter-shell {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  width: min(100%, 1500px);
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+}
+
+/*
+ * Proximity: the gap under a head must be clearly smaller than the gap above it.
+ * These shells own the "section-to-section" step; the head's own internals
+ * (eyebrow-to-title) are tighter, set by the prose margins.
+ */
+:root[data-slide-theme="kami"] .kami-cover-shell {
+  gap: clamp(1.2rem, 2vw, 2rem);
+}
+
+:root[data-slide-theme="kami"] .kami-section-shell,
+:root[data-slide-theme="kami"] .kami-chapter-shell {
+  gap: clamp(1rem, 1.6vw, 1.6rem);
+}
+
+:root[data-slide-theme="kami"] .kami-statement-shell {
+  gap: clamp(1rem, 1.8vw, 1.8rem);
+}
+
+/* The cover's short brand rule — the one mark on an otherwise bare page. */
+:root[data-slide-theme="kami"] .kami-cover-rule {
+  width: 5.5rem;
+  height: 2.5px;
+  background: var(--slide-ui-accent);
+}
+
+:root[data-slide-theme="kami"] .kami-cover-content {
+  display: grid;
+  gap: inherit;
+  justify-items: start;
+  width: 100%;
+}
+
+/* A statement is the one place type goes large and nothing else competes. */
+:root[data-slide-theme="kami"] .kami-statement-shell .slide-prose h1,
+:root[data-slide-theme="kami"] .kami-statement-shell .slide-prose h2 {
+  max-width: 26ch;
+}
+
+/* Chapter number, when authored as an eyebrow, reads as a serif numeral. */
+:root[data-slide-theme="kami"] .kami-chapter-shell .slide-prose h1 {
+  max-width: 22ch;
+}
+
+/* Reduced motion is already global; nothing here animates. */
